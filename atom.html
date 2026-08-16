@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>أساسيات الإلكترونيات | الذرة والبنية الذرية والتحرير الكهربائي</title>
+    <meta name="description" content="تطبيق محاكاة تفاعلي لتعلم أساسيات الإلكترونيات والبنية الذرية، يوضح كيفية تحرير الإلكترونات وتوليد التيار الكهربائي وإضاءة المصباح باستخدام مصادر الطاقة المختلفة.">
+    <meta name="keywords" content="أساسيات الإلكترونيات, الذرة, الإلكترونات, التيار الكهربائي, النواة, تحرير الإلكترونات, محاكاة تفاعلية, فيزياء, كهرباء">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="أساسيات الإلكترونيات | الذرة والبنية الذرية والتحرير">
+    <meta property="og:description" content="تعلم أساسيات الإلكترونيات وكيفية حركة الإلكترونات وتوليد التيار الكهربائي من خلال محاكاة تفاعلية ممتعة.">
+    <meta property="og:locale" content="ar_AR">
+
+    <!-- Twitter SEO -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="أساسيات الإلكترونيات | الذرة">
+    <meta name="twitter:description" content="محاكاة تفاعلية لتعلم البنية الذرية وكيفية انطلاق الإلكترونات لتوليد الكهرباء.">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-wrapper {
+            flex: 1;
+        }
+        #phaser-game-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155;
+            height: 100%;
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .atom-card { background-color: #0f172a; border: 1px solid #334155; }
+        
+        /* Atom Profile Card Styling */
+        .atom-profile-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+        }
+        .atom-spec-box {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        /* Header Styling */
+        .app-header {
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .back-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease-in-out;
+        }
+        .back-nav-link:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        /* Footer Styling */
+        .app-footer {
+            background-color: #1e293b;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            margin-top: auto;
+        }
+        .github-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .github-btn:hover {
+            background-color: #334155;
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+        .footer-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
+            color: #7dd3fc;
+        }
+    </style>
+</head>
+<body>
+
+<!-- الشريط العلوي (Header) -->
+<header class="app-header py-3 sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <span class="fs-4 text-info">⚛️</span>
+            <h1 class="h5 mb-0 fw-bold text-light">أساسيات الإلكترونيات | الذرة</h1>
+        </div>
+        <button id="btnShare" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2 px-3">
+            <i class="bi bi-share-fill"></i>
+            <span>مشاركة</span>
+        </button>
+    </div>
+</header>
+
+<div class="main-wrapper">
+    <div class="container py-3">
+        <!-- زر عودة إلى الصفحة الرئيسية -->
+        <div class="mb-3">
+            <a href="index.html" class="back-nav-link">
+                <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                <span>عودة إلى الصفحة الرئيسية</span>
+            </a>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+
+                <p class="lead text-slate-300 fs-6">شاهد كيف تتكامل بنية الذرة مع مصادر الطاقة لتوليد تيار كهربائي لإضاءة مصباح!</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- منطقة المحاكاة وبطاقة تعريف الذرة -->
+            <div class="col-lg-8">
+               
+
+                <!-- بطاقة تعريف الذرة (Atom Profile Card) -->
+                <div class="atom-profile-card mt-3 p-3 text-light">
+                    <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-2 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-3">🆔</span>
+                            <h3 class="h5 mb-0 text-info fw-bold">بطاقة تعريف الذرة (Atom Profile Card)</h3>
+                        </div>
+                        <span class="badge bg-primary px-3 py-1 fs-6">عنصر الفلور (Fluorine - F)</span>
+                    </div>
+
+                    <div class="row g-2 mb-3 text-center">
+                        <div class="col-4 col-sm-2">
+                            <div class="atom-spec-box">
+                                <span class="d-block text-muted small">الرمز</span>
+                                <span class="fw-bold text-warning fs-5">F</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="atom-spec-box">
+                                <span class="d-block text-muted small">العدد الذري</span>
+                                <span class="fw-bold text-info fs-5">9</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="atom-spec-box">
+                                <span class="d-block text-muted small">البروتونات</span>
+                                <span class="fw-bold text-danger fs-5">9 🔴</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="atom-spec-box">
+                                <span class="d-block text-muted small">النيوترونات</span>
+                                <span class="fw-bold fs-5" style="color: #a855f7;">10 🟣</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="atom-spec-box">
+                                <span class="d-block text-muted small">الإلكترونات</span>
+                                <span id="idCardElectrons" class="fw-bold text-warning fs-5">9 🟡</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="atom-spec-box">
+                                <span class="d-block text-muted small">التكافؤ</span>
+                                <span class="fw-bold text-success fs-5">1-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 small text-muted">
+                        <div class="col-md-6">
+                            <div class="p-2 border border-secondary rounded bg-dark">
+                                <strong class="text-info d-block mb-1">📍 التوزيع الإلكتروني للمدارات:</strong>
+                                <ul>
+                                    <li><b>المدار الأول (K):</b> 2 إلكترون</li>
+                                    <li><b>المدار الثاني (L):</b> 4 إلكترونات</li>
+                                    <li><b>المدار الثالث (M):</b> 3 إلكترونات (إلكترونات تكافؤ قابلة للتحرير)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-2 border border-secondary rounded bg-dark">
+                                <strong class="text-info d-block mb-1">⚡ خصائص الشحنة والحالة:</strong>
+                                <ul>
+                                    <li><b>الحالة الطبيعية:</b> متعادلة كهربائياً (عدد البروتونات = عدد الإلكترونات).</li>
+                                    <li><b>عند فقدان إلكترون:</b> تتحول الذرة إلى <span class="text-warning fw-bold">أيون موجب</span> وتولد تياراً كهربائياً.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- لوحة التحكم (Bootstrap) -->
+            <div class="col-lg-4">
+                <div class="control-panel d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- تعريف الذرة الأشمل -->
+                        <div class="card atom-card mb-3 p-3">
+                            <h3 class="h6 text-info fw-bold mb-2">⚛️ ما هي الذرة؟ (بنيتها وأسرارها)</h3>
+                            <p class="small text-muted mb-2" style="line-height: 1.6;">
+                                الذرة هي اللبنة الأساسية لكل مواد الكون، وتتكون من قسمين رئيسيين:
+                            </p>
+                            <ul class="small text-muted ps-3 mb-2" style="line-height: 1.5;">
+                                <li><b>النواة (في المركز):</b> تحوي <span class="text-danger">بروتونات موجبة</span> و<span style="color:#a855f7;">نيوترونات متعادلة</span>، وهي المسؤولة عن كتلة الذرة.</li>
+                                <li><b>الإلكترونات (<span class="text-warning">نقاط صفراء</span>):</b> جسيمات سالبة الشحنة تدور بسرعة هائلة في مدارات خارجية واسعة.</li>
+                            </ul>
+                            <p class="small text-muted mb-0" style="line-height: 1.5;">
+                                💡 <b>السر في الكهرباء:</b> عندما نطبق طاقة خارجية، تتحرر هذه الإلكترونات وتندفع في السلك لتشكل <b>التيار الكهربائي</b>!
+                            </p>
+                        </div>
+ <div id="phaser-game-container"></div>
+                        <h3 class="h6 mb-2 text-info border-bottom border-secondary pb-2">اختر مصدر الطاقة للتحرير</h3>
+                        
+                        <!-- أزرار مصادر الطاقة -->
+                        <div class="d-grid gap-2 mb-3">
+                            <button id="btnBattery" class="btn btn-success btn-sm text-start fw-bold shadow-sm py-2">
+                                🔋 توصيل بطارية (تحرير إلكترون)
+                            </button>
+                            <button id="btnMagnet" class="btn btn-primary btn-sm text-start fw-bold shadow-sm py-2">
+                                🧲 تحريك مغناطيس (تحرير إلكترون)
+                            </button>
+                            <button id="btnSolar" class="btn btn-warning btn-sm text-start text-dark fw-bold shadow-sm py-2">
+                                ☀️ تسليط ضوء (تحرير إلكترون)
+                            </button>
+                        </div>
+
+                        <!-- حالة المصباح -->
+                        <div class="card bg-dark border-secondary mb-3 text-center">
+                            <div class="card-body py-2">
+                                <span class="small text-muted d-block mb-1">حالة المصباح والتدفق:</span>
+                                <span id="lampStateBadge" class="badge bg-secondary fs-6 px-3 py-2">⚪ مطفأ (0 إلكترونات)</span>
+                            </div>
+                        </div>
+
+                        <!-- صندوق الشرح العلمي التفاعلي -->
+                        <div id="explanationBox" class="alert alert-info border-info text-dark small mb-2 p-2">
+                            <strong>التوجيه:</strong> <span>اضغط على مصادر الطاقة لتحرير الإلكترونات تدريجياً (من 1 إلى 9 إلكترونات).</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <button id="resetBtn" class="btn btn-outline-secondary btn-sm w-100">
+                            🔄 إعادة ضبط التجربة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="app-footer py-3 text-center">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+        <div class="small">
+            جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم <a href="https://me.haythamzeidan.workers.dev/" class="footer-link">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress/Electronics-basics" target="_blank" rel="noopener noreferrer" class="github-btn">
+                <i class="bi bi-github fs-6"></i>
+                <span>عرض على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ==========================================
+// 1. منطق Phaser 3 (المحاكاة البصرية)
+// ==========================================
+
+class AtomCircuitScene extends Phaser.Scene {
+    constructor() {
+        super('AtomCircuitScene');
+    }
+
+    create() {
+        this.atomX = 200;
+        this.atomY = this.cameras.main.height / 2;
+        this.wireStartX = 360;
+        this.wireY = this.atomY;
+        this.lampX = 650;
+        this.lampY = this.atomY;
+
+        this.graphics = this.add.graphics();
+        this.electrons = [];
+        this.freeElectronsInWire = 0;
+
+        this.drawWire();
+        this.initAtom();
+
+        window.addEventListener('applyEnergy', (e) => {
+            this.sendEnergyPulse(e.detail.emoji);
+        });
+        
+        window.addEventListener('resetAtom', () => this.initAtom());
+    }
+
+    drawWire() {
+        this.graphics.lineStyle(24, 0xb45309, 0.4);
+        this.graphics.beginPath();
+        this.graphics.moveTo(this.wireStartX, this.wireY);
+        this.graphics.lineTo(this.lampX + 50, this.wireY);
+        this.graphics.strokePath();
+
+        this.graphics.lineStyle(2, 0xd97706, 0.8);
+        this.graphics.beginPath();
+        this.graphics.moveTo(this.wireStartX, this.wireY - 12);
+        this.graphics.lineTo(this.lampX + 50, this.wireY - 12);
+        this.graphics.moveTo(this.wireStartX, this.wireY + 12);
+        this.graphics.lineTo(this.lampX + 50, this.wireY + 12);
+        this.graphics.strokePath();
+
+        this.add.text(this.wireStartX + 90, this.wireY - 40, "سلك نحاسي (مسار التيار)", { 
+            fontFamily: 'Tahoma', fontSize: '13px', color: '#94a3b8' 
+        });
+    }
+
+    initAtom() {
+        this.electrons.forEach(e => e.destroy());
+        this.electrons = [];
+        this.freeElectronsInWire = 0;
+        this.updateUIStatus();
+
+        this.orbitRadii = [40, 80, 120];
+        const distribution = [2, 4, 3];
+        
+        distribution.forEach((count, orbitIndex) => {
+            for (let i = 0; i < count; i++) {
+                let e = this.add.circle(0, 0, 6, 0xfacc15);
+                e.orbitRadius = this.orbitRadii[orbitIndex];
+                e.angleRad = (Math.PI * 2 / count) * i;
+                e.speed = 0.03 - (orbitIndex * 0.005);
+                e.state = 'bound'; 
+                this.electrons.push(e);
+            }
+        });
+    }
+
+    sendEnergyPulse(emoji) {
+        const boundElectrons = this.electrons.filter(e => e.state === 'bound');
+        if (boundElectrons.length === 0) return;
+
+        let energySprite = this.add.text(20, this.atomY - 15, emoji, { fontSize: '32px' });
+        
+        this.tweens.add({
+            targets: energySprite,
+            x: this.atomX,
+            duration: 500,
+            ease: 'Power2',
+            onComplete: () => {
+                this.cameras.main.flash(80, 255, 255, 255);
+                energySprite.destroy();
+                this.freeElectron();
+            }
+        });
+    }
+
+    freeElectron() {
+        const boundElectrons = this.electrons.filter(e => e.state === 'bound');
+        
+        if (boundElectrons.length > 0) {
+            const outerMostElectron = boundElectrons.reduce((prev, current) => 
+                (prev.orbitRadius > current.orbitRadius) ? prev : current
+            );
+            
+            outerMostElectron.state = 'moving_to_wire';
+            
+            const dx = this.wireStartX - outerMostElectron.x;
+            const dy = this.wireY - outerMostElectron.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            outerMostElectron.vx = (dx / distance) * 5;
+            outerMostElectron.vy = (dy / distance) * 5;
+
+            this.freeElectronsInWire++;
+            this.updateUIStatus();
+        }
+    }
+
+    updateUIStatus() {
+        let stateText = "";
+        let badgeClass = "";
+        let intensity = 0;
+
+        if (this.freeElectronsInWire === 0) {
+            stateText = "⚪ مطفأ (0 إلكترونات)";
+            badgeClass = "badge bg-secondary fs-6 px-3 py-2";
+            intensity = 0;
+        } else if (this.freeElectronsInWire >= 1 && this.freeElectronsInWire <= 3) {
+            stateText = `🟡 ضعيف (${this.freeElectronsInWire} إلكترونات)`;
+            badgeClass = "badge bg-warning text-dark fs-6 px-3 py-2";
+            intensity = 0.3;
+        } else if (this.freeElectronsInWire >= 4 && this.freeElectronsInWire <= 6) {
+            stateText = `🟠 متوسط (${this.freeElectronsInWire} إلكترونات)`;
+            badgeClass = "badge bg-info text-dark fs-6 px-3 py-2";
+            intensity = 0.6;
+        } else if (this.freeElectronsInWire >= 7) {
+            stateText = `💡 سطوع عالي (${this.freeElectronsInWire} إلكترونات)`;
+            badgeClass = "badge bg-success fs-6 px-3 py-2 shadow";
+            intensity = 1.0;
+        }
+
+        this.currentLampIntensity = intensity;
+
+        window.dispatchEvent(new CustomEvent('updateLampState', {
+            detail: { text: stateText, className: badgeClass, count: this.freeElectronsInWire }
+        }));
+    }
+
+    update() {
+        this.graphics.clear();
+        this.drawWire();
+
+        this.graphics.lineStyle(1, 0x334155, 0.6);
+        this.orbitRadii.forEach(r => {
+            this.graphics.strokeCircle(this.atomX, this.atomY, r);
+        });
+
+        this.drawNucleus();
+        this.drawLamp();
+
+        this.electrons.forEach(e => {
+            if (e.state === 'bound') {
+                e.angleRad += e.speed;
+                e.x = this.atomX + Math.cos(e.angleRad) * e.orbitRadius;
+                e.y = this.atomY + Math.sin(e.angleRad) * e.orbitRadius;
+            } else if (e.state === 'moving_to_wire') {
+                e.x += e.vx;
+                e.y += e.vy;
+                
+                if (Math.abs(e.x - this.wireStartX) < 6 && Math.abs(e.y - this.wireY) < 15) {
+                    e.state = 'in_wire';
+                    e.x = this.wireStartX;
+                    e.wireYOffset = (Math.random() - 0.5) * 16; 
+                }
+            } else if (e.state === 'in_wire') {
+                e.x += 3.5;
+                e.y = this.wireY + e.wireYOffset;
+
+                if (e.x > this.lampX + 30) {
+                    e.x = this.wireStartX;
+                }
+            }
+        });
+    }
+
+    drawNucleus() {
+        const nucleons = [
+            {x: -4, y: -4, c: 0xef4444}, {x: 4, y: 4, c: 0xef4444}, {x: 0, y: 7, c: 0xef4444},
+            {x: 5, y: -3, c: 0x8b5cf6}, {x: -5, y: 3, c: 0x8b5cf6}, {x: 0, y: -7, c: 0x8b5cf6}
+        ];
+        nucleons.forEach(n => {
+            this.graphics.fillStyle(n.c, 1);
+            this.graphics.fillCircle(this.atomX + n.x, this.atomY + n.y, 6);
+        });
+    }
+
+    drawLamp() {
+        const intensity = this.currentLampIntensity || 0;
+
+        if (intensity > 0) {
+            this.graphics.fillStyle(0xfef08a, intensity * 0.4);
+            this.graphics.fillCircle(this.lampX, this.lampY, 35 + (intensity * 35));
+        }
+
+        let bulbColor = 0x475569; 
+        if (intensity === 0.3) bulbColor = 0xfde047; 
+        if (intensity === 0.6) bulbColor = 0xfacc15; 
+        if (intensity === 1.0) bulbColor = 0xfef08a; 
+
+        this.graphics.fillStyle(bulbColor, 1);
+        this.graphics.fillCircle(this.lampX, this.lampY, 25);
+        
+        this.graphics.fillStyle(0x94a3b8, 1);
+        this.graphics.fillRect(this.lampX - 10, this.lampY + 20, 20, 15);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 400,
+    backgroundColor: '#0f172a',
+    scene: AtomCircuitScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+const game = new Phaser.Game(config);
+
+// ==========================================
+// 2. تحديث الواجهة والشرح العلمي
+// ==========================================
+
+const lampStateBadge = document.getElementById('lampStateBadge');
+const explanationBox = document.querySelector('#explanationBox span');
+const idCardElectrons = document.getElementById('idCardElectrons');
+
+function triggerEnergySource(type) {
+    let emoji = '';
+    let explanation = '';
+
+    if (type === 'battery') {
+        emoji = '⚡';
+        explanation = "البطارية تضخ طاقة كيميائية لتحرير المزيد من الإلكترونات وزيادة التيار الكهربائي.";
+    } else if (type === 'magnet') {
+        emoji = '🧲';
+        explanation = "حركة المجال المغناطيسي تدفع إلكترونات جديدة عبر السلك لتطوير شدة الإضاءة.";
+    } else if (type === 'solar') {
+        emoji = '☀️';
+        explanation = "فوتونات الضوء تنتزع الإلكترونات المتبقية في المدارات لرفع مستوى السطوع إلى أعلى درجة.";
+    }
+
+    explanationBox.innerHTML = explanation;
+    window.dispatchEvent(new CustomEvent('applyEnergy', { detail: { emoji: emoji } }));
+}
+
+document.getElementById('btnBattery').addEventListener('click', () => triggerEnergySource('battery'));
+document.getElementById('btnMagnet').addEventListener('click', () => triggerEnergySource('magnet'));
+document.getElementById('btnSolar').addEventListener('click', () => triggerEnergySource('solar'));
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+    window.dispatchEvent(new Event('resetAtom'));
+    explanationBox.innerHTML = "اضغط على مصادر الطاقة لتحرير الإلكترونات تدريجياً (من 1 إلى 9 إلكترونات).";
+});
+
+window.addEventListener('updateLampState', (e) => {
+    const { text, className, count } = e.detail;
+    lampStateBadge.innerText = text;
+    lampStateBadge.className = className;
+    
+    // تحديث عدد الإلكترونات المتبقية في بطاقة التعريف
+    const remainingElectrons = 9 - count;
+    if (idCardElectrons) {
+        idCardElectrons.innerText = `${remainingElectrons} 🟡`;
+    }
+});
+
+// زر المشاركة
+document.getElementById('btnShare').addEventListener('click', async () => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'أساسيات الإلكترونيات | الذرة',
+                text: 'شاهد محاكاة تفاعلية رائعة لتعلم أساسيات الإلكترونيات والبنية الذرية!',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('مشاركة ملغاة');
+        }
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ رابط الصفحة إلى الحافظة!');
+    }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
