@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- وسوم SEO والتواصل الاجتماعي -->
+    <title>محاكاة الترانزستور (NPN) - مكبر الإشارة | أساسيات الإلكترونيات</title>
+    <meta name="description" content="تطبيق محاكاة تفاعلي لترانزستور NPN كمكبر إشارة، يوضح مناطق العمل (الفعالة، القطع، الإشباع) وخصائص الانحياز مع راسم الإشارة.">
+    <meta name="keywords" content="ترانزستور, NPN, مكبر إشارة, إلكترونيات, محاكاة, Phaser, BJT, Oscillosocpe">
+    <meta name="author" content="اسم المطور">
+    
+    <!-- Open Graph (Facebook / WhatsApp / LinkedIn) -->
+    <meta property="og:title" content="محاكاة الترانزستور (NPN) - مكبر الإشارة">
+    <meta property="og:description" content="تطبيق تفاعلي لشرح عمل الترانزستور كمكبر إشارة ورسم الموجات اللحظية.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com/transistor-sim">
+
+    <!-- CSS / Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-content {
+            flex: 1;
+        }
+        #phaser-game-container {
+            width: 100%;
+            min-height: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        }
+        input[type=range] { direction: ltr; }
+        
+        .id-card {
+            background-color: #1e293b;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .id-card-header {
+            background-color: #f59e0b;
+            color: #020617;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        /* Footer Styles */
+        footer {
+            background-color: #090d16;
+            border-top: 1px solid #334155;
+        }
+        .github-link {
+            transition: color 0.3s ease;
+        }
+        .github-link:hover {
+            color: #f59e0b !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar (الشريط العلوي) -->
+<nav class="navbar navbar-dark bg-dark px-3 border-bottom border-secondary">
+    <div class="container-fluid">
+<span class="navbar-brand mb-0 h1 fs-5">🎛️ أساسيات الإلكترونيات | الترانزستور (NPN)كمبر إشارة</span>
+        <button class="btn btn-outline-warning btn-sm" onclick="shareApp()">
+            <i class="bi bi-share-fill me-1"></i> مشاركة
+        </button>
+    </div>
+</nav>
+
+<div class="container py-3 main-content">
+    <!-- زر العودة للرئيسية أسفل الشريط العلوي -->
+    <div class="mb-3">
+        <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill px-3">
+            <i class="bi bi-arrow-right me-1"></i> العودة إلى الصفحة الرئيسية
+        </a>
+    </div>
+
+ 
+    
+    <div class="row g-4">
+        <!-- القسم الأيسر -->
+        <div class="col-lg-8">
+           
+
+            <div class="id-card shadow">
+                <div class="id-card-header">
+                    📑 بطاقة تعريف: الترانزستور ثنائي القطب (BJT - NPN)
+                </div>
+                <div class="p-3 text-light">
+                    <p class="mb-3">
+                        <strong>المبدأ الأساسي:</strong> تيار صغير جداً يدخل من "القاعدة" (Base) يتحكم في تيار كبير جداً يمر من "المجمع" (Collector) إلى "الباعث" (Emitter).
+                    </p>
+                    <ul class="list-group list-group-flush mb-0 text-light" style="background: transparent;">
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-success">المنطقة الفعالة (Active):</strong> عندما يكون جهد القاعدة حول 0.7V. هنا يعمل كمكبر؛ إشارة صغيرة تنتج موجة كبيرة ومعكوسة.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-danger">منطقة القطع (Cut-off):</strong> إذا كان جهد القاعدة أقل من 0.6V، يغلق الترانزستور ويصبح جهد الخرج 12V (تشويه لقمة الموجة).
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-0">
+                            <strong class="text-warning">منطقة الإشباع (Saturation):</strong> إذا زاد جهد القاعدة عن 0.8V، يفتح الترانزستور بالكامل وينهار جهد الخرج إلى الصفر (تشويه لقاع الموجة).
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن -->
+        <div class="col-lg-4">
+            <div class="control-panel h-100 d-flex flex-column">
+             <div id="phaser-game-container" class="mb-4"></div>
+                <h5 class="text-white mb-4 border-bottom border-secondary pb-2">🎛️ لوحة الضبط والانحياز</h5>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between" style="color: #fbd38d;">
+                        <span>جهد الانحياز (DC Bias - Vbe)</span>
+                        <span class="badge text-dark" style="background-color: #f59e0b;" id="biasValue">0.70 V</span>
+                    </label>
+                    <input type="range" id="biasSlider" min="0.5" max="0.9" value="0.7" step="0.01" class="form-range">
+                    <small class="text-secondary">يحدد نقطة تشغيل الترانزستور (Q-Point).</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-danger">
+                        <span>سعة إشارة الدخل (AC - Base)</span>
+                        <span class="badge bg-danger" id="acValue">10 mV</span>
+                    </label>
+                    <input type="range" id="acSlider" min="0" max="40" value="10" step="1" class="form-range">
+                    <small class="text-secondary">الإشارة الصغيرة المراد تكبيرها.</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-info fw-bold mb-2 d-flex justify-content-between">
+                        <span>التردد (Frequency)</span>
+                        <span class="badge bg-primary" id="freqValue">3</span>
+                    </label>
+                    <input type="range" id="freqSlider" min="1" max="10" value="3" step="1" class="form-range">
+                </div>
+
+                <!-- شاشة الحالة -->
+                <div class="mt-auto">
+                    <label class="text-secondary small fw-bold mb-1">حالة الترانزستور اللحظية:</label>
+                    <div id="transistorStatus" class="badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base" style="min-height: 70px;">
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="text-center py-3 mt-5">
+    <div class="container">
+        <p class="mb-1 text-secondary">
+            تصميم وتطوير بواسطة <a href="https://me.haythamzeidan.workers.dev/" class="text-decoration-none text-light fw-bold">هيثم زيدان</a> &copy; 2026 جميع الحقوق محفوظة.
+        </p>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="github-link text-decoration-none text-secondary">
+                <i class="bi bi-github me-1"></i> تابعني على GitHub
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// دالة المشاركة
+function shareApp() {
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            text: 'تفقد تطبيق محاكاة الترانزستور كمكبر إشارة التفاعلي!',
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert("تم نسخ رابط التطبيق للحافظة!");
+    }
+}
+
+window.SimData = {
+    bias: 0.7,
+    acAmp: 10,
+    freq: 3
+};
+
+function updateUI() {
+    let biasInput = parseFloat(document.getElementById('biasSlider').value);
+    let acInput = parseFloat(document.getElementById('acSlider').value);
+    let freqInput = parseFloat(document.getElementById('freqSlider').value);
+    
+    window.SimData.bias = isNaN(biasInput) ? 0.7 : biasInput;
+    window.SimData.acAmp = isNaN(acInput) ? 10 : acInput;
+    window.SimData.freq = isNaN(freqInput) ? 3 : freqInput;
+
+    document.getElementById('biasValue').innerText = window.SimData.bias.toFixed(2) + " V";
+    document.getElementById('acValue').innerText = window.SimData.acAmp + " mV";
+    document.getElementById('freqValue').innerText = window.SimData.freq;
+}
+
+document.getElementById('biasSlider').addEventListener('input', updateUI);
+document.getElementById('acSlider').addEventListener('input', updateUI);
+document.getElementById('freqSlider').addEventListener('input', updateUI);
+
+class TransistorScene extends Phaser.Scene {
+    constructor() { super('TransistorScene'); }
+
+    create() {
+        this.graphics = this.add.graphics();
+        this.tick = 0;
+        this.historyIn = new Array(400).fill(0);
+        this.historyOut = new Array(400).fill(0);
+
+        let fontStyle = { font: '14px Tahoma, sans-serif', fill: '#cbd5e1' };
+        this.add.text(400, 20, 'راسم الإشارة (Oscilloscope) - مكبر باعث مشترك', fontStyle).setOrigin(0.5);
+        
+        this.add.text(230, 40, 'إشارة الدخل بالقاعدة (مكبرة للعرض)', { font: '12px Tahoma', fill: '#ef4444' }).setOrigin(0);
+        this.add.text(230, 60, 'إشارة الخرج عالمجمع (VCE)', { font: '12px Tahoma', fill: '#22c55e' }).setOrigin(0);
+        
+        // تسميات المحاور
+        this.add.text(175, 100, '12V', { font: '12px Tahoma', fill: '#64748b' });
+        this.add.text(180, 220, '6V', { font: '12px Tahoma', fill: '#64748b' });
+        this.add.text(180, 340, '0V', { font: '12px Tahoma', fill: '#64748b' });
+    }
+
+    update() {
+        if (isNaN(this.tick)) this.tick = 0;
+        this.tick += (window.SimData.freq * 0.015);
+        
+        let v_in_ac_mv = window.SimData.acAmp * Math.sin(this.tick);
+        if (isNaN(v_in_ac_mv)) v_in_ac_mv = 0; 
+
+        let v_be_total = window.SimData.bias + (v_in_ac_mv / 1000);
+
+        let v_out_ce = 12 - ((v_be_total - 0.65) * 120);
+
+        let clipped = false;
+        let isCutoff = false;
+        let isSat = false;
+
+        if (v_out_ce >= 12) {
+            v_out_ce = 12;
+            isCutoff = true;
+            clipped = true;
+        }
+        if (v_out_ce <= 0) {
+            v_out_ce = 0;
+            isSat = true;
+            clipped = true;
+        }
+
+        let statusEl = document.getElementById('transistorStatus');
+        
+        let max_v_out = 12 - ((window.SimData.bias - (window.SimData.acAmp/1000) - 0.65) * 120);
+        let min_v_out = 12 - ((window.SimData.bias + (window.SimData.acAmp/1000) - 0.65) * 120);
+
+        if (max_v_out >= 12 && min_v_out <= 0) {
+            statusEl.className = "badge bg-danger fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "تشويه كامل 💥\nالترانزستور يدخل في القطع والإشباع معاً!";
+        } else if (max_v_out >= 12) {
+            statusEl.className = "badge bg-warning text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "منطقة القطع (Cut-off) ⚠️\nتشويه لقمة الموجة (الجهد لا يكفي لفتح الترانزستور دائماً)";
+        } else if (min_v_out <= 0) {
+            statusEl.className = "badge bg-warning text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "منطقة الإشباع (Saturation) ⚠️\nتشويه لقاع الموجة (تيار القاعدة مرتفع جداً)";
+        } else if (window.SimData.acAmp === 0) {
+            statusEl.className = "badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = `الترانزستور في وضع السكون (Q-Point)\nجهد المجمع: ${v_out_ce.toFixed(1)} V`;
+        } else {
+            statusEl.className = "badge bg-success fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "المنطقة الفعالة (Active) ✅\nتكبير مثالي للإشارة بدون تشويه!";
+        }
+
+        this.graphics.clear();
+        this.historyIn.push(v_in_ac_mv);
+        this.historyIn.shift();
+        this.historyOut.push(v_out_ce);
+        this.historyOut.shift();
+
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillRect(200, 90, 400, 260);
+        
+        this.graphics.lineStyle(1, 0x1e293b, 1);
+        this.graphics.beginPath();
+        for(let i=10; i<400; i+=20) {
+            this.graphics.moveTo(200+i, 90); this.graphics.lineTo(200+i, 350);
+        }
+        for(let i=10; i<260; i+=20) {
+            this.graphics.moveTo(200, 90+i); this.graphics.lineTo(600, 90+i);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.lineStyle(2, 0x475569, 1);
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(200, 220, 600, 220));
+
+        let scaleY_out = 20; 
+        let scaleY_in = 2; 
+
+        this.graphics.lineStyle(2, 0xef4444, 0.7);
+        this.graphics.beginPath();
+        for(let i=0; i<400; i++) {
+            let y = 220 - (this.historyIn[i] * scaleY_in);
+            if (i === 0) this.graphics.moveTo(200 + i, y);
+            else this.graphics.lineTo(200 + i, y);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.lineStyle(3, 0x22c55e, 1);
+        this.graphics.beginPath();
+        for(let i=0; i<400; i++) {
+            let y = 340 - (this.historyOut[i] * scaleY_out);
+            if (i === 0) this.graphics.moveTo(200 + i, y);
+            else this.graphics.lineTo(200 + i, y);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.fillStyle(0x020617, 0.8);
+        this.graphics.fillRect(210, 30, 220, 50);
+        this.graphics.fillStyle(0xef4444, 1);
+        this.graphics.fillCircle(220, 48, 5);
+        this.graphics.fillStyle(0x22c55e, 1);
+        this.graphics.fillCircle(220, 68, 5);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 400,
+    backgroundColor: '#020617',
+    scene: TransistorScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+window.onload = () => {
+    updateUI(); 
+    new Phaser.Game(config);
+};
+</script>
+
+</body>
+</html>
