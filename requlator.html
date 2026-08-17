@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>أساسيات الإلكترونيات | محاكاة منظم الجهد (Voltage Regulator)</title> <!--[cite: 1] -->
+    <meta name="description" content="تطبيق ويب تفاعلي لمحاكاة عمل منظم الجهد الخطي من عائلة 78xx وتجربة تغير الجهد والحرارة بيانيا ومائيا."> <!--[cite: 1] -->
+    <meta name="keywords" content="منظم الجهد, Voltage Regulator, LM7805, LM7809, LM7812, إلكترونيات, محاكاة تفاعلية, Phaser.js, هندسة كهربائية">
+    <meta name="author" content="هيثم زيدان"> <!--[cite: 1] -->
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook / WhatsApp SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="أساسيات الإلكترونيات | محاكاة منظم الجهد (Voltage Regulator)"> <!--[cite: 1] -->
+    <meta property="og:description" content="تطبيق تفاعلي لمحاكاة عمل منظمات الجهد الخطية عائلة 78xx وتوضيح مفاهيم جهد السقوط وتبديد الحرارة.">
+    <meta property="og:locale" content="ar_AR">
+
+    <!-- Twitter Card SEO -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="أساسيات الإلكترونيات | محاكاة منظم الجهد (Voltage Regulator)"> <!--[cite: 1] -->
+    <meta name="twitter:description" content="تطبيق تفاعلي لمحاكاة عمل منظمات الجهد الخطية عائلة 78xx وتوضيح مفاهيم جهد السقوط وتبديد الحرارة.">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet"> <!--[cite: 1] -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"> <!--[cite: 1] -->
+    
+    <!-- Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script> <!--[cite: 1] -->
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        } /*[cite: 1] */
+        
+        .custom-navbar { background-color: #1e293b; border-color: #334155 !important; } /*[cite: 1] */
+        
+        #phaser-game-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        } /*[cite: 1] */
+        
+        .control-panel, .id-card { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        } /*[cite: 1] */
+        
+        canvas { display: block; width: 100% !important; height: auto !important; } /*[cite: 1] */
+        
+        /* Slider Styling */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; } /*[cite: 1] */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+            cursor: pointer; margin-top: -8px; background: #06b6d4; box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        } /*[cite: 1] */
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; cursor: pointer; background: #475569; border-radius: 3px;
+        } /*[cite: 1] */
+        
+        .main-content { flex: 1; } /*[cite: 1] */
+        .list-group-item { background-color: transparent !important; color: #cbd5e1 !important; border-color: #334155 !important; } /*[cite: 1] */
+
+        /* Footer Link Hover Animations */
+        .footer-link {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-link:hover {
+            color: #06b6d4;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar custom-navbar border-bottom py-3 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1 text-info fw-bold d-flex align-items-center gap-2">
+            <i class="bi bi-motherboard-fill fs-4 text-cyan" style="color: #06b6d4;"></i> <!--[cite: 1] -->
+أساسيات الإلكترونيات | محاكاة منظم الجهد (78xx) <!--[cite: 1] -->
+        </span>
+        <!-- زر المشاركة -->
+        <button id="shareButton" class="btn btn-outline-info btn-sm rounded-pill px-3 d-flex align-items-center gap-2">
+            <i class="bi bi-share-fill"></i>
+            <span></span>
+        </button>
+    </div>
+</nav>
+
+<div class="main-content container py-4">
+    <!-- زر العودة إلى الصفحة الرئيسية أسفل الشريط العلوي -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="index.html" class="btn btn-dark text-info border-secondary rounded-pill px-3 py-1 shadow-sm d-inline-flex align-items-center gap-2">
+                <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                <span>العودة إلى الصفحة الرئيسية</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="display-6 fw-bold text-white">منظم الجهد الخطي (Voltage Regulator)</h1> <!--[cite: 1] -->
+            <p class="lead text-slate-300 fs-6">ارفع جهد الدخل ولاحظ كيف يثبت جهد الخرج، وانتبه للحرارة الناتجة عن تبديد الطاقة الزائدة!</p> <!--[cite: 1] -->
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- منطقة المحاكاة -->
+        <div class="col-lg-8">
+          
+            
+            <!-- بطاقة التعريف الديناميكية -->
+            <div class="id-card mt-4 border-info"> <!--[cite: 1] -->
+                <h5 class="text-info border-bottom border-secondary pb-2 mb-3">
+                    <i class="bi bi-cpu"></i> بطاقة تعريف منظم الجهد <!--[cite: 1] -->
+                </h5>
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center border-end border-secondary"> <!--[cite: 1] -->
+                        <i id="idCardIcon" class="bi bi-plug-fill mb-2" style="font-size: 3.5rem; color: #06b6d4;"></i> <!--[cite: 1] -->
+                        <h6 id="idCardTitle" class="text-white fw-bold">LM7805 (5V)</h6> <!--[cite: 1] -->
+                    </div>
+                    <div class="col-md-9">
+                        <ul class="list-group list-group-flush small"> <!--[cite: 1] -->
+                            <li class="list-group-item px-0"> <!--[cite: 1] -->
+                                <strong style="color: #06b6d4;">الوظيفة الأساسية:</strong> <span id="idCardDesc">يستقبل جهداً غير مستقر أو مرتفع، ويخفضه إلى جهد DC ثابت ومستقر بغض النظر عن تقلبات الدخل.</span> <!--[cite: 1] -->
+                            </li>
+                            <li class="list-group-item px-0"> <!--[cite: 1] -->
+                                <strong style="color: #06b6d4;">جهد السقوط (Dropout Voltage):</strong> <span id="idCardDrop">يحتاج إلى جهد دخل أعلى بـ 2 فولت على الأقل من جهد الخرج ليعمل بكفاءة.</span> <!--[cite: 1] -->
+                            </li>
+                            <li class="list-group-item px-0 border-bottom-0"> <!--[cite: 1] -->
+                                <strong style="color: #06b6d4;">تبديد الطاقة (Heat):</strong> <span id="idCardHeat">الجهد الفائض يتم تحويله إلى حرارة. إذا زاد الدخل كثيراً، سيحتاج المنظم لمشتت حراري (Heatsink) لمنع احتراقه.</span> <!--[cite: 1] -->
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- لوحة التحكم -->
+        <div class="col-lg-4">
+            <div class="control-panel d-flex flex-column h-100"> <!--[cite: 1] -->
+              <div id="phaser-game-container"></div> <!--[cite: 1] -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold" style="color: #06b6d4;">⚙️ اختر نوع المنظم:</label> <!--[cite: 1] -->
+                    <select id="regulatorTypeSelect" class="form-select bg-dark text-white border-info"> <!--[cite: 1] -->
+                        <option value="5" selected>LM7805 (منظم 5 فولت)</option> <!--[cite: 1] -->
+                        <option value="9">LM7809 (منظم 9 فولت)</option> <!--[cite: 1] -->
+                        <option value="12">LM7812 (منظم 12 فولت)</option> <!--[cite: 1] -->
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-info fw-bold d-flex justify-content-between">
+                        <span>🔋 جهد الدخل V_IN</span> <!--[cite: 1] -->
+                        <span id="voltInValue" class="badge bg-primary fs-6">0.0 V</span> <!--[cite: 1] -->
+                    </h6>
+                    <input type="range" id="voltageSlider" min="0" max="24" value="0" step="0.5" class="form-range w-100"> <!--[cite: 1] -->
+                    <div class="d-flex justify-content-between small text-muted mt-1"> <!--[cite: 1] -->
+                        <span>0V</span> <!--[cite: 1] -->
+                        <span>12V</span> <!--[cite: 1] -->
+                        <span>24V</span> <!--[cite: 1] -->
+                    </div>
+                </div>
+
+                <hr class="border-secondary mb-4"> <!--[cite: 1] -->
+
+                <!-- نتيجة القياس -->
+                <div class="row g-2 mb-3"> <!--[cite: 1] -->
+                    <div class="col-6">
+                        <div class="card bg-dark border-secondary text-center h-100"> <!--[cite: 1] -->
+                            <div class="card-body py-2">
+                                <h6 class="text-white fw-bold mb-1">جهد الخرج V_OUT</h6> <!--[cite: 1] -->
+                                <h4 id="voltOutValue" class="fw-bold text-success mb-0">0.0V</h4> <!--[cite: 1] -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-dark border-secondary text-center h-100"> <!--[cite: 1] -->
+                            <div class="card-body py-2">
+                                <h6 class="text-white fw-bold mb-1">الحرارة (Heat)</h6> <!--[cite: 1] -->
+                                <h4 id="heatValue" class="fw-bold text-secondary mb-0">طبيعي</h4> <!--[cite: 1] -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div id="statusBadge" class="badge bg-secondary fs-6 w-100 py-2 mb-2">الحالة: مطفأ</div> <!--[cite: 1] -->
+                    <p id="regulatorDesc" class="small text-muted mb-0">ارفع جهد الدخل لتبدأ عملية التنظيم.</p> <!--[cite: 1] -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="custom-navbar border-top py-3 mt-auto">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div class="text-muted small">
+            جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم 
+            <a href="https://me.haythamzeidan.workers.dev/" target="_blank" rel="noopener noreferrer" class="fw-bold text-info text-decoration-none">هيثم زيدان</a> <!--[cite: 1] -->
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="footer-link d-flex align-items-center gap-1 small">
+                <i class="bi bi-github fs-5"></i>
+                <span>GitHub تابعني على</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ==========================================
+// قاعدة بيانات المنظمات
+// ==========================================
+const regulatorData = {
+    '5': {
+        title: 'LM7805 (منظم 5V)',
+        desc: 'منظم خطي يحافظ على خرج ثابت بقيمة 5 فولت.',
+        drop: 'يحتاج لدخل 7 فولت فما فوق ليعمل بكفاءة.',
+        heat: 'يستخدم بكثرة لتشغيل أردوينو (Arduino)، منافذ USB، والمتحكمات الدقيقة.'
+    },
+    '9': {
+        title: 'LM7809 (منظم 9V)',
+        desc: 'منظم خطي يحافظ على خرج ثابت بقيمة 9 فولت.',
+        drop: 'يحتاج لدخل 11 فولت فما فوق ليعمل بكفاءة.',
+        heat: 'يستخدم لتشغيل حساسات خاصة، دواسات المؤثرات الصوتية (Guitar Pedals).'
+    },
+    '12': {
+        title: 'LM7812 (منظم 12V)',
+        desc: 'منظم خطي يحافظ على خرج ثابت بقيمة 12 فولت.',
+        drop: 'يحتاج لدخل 14 فولت فما فوق ليعمل بكفاءة.',
+        heat: 'يستخدم في دوائر المحركات، الريليهات (Relays)، وأنظمة الصوت المنزلية.'
+    }
+}; /*[cite: 1] */
+
+class RegulatorScene extends Phaser.Scene {
+    constructor() { super('RegulatorScene'); } /*[cite: 1] */
+
+    create() {
+        this.vIn = 0.0; /*[cite: 1] */
+        this.vTarget = 5.0; // الجهد المطلوب[cite: 1]
+        this.vOut = 0.0; /*[cite: 1] */
+        this.dropout = 2.0; // جهد السقوط[cite: 1]
+        this.heatFactor = 0; /*[cite: 1] */
+
+        this.graphics = this.add.graphics(); /*[cite: 1] */
+        this.electronsInGroup = this.add.group(); /*[cite: 1] */
+        this.electronsOutGroup = this.add.group(); /*[cite: 1] */
+        this.waterGroup = this.add.group(); /*[cite: 1] */
+
+        // التشبيه المائي: أنبوب واسع للدخل، صمام ذكي، أنبوب للخرج
+        this.pipeTopIn = this.add.rectangle(200, 420, 200, 10, 0x475569).setOrigin(0,0.5); /*[cite: 1] */
+        this.pipeBotIn = this.add.rectangle(200, 500, 200, 10, 0x475569).setOrigin(0,0.5); /*[cite: 1] */
+        
+        this.pipeTopOut = this.add.rectangle(450, 440, 300, 10, 0x475569).setOrigin(0,0.5); /*[cite: 1] */
+        this.pipeBotOut = this.add.rectangle(450, 480, 300, 10, 0x475569).setOrigin(0,0.5); /*[cite: 1] */
+
+        // الصمام الذكي
+        this.smartValveTop = this.add.rectangle(425, 420, 50, 30, 0x06b6d4).setOrigin(0.5, 0); /*[cite: 1] */
+        this.smartValveBot = this.add.rectangle(425, 500, 50, 30, 0x06b6d4).setOrigin(0.5, 1); /*[cite: 1] */
+
+        // مسار الدائرة
+        this.pathIn = new Phaser.Curves.Path(100, 200).lineTo(100, 130).lineTo(370, 130); // دخول[cite: 1]
+        this.pathOut = new Phaser.Curves.Path(430, 130).lineTo(700, 130).lineTo(700, 250); // خروج (إلى حمل)[cite: 1]
+        this.pathGnd = new Phaser.Curves.Path(400, 180).lineTo(400, 280).lineTo(100, 280).lineTo(100, 240); // أرضي[cite: 1]
+
+        // الشحنات
+        for (let i = 0; i < 15; i++) {
+            let e = this.add.circle(0, 0, 5, 0xef4444); // شحنات دخل (حمراء/طاقة عالية)[cite: 1]
+            e.t = i / 15;
+            this.electronsInGroup.add(e);
+        } /*[cite: 1] */
+        for (let i = 0; i < 20; i++) {
+            let e = this.add.circle(0, 0, 5, 0x22c55e); // شحنات خرج (خضراء/منظمة)[cite: 1]
+            e.t = i / 20;
+            this.electronsOutGroup.add(e);
+        } /*[cite: 1] */
+
+        // جزيئات الماء
+        for (let i = 0; i < 25; i++) {
+            let w = this.add.circle(0, 0, 8, 0x0ea5e9);
+            w.t = i / 25;
+            w.yOffset = (Math.random() - 0.5) * 60; 
+            this.waterGroup.add(w);
+        } /*[cite: 1] */
+
+        // جزيئات الدخان/الحرارة
+        this.smokeParticles = this.add.particles(0, 0, 'smoke', {
+            x: 400,
+            y: 70,
+            speedUp: { min: 20, max: 60 },
+            angle: { min: 250, max: 290 },
+            scale: { start: 0, end: 1 },
+            alpha: { start: 0.5, end: 0 },
+            lifespan: 1500,
+            frequency: 100,
+            tint: 0xff6600,
+            emitting: false
+        }); /*[cite: 1] */
+        
+        // رسم وهمي للدخان بما أننا لا نملك صورة
+        let smokeG = this.make.graphics({x:0, y:0, add:false}); /*[cite: 1] */
+        smokeG.fillStyle(0xffffff, 1); /*[cite: 1] */
+        smokeG.fillCircle(4,4,4); /*[cite: 1] */
+        smokeG.generateTexture('smoke', 8, 8); /*[cite: 1] */
+
+        this.add.text(400, 20, 'منظم الجهد الخطي LM78xx', { fontFamily: 'Tahoma', fontSize: '16px', color: '#cbd5e1', rtl: true }).setOrigin(0.5); /*[cite: 1] */
+        this.add.text(400, 350, 'التشبيه المائي للصمام الذكي (يضيق لتقليل الضغط الزائد)', { fontFamily: 'Tahoma', fontSize: '16px', color: '#cbd5e1', rtl: true }).setOrigin(0.5); /*[cite: 1] */
+        
+        this.icLabel = this.add.text(400, 105, '7805', { fontFamily: 'Tahoma', fontSize: '14px', color: '#ffffff' }).setOrigin(0.5); /*[cite: 1] */
+        
+        window.addEventListener('updateRegulator', (e) => {
+            this.vIn = e.detail.vIn;
+            this.vTarget = e.detail.vTarget;
+            this.calculatePhysics();
+            this.drawVisuals();
+        }); /*[cite: 1] */
+
+        this.calculatePhysics(); /*[cite: 1] */
+        this.drawVisuals(); /*[cite: 1] */
+    }
+
+    calculatePhysics() {
+        if (this.vIn < 1.0) {
+            this.vOut = 0;
+            this.heatFactor = 0;
+        } else if (this.vIn < (this.vTarget + this.dropout)) {
+            // منطقة غير منظمة (جهد أقل من المطلوب)
+            this.vOut = Math.max(0, this.vIn - 1.0); // يستهلك المنظم حوالي 1 فولت حتى وهو غير منظم
+            this.heatFactor = 0.1;
+        } else {
+            // منطقة التنظيم المستقرة
+            this.vOut = this.vTarget;
+            // الحرارة تتناسب مع فرق الجهد (الطاقة المبددة = (Vin - Vout) * I)
+            this.heatFactor = (this.vIn - this.vOut) / 10.0; 
+        }
+        
+        // تحديث الانبعاث الحراري
+        if (this.heatFactor > 0.5) {
+            this.smokeParticles.start();
+            this.smokeParticles.particleTint = (this.heatFactor > 1.2) ? 0xff0000 : 0xff8800;
+            this.smokeParticles.frequency = Math.max(10, 100 - (this.heatFactor * 50));
+        } else {
+            this.smokeParticles.stop();
+        }
+    } /*[cite: 1] */
+
+    drawTO220(x, y, heat) {
+        // المشتت الحراري المعدني (Tab)
+        let tabColor = 0x94a3b8; // فضي طبيعي
+        if (heat > 0.2) {
+            // تحويل اللون للاحمرار مع زيادة الحرارة
+            let r = Math.min(255, 148 + (heat * 100));
+            let g = Math.max(0, 163 - (heat * 50));
+            let b = Math.max(0, 184 - (heat * 100));
+            tabColor = Phaser.Display.Color.GetColor(r, g, b);
+        }
+        
+        this.graphics.fillStyle(tabColor, 1);
+        this.graphics.fillRoundedRect(x - 25, y - 50, 50, 40, 4);
+        
+        // ثقب التثبيت
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillCircle(x, y - 35, 6);
+
+        // جسم المنظم (بلاستيك أسود)
+        this.graphics.fillStyle(0x1e293b, 1);
+        this.graphics.lineStyle(1, 0x334155, 1);
+        this.graphics.fillRoundedRect(x - 30, y - 20, 60, 50, 2);
+        this.graphics.strokeRoundedRect(x - 30, y - 20, 60, 50, 2);
+
+        // أرجل (Pins)
+        this.graphics.fillStyle(0x94a3b8, 1);
+        this.graphics.fillRect(x - 22, y + 30, 6, 20); // IN (Pin 1)
+        this.graphics.fillRect(x - 3, y + 30, 6, 20);  // GND (Pin 2)
+        this.graphics.fillRect(x + 16, y + 30, 6, 20); // OUT (Pin 3)
+
+        // تسميات الأرجل
+        this.add.text(x - 19, y + 55, 'IN', { fontSize: '10px', color: '#94a3b8' }).setOrigin(0.5);
+        this.add.text(x, y + 55, 'GND', { fontSize: '10px', color: '#94a3b8' }).setOrigin(0.5);
+        this.add.text(x + 19, y + 55, 'OUT', { fontSize: '10px', color: '#94a3b8' }).setOrigin(0.5);
+    } /*[cite: 1] */
+
+    drawVisuals() {
+        this.graphics.clear();
+
+        // أسلاك الدائرة
+        this.graphics.lineStyle(4, 0x475569, 1);
+        this.pathIn.draw(this.graphics);
+        this.pathOut.draw(this.graphics);
+        this.pathGnd.draw(this.graphics);
+        
+        // نقطة اتصال الأرضي
+        this.graphics.fillStyle(0x475569, 1);
+        this.graphics.fillCircle(400, 180, 4);
+
+        // رسم حزمة TO-220
+        this.drawTO220(400, 100, this.heatFactor);
+        this.icLabel.setText(`78${this.vTarget < 10 ? '0'+this.vTarget : this.vTarget}`);
+
+        // رسم البطارية (الدخل)
+        this.graphics.fillStyle(0x1e3a8a, 1);
+        this.graphics.fillRect(80, 200, 40, 40);
+        this.graphics.fillStyle(0xef4444, 1); 
+        this.graphics.fillRect(90, 190, 20, 10); // قطب موجب
+        this.graphics.fillStyle(0x3b82f6, 1);
+        this.graphics.fillRect(90, 240, 20, 10); // قطب سالب
+
+        // رسم الحمل (لمبة أو محرك)
+        this.graphics.lineStyle(2, 0xffffff, 1);
+        this.graphics.strokeCircle(700, 270, 20);
+        let brightness = this.vOut / 12.0; // للون فقط
+        this.graphics.fillStyle(Phaser.Display.Color.GetColor(255, 255 * brightness, 0), brightness);
+        this.graphics.fillCircle(700, 270, 18);
+
+        // تفاعل الصمام المائي الذكي
+        // كلما زاد الجهد (الضغط)، يضيق الصمام لتقليل التدفق
+        let valveCloseAmount = 0;
+        if (this.vIn >= this.vTarget + this.dropout) {
+            valveCloseAmount = Math.min(25, (this.vIn - this.vTarget) * 1.5);
+        } else if (this.vIn > 0) {
+            valveCloseAmount = 5; // مفتوح تقريباً
+        }
+        
+        this.smartValveTop.setSize(30, 10 + valveCloseAmount);
+        this.smartValveBot.setSize(30, 10 + valveCloseAmount);
+    } /*[cite: 1] */
+
+    update(time, delta) {
+        // سرعة الدخل متغيرة حسب الجهد
+        let speedIn = this.vIn * 0.0005;
+        // سرعة الخرج ثابتة إذا كان منظماً
+        let speedOut = this.vOut * 0.0005;
+
+        this.electronsInGroup.getChildren().forEach(e => {
+            if (this.vIn > 0) {
+                e.t += speedIn * delta;
+                if (e.t >= 1) e.t = 0;
+                let pos = this.pathIn.getPoint(e.t);
+                if (pos) { e.x = pos.x; e.y = pos.y; }
+                e.setAlpha(1);
+            } else { e.setAlpha(0.2); }
+        });
+
+        this.electronsOutGroup.getChildren().forEach(e => {
+            if (this.vOut > 0) {
+                e.t += speedOut * delta;
+                if (e.t >= 1) e.t = 0;
+                let pos = this.pathOut.getPoint(e.t);
+                if (pos) { e.x = pos.x; e.y = pos.y; }
+                e.setAlpha(1);
+            } else { e.setAlpha(0.2); }
+        });
+
+        this.waterGroup.getChildren().forEach(w => {
+            if (this.vIn > 0) {
+                // الماء في الجزء الأيسر أسرع (ضغط عالي)، وفي الأيمن ثابت
+                let isLeft = w.x < 425;
+                w.t += (isLeft ? speedIn : speedOut) * delta * 0.3; 
+                if (w.t >= 1) w.t = 0;
+                
+                // تحديد مكان الماء
+                w.x = 200 + (w.t * 500);
+                
+                // تضييق مسار الماء عند مرور بالصمام
+                let currentOffset = w.yOffset;
+                if (w.x > 400 && w.x < 450 && this.vIn >= this.vTarget) {
+                    currentOffset *= 0.3; // يتجمع في المنتصف
+                } else if (w.x >= 450) {
+                    currentOffset *= 0.6; // يخرج في أنبوب أضيق
+                }
+                
+                w.y = 460 + currentOffset;
+                w.setAlpha(0.8);
+            } else { w.setAlpha(0.1); }
+        });
+    } /*[cite: 1] */
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 600, 
+    backgroundColor: '#0f172a',
+    scene: RegulatorScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+}; /*[cite: 1] */
+const game = new Phaser.Game(config); /*[cite: 1] */
+
+// عناصر واجهة المستخدم
+const voltSlider = document.getElementById('voltageSlider'); /*[cite: 1] */
+const voltInValue = document.getElementById('voltInValue'); /*[cite: 1] */
+const voltOutValue = document.getElementById('voltOutValue'); /*[cite: 1] */
+const heatValue = document.getElementById('heatValue'); /*[cite: 1] */
+const regulatorTypeSelect = document.getElementById('regulatorTypeSelect'); /*[cite: 1] */
+const statusBadge = document.getElementById('statusBadge'); /*[cite: 1] */
+const regulatorDesc = document.getElementById('regulatorDesc'); /*[cite: 1] */
+
+// عناصر بطاقة التعريف
+const idCardTitle = document.getElementById('idCardTitle'); /*[cite: 1] */
+const idCardDesc = document.getElementById('idCardDesc'); /*[cite: 1] */
+const idCardDrop = document.getElementById('idCardDrop'); /*[cite: 1] */
+const idCardHeat = document.getElementById('idCardHeat'); /*[cite: 1] */
+
+function updateSimulation() {
+    let vIn = parseFloat(voltSlider.value);
+    let vTarget = parseInt(regulatorTypeSelect.value);
+    let dropout = 2.0; // ثابت لعائلة 78xx
+    
+    // تحديث بيانات بطاقة التعريف
+    let info = regulatorData[vTarget];
+    idCardTitle.innerText = info.title;
+    idCardDesc.innerText = info.desc;
+    idCardDrop.innerText = info.drop;
+    idCardHeat.innerText = info.heat;
+
+    voltInValue.innerText = vIn.toFixed(1) + " V";
+
+    let vOut = 0;
+    let heatState = "طبيعي";
+    let heatClass = "text-secondary";
+
+    // حساب الخرج والحرارة
+    if (vIn < 1.0) {
+        vOut = 0;
+        statusBadge.className = "badge bg-secondary fs-6 w-100 py-2 mb-2";
+        statusBadge.innerText = "الحالة: مطفأ";
+        regulatorDesc.innerText = "لا يوجد جهد كافٍ.";
+    } else if (vIn < (vTarget + dropout)) {
+        vOut = Math.max(0, vIn - 1.0);
+        statusBadge.className = "badge bg-warning text-dark fs-6 w-100 py-2 mb-2";
+        statusBadge.innerText = "الحالة: انخفاض الجهد (Under-voltage) ⚠️";
+        regulatorDesc.innerText = `الدخل أقل من ${vTarget + dropout}V. المنظم لا يستطيع تثبيت الجهد.`;
+    } else {
+        vOut = vTarget;
+        
+        let diff = vIn - vTarget;
+        if (diff <= 4) {
+            heatState = "مستقر (قليل)";
+            heatClass = "text-success";
+            statusBadge.className = "badge bg-success fs-6 w-100 py-2 mb-2";
+            statusBadge.innerText = "الحالة: تنظيم مثالي ✅";
+            regulatorDesc.innerText = "الجهد ثابت والحرارة المبددة منخفضة. حالة مثالية.";
+        } else if (diff <= 8) {
+            heatState = "دافيء (متوسط)";
+            heatClass = "text-warning";
+            statusBadge.className = "badge bg-primary fs-6 w-100 py-2 mb-2";
+            statusBadge.innerText = "الحالة: تنظيم طبيعي (مع حرارة) 🌡️";
+            regulatorDesc.innerText = "الجهد ثابت، لكن المنظم بدأ يسخن لتصريف الطاقة الزائدة.";
+        } else {
+            heatState = "ساخن جداً 🔥";
+            heatClass = "text-danger";
+            statusBadge.className = "badge bg-danger fs-6 w-100 py-2 mb-2";
+            statusBadge.innerText = "الحالة: تنظيم مع خطر الحرارة 🚨";
+            regulatorDesc.innerText = "تنبيه: فرق الجهد كبير جداً! القطعة تشتت طاقة عالية وتحتاج لمشتت حراري ضخم.";
+        }
+    }
+
+    voltOutValue.innerText = vOut.toFixed(1) + " V";
+    heatValue.innerText = heatState;
+    heatValue.className = "fw-bold mb-0 " + heatClass;
+
+    window.dispatchEvent(new CustomEvent('updateRegulator', { 
+        detail: { vIn: vIn, vTarget: vTarget } 
+    }));
+} /*[cite: 1] */
+
+voltSlider.addEventListener('input', updateSimulation); /*[cite: 1] */
+regulatorTypeSelect.addEventListener('change', updateSimulation); /*[cite: 1] */
+updateSimulation(); /*[cite: 1] */
+
+// ==========================================
+// برمجية زر المشاركة (Web Share API)
+// ==========================================
+document.getElementById('shareButton').addEventListener('click', async () => {
+    const shareData = {
+        title: document.title,
+        text: 'تفقد محاكاة منظم الجهد الخطي التفاعلية!',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.log('تم إلغاء المشاركة أو الانتهاء منها.');
+        }
+    } else {
+        // Fallback في حال عدم دعم الميزّة في بعض المتصفحات القديمة
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            alert('تم نسخ رابط التطبيق إلى الحافظة بنجاح!');
+        } catch (err) {
+            alert('رابط التطبيق: ' + window.location.href);
+        }
+    }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> <!--[cite: 1] -->
+</body>
+</html>
