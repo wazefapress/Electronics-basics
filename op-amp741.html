@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>مكبر العمليات 741 | أساسيات الدوائر المتكاملة والتحكم التناظري</title>
+    <meta name="description" content="تطبيق محاكاة تفاعلي لتعلم مبدأ عمل مكبر العمليات الشهير LM741، وكيفية حساب معامل التكبير والجهد الخارجي وحالات التشبع (Saturation).">
+    <meta name="keywords" content="مكبر العمليات, 741, LM741, إلكترونيات تناظرية, تكبير الإشارة, محاكاة تفاعلية, دوائر متكاملة">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="مكبر العمليات 741 | محاكاة تفاعلية">
+    <meta property="og:description" content="تعلم كيفية عمل مكبر العمليات 741 وتكبير الإشارات الكهربائية من خلال محاكاة تفاعلية ممتعة.">
+    <meta property="og:locale" content="ar_AR">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-wrapper {
+            flex: 1;
+        }
+        #phaser-game-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155;
+            height: 100%;
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .opamp-card { background-color: #0f172a; border: 1px solid #334155; }
+        
+        /* Op-Amp Profile Card Styling */
+        .opamp-profile-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+        }
+        .opamp-spec-box {
+            background-color: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        /* Header Styling */
+        .app-header {
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .back-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease-in-out;
+        }
+        .back-nav-link:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        /* Footer Styling */
+        .app-footer {
+            background-color: #1e293b;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            margin-top: auto;
+        }
+        .github-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .github-btn:hover {
+            background-color: #334155;
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+        .footer-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
+            color: #7dd3fc;
+        }
+    </style>
+</head>
+<body>
+
+<!-- الشريط العلوي (Header) -->
+<header class="app-header py-3 sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+<span class="fs-4 text-info"> أساسيات الإلكترونيات 🔌</span>
+            <h1 class="h5 mb-0 fw-bold text-light">مكبر العمليات 741 | LM741 Op-Amp</h1>
+        </div>
+        <button id="btnShare" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2 px-3">
+<i class="bi bi-share-fill"></i>
+        </button>
+    </div>
+</header>
+
+<div class="main-wrapper">
+    <div class="container py-3">
+        <!-- زر عودة إلى الصفحة الرئيسية -->
+        <div class="mb-3">
+            <a href="index.html" class="back-nav-link">
+                <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                <span>عودة إلى الصفحة الرئيسية</span>
+            </a>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <p class="lead text-slate-300 fs-6">تحكم في إشارة الدخل ومقاومات التغذية الراجعة لمشاهدة تأثير التكبير على إشارة الخرج!</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- منطقة المحاكاة وبطاقة تعريف المتكاملة -->
+            <div class="col-lg-8">
+           
+
+                <!-- بطاقة تعريف مكبر العمليات (Op-Amp Profile Card) -->
+                <div class="opamp-profile-card p-3 text-light">
+                    <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-2 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-3">🆔</span>
+                            <h3 class="h5 mb-0 text-info fw-bold">بطاقة تعريف مكبر العمليات (LM741 Profile Card)</h3>
+                        </div>
+                        <span class="badge bg-primary px-3 py-1 fs-6">شريحة قياسية (DIP-8)</span>
+                    </div>
+
+                    <div class="row g-2 mb-3 text-center">
+                        <div class="col-4 col-sm-2">
+                            <div class="opamp-spec-box">
+                                <span class="d-block text-muted small">النوع</span>
+                                <span class="fw-bold text-warning fs-5">LM741</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="opamp-spec-box">
+                                <span class="d-block text-muted small">الأطراف</span>
+                                <span class="fw-bold text-info fs-5">8 Pins</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="opamp-spec-box">
+                                <span class="d-block text-muted small">جهد التغذية</span>
+                                <span class="fw-bold text-danger fs-5">±15V</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="opamp-spec-box">
+                                <span class="d-block text-muted small">معكوس Inverting</span>
+                                <span class="fw-bold text-warning fs-5">طرف 2</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="opamp-spec-box">
+                                <span class="d-block text-muted small">غير معكوس Non-Inv</span>
+                                <span class="fw-bold text-success fs-5">طرف 3</span>
+                            </div>
+                        </div>
+                        <div class="col-4 col-sm-2">
+                            <div class="opamp-spec-box">
+                                <span class="d-block text-muted small">الخرج Output</span>
+                                <span class="fw-bold text-info fs-5">طرف 6</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 small text-muted">
+                        <div class="col-md-6">
+                            <div class="p-2 border border-secondary rounded bg-dark">
+                                <strong class="text-info d-block mb-1">📍 خصائص التشغيل الأساسية:</strong>
+                                <ul>
+                                    <li><b>مقاومة الدخل:</b> عالية جداً (تُقدر بالميغاوم).</li>
+                                    <li><b>مقاومة الخرج:</b> منخفضة (تقارب الصفر أيديالياً).</li>
+                                    <li><b>الربح المفتوح (Open-Loop Gain):</b> يصل إلى 200,000 مرة.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-2 border border-secondary rounded bg-dark">
+                                <strong class="text-info d-block mb-1">⚡ ظاهرة التشبع (Saturation):</strong>
+                                <ul>
+                                    <li>لا يمكن أن يتجاوز جهد الخرج (V_out) حدود جهد البطارية (V_CC).</li>
+                                    <li>عند تجاوز الحد، تحدث عملية قص أو تسطيح لموجة الخرج (Clipping).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- لوحة التحكم (Bootstrap) -->
+            <div class="col-lg-4">
+                <div class="control-panel d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- تعريف مكبر العمليات الأشمل -->
+                        <div class="card opamp-card mb-3 p-3">
+                            <h3 class="h6 text-info fw-bold mb-2">🔌 ما هو مكبر العمليات 741؟</h3>
+                            <p class="small text-muted mb-2" style="line-height: 1.6;">
+                                هو دائرة متكاملة إلكترونية (IC) تستخدم لتكبير الإشارات الكهربائية الضعيفة وتدخل في تطبيقات الفلاتر والمقارنات الحسابية.
+                            </p>
+                            <ul class="small text-muted ps-3 mb-2" style="line-height: 1.5;">
+                                <li><b>دخل غير معكوس (<span class="text-success">+</span>):</b> الإشارة الخارجة تكون بنفس الطور.</li>
+                                <li><b>دخل معكوس (<span class="text-warning">-</span>):</b> الإشارة الخارجة تعكس طورها بمقدار 180 درجة.</li>
+                            </ul>
+                            <p class="small text-muted mb-0" style="line-height: 1.5;">
+                                💡 <b>معادلة التكبير غير المعكوس:</b> A_v = 1 + (R_f / R_in)
+                            </p>
+                        </div>
+     <div id="phaser-game-container" class="mb-3"></div>
+                        <h3 class="h6 mb-3 text-info border-bottom border-secondary pb-2">متغيرات الدائرة الإلكترونية</h3>
+                        
+                        <!-- عناصر التحكم (Sliders) -->
+                        <div class="mb-3">
+                            <label for="vinRange" class="form-label small text-light">جهد الدخل (V_in): <span id="vinVal" class="text-warning fw-bold">1.0</span> V</label>
+                            <input type="range" class="form-range" id="vinRange" min="0.1" max="5.0" step="0.1" value="1.0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rfRange" class="form-label small text-light">مقاومة التغذية الراجعة (R_f): <span id="rfVal" class="text-warning fw-bold">20</span> kΩ</label>
+                            <input type="range" class="form-range" id="rfRange" min="10" max="100" step="5" value="20">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rinRange" class="form-label small text-light">مقاومة الدخل (R_in): <span id="rinVal" class="text-warning fw-bold">10</span> kΩ</label>
+                            <input type="range" class="form-range" id="rinRange" min="5" max="50" step="5" value="10">
+                        </div>
+
+                        <!-- حالة الخرج والتكبير -->
+                        <div class="card bg-dark border-secondary mb-3 text-center">
+                            <div class="card-body py-2">
+                                <span class="small text-muted d-block mb-1">الربح المحسوبة (A_v) والخرج (V_out):</span>
+                                <span id="outputStateBadge" class="badge bg-success fs-6 px-3 py-2">Vout: 3.0V (Gain: 3.0x)</span>
+                            </div>
+                        </div>
+
+                        <!-- صندوق الشرح العلمي التفاعلي -->
+                        <div id="explanationBox" class="alert alert-info border-info text-dark small mb-2 p-2">
+                            <strong>التوجيه:</strong> <span>قم بتعديل قيم المقاومات أو جهد الدخل لملاحظة تغير سعة الإشارة على شاشة الذبذبات.</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <button id="resetBtn" class="btn btn-outline-secondary btn-sm w-100">
+                            🔄 إعادة ضبط القيم الافتراضية
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="app-footer py-3 text-center">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+        <div class="small">
+            جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم <a href="https://me.haythamzeidan.workers.dev/" class="footer-link">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress/Electronics-basics" target="_blank" rel="noopener noreferrer" class="github-btn">
+                <i class="bi bi-github fs-6"></i>
+                <span>عرض على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ==========================================
+// 1. منطق Phaser 3 (محاكاة إشارات مكبر العمليات)
+// ==========================================
+
+class OpAmpCircuitScene extends Phaser.Scene {
+    constructor() {
+        super('OpAmpCircuitScene');
+    }
+
+    create() {
+        this.graphWidth = 760;
+        this.graphHeight = 360;
+        this.centerX = 400;
+        this.centerY = 200;
+
+        this.graphics = this.add.graphics();
+        this.timeStep = 0;
+
+        // استقبال التحديثات من واجهة المستخدم
+        window.addEventListener('updateOpAmpParams', (e) => {
+            this.vin = e.detail.vin;
+            this.rf = e.detail.rf;
+            this.rin = e.detail.rin;
+            this.gain = 1 + (this.rf / this.rin);
+            this.rawVout = this.vin * this.gain;
+            this.isSat = this.rawVout > 12;
+            this.vout = Math.min(this.rawVout, 12);
+        });
+
+        // القيم الافتراضية الأولية
+        this.vin = 1.0;
+        this.rf = 20;
+        this.rin = 10;
+        this.gain = 3.0;
+        this.vout = 3.0;
+        this.isSat = false;
+    }
+
+    update() {
+        this.graphics.clear();
+        this.timeStep += 0.05;
+
+        // رسم شاشة راسم الذبذبات (Oscilloscope)
+        this.drawOscilloscopeGrid();
+        this.drawWaveforms();
+        this.drawOpAmpSymbolOverlay();
+    }
+
+    drawOscilloscopeGrid() {
+        // خلفية الشاشة
+        this.graphics.fillStyle(0x090d16, 0.9);
+        this.graphics.fillRect(20, 20, this.graphWidth, this.graphHeight);
+
+        // خطوط الشبكة الوهمية
+        this.graphics.lineStyle(1, 0x1e293b, 0.8);
+        for (let x = 20; x <= this.graphWidth + 20; x += 40) {
+            this.graphics.beginPath();
+            this.graphics.moveTo(x, 20);
+            this.graphics.lineTo(x, 20 + this.graphHeight);
+            this.graphics.strokePath();
+        }
+        for (let y = 20; y <= this.graphHeight + 20; y += 40) {
+            this.graphics.beginPath();
+            this.graphics.moveTo(20, y);
+            this.graphics.lineTo(20 + this.graphWidth, y);
+            this.graphics.strokePath();
+        }
+
+        // المحور المركزي
+        this.graphics.lineStyle(1.5, 0x334155, 1);
+        this.graphics.beginPath();
+        this.graphics.moveTo(20, this.centerY);
+        this.graphics.lineTo(this.graphWidth + 20, this.centerY);
+        this.graphics.strokePath();
+
+        // التسميات التوضيحية للشاشة
+        this.add.text(30, 30, "شاشة مراقبة الإشارات (Oscilloscope View)", { fontFamily: 'Tahoma', fontSize: '12px', color: '#64748b' });
+    }
+
+    drawWaveforms() {
+        const startX = 40;
+        const width = 720;
+        const scaleY = 15; // مقياس الرسم للجهد على الشاشة
+
+        // 1. رسم إشارة الدخل (Vin) باللون الأزرق
+        this.graphics.lineStyle(2, 0x38bdf8, 0.9);
+        this.graphics.beginPath();
+        for (let i = 0; i < width; i += 2) {
+            let x = startX + i;
+            let angle = (i * 0.02) + this.timeStep;
+            let y = this.centerY - (Math.sin(angle) * this.vin * scaleY);
+            if (i === 0) this.graphics.moveTo(x, y);
+            else this.graphics.lineTo(x, y);
+        }
+        this.graphics.strokePath();
+
+        // 2. رسم إشارة الخرج (Vout) باللون الأصفر أو الأحمر في حالة التشبع
+        let waveColor = this.isSat ? 0xef4444 : 0xfacc15;
+        this.graphics.lineStyle(3, waveColor, 1);
+        this.graphics.beginPath();
+        for (let i = 0; i < width; i += 2) {
+            let x = startX + i;
+            let angle = (i * 0.02) + this.timeStep;
+            let rawYVal = Math.sin(angle) * this.vin * this.gain * scaleY;
+            
+            // محاكاة القص عند حد التشبع (Saturation clipping عند ±12V)
+            let maxYLimit = 12 * scaleY;
+            if (rawYVal > maxYLimit) rawYVal = maxYLimit;
+            if (rawYVal < -maxYLimit) rawYVal = -maxYLimit;
+
+            let y = this.centerY - rawYVal;
+            if (i === 0) this.graphics.moveTo(x, y);
+            else this.graphics.lineTo(x, y);
+        }
+        this.graphics.strokePath();
+    }
+
+    drawOpAmpSymbolOverlay() {
+        // رسم صندوق صغير يمثل رمز الـ Op-Amp في زاوية الشاشة للتوضيح البصري
+        this.graphics.fillStyle(0x1e293b, 0.85);
+        this.graphics.lineStyle(2, 0x3b82f6, 1);
+        this.graphics.fillRect(630, 265, 140, 100);
+        this.graphics.strokeRect(630, 265, 140, 100);
+
+        this.add.text(645, 275, "LM741 IC Status", { fontFamily: 'Tahoma', fontSize: '11px', color: '#38bdf8' });
+        this.add.text(645, 295, `Gain (Av): ${this.gain.toFixed(1)}x`, { fontFamily: 'Tahoma', fontSize: '11px', color: '#f8fafc' });
+        this.add.text(645, 315, `Vout: ${this.vout.toFixed(1)}V`, { fontFamily: 'Tahoma', fontSize: '11px', color: this.isSat ? '#ef4444' : '#facc15' });
+        this.add.text(645, 335, this.isSat ? "⚠️ تشبع (Saturation)" : "✨ تشغيل عادي", { fontFamily: 'Tahoma', fontSize: '10px', color: this.isSat ? '#ef4444' : '#22c55e' });
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 400,
+    backgroundColor: '#0f172a',
+    scene: OpAmpCircuitScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+const game = new Phaser.Game(config);
+
+// ==========================================
+// 2. تحديث الواجهة والمنطق الحسابي
+// ==========================================
+
+const vinRange = document.getElementById('vinRange');
+const rfRange = document.getElementById('rfRange');
+const rinRange = document.getElementById('rinRange');
+
+const vinVal = document.getElementById('vinVal');
+const rfVal = document.getElementById('rfVal');
+const rinVal = document.getElementById('rinVal');
+
+const outputStateBadge = document.getElementById('outputStateBadge');
+const explanationBox = document.querySelector('#explanationBox span');
+
+function updateSimulation() {
+    const vin = parseFloat(vinRange.value);
+    const rf = parseFloat(rfRange.value);
+    const rin = parseFloat(rinRange.value);
+
+    vinVal.innerText = vin.toFixed(1);
+    rfVal.innerText = rf;
+    rinVal.innerText = rin;
+
+    const gain = 1 + (rf / rin);
+    const rawVout = vin * gain;
+    const isSat = rawVout > 12;
+    const vout = Math.min(rawVout, 12);
+
+    // تحديث شارة الخرج
+    if (isSat) {
+        outputStateBadge.className = "badge bg-danger fs-6 px-3 py-2 shadow";
+        outputStateBadge.innerText = `Vout: 12.0V (Gain: ${gain.toFixed(1)}x) - ⚠️ تشبع السعة!`;
+        explanationBox.innerHTML = "<strong>تنبيه:</strong> وصل جهد الخرج إلى حد التشبع ($V_{CC} = 12V$)، مما أدى إلى قص قمم الموجة (Clipping). قم بتقليل جهد الدخل أو مقاومة التغذية.";
+    } else {
+        outputStateBadge.className = "badge bg-success fs-6 px-3 py-2";
+        outputStateBadge.innerText = `Vout: ${vout.toFixed(1)}V (Gain: ${gain.toFixed(1)}x)`;
+        explanationBox.innerHTML = `معكوس التكبير محسوب بدقة ($A_v = 1 + (${rf}/${rin}) = ${gain.toFixed(1)}$). إشارة الخرج مكبرة بنجاح وبدون تشوهات.`;
+    }
+
+    // إرسال البيانات المحدثة لمحاكاة Phaser
+    window.dispatchEvent(new CustomEvent('updateOpAmpParams', {
+        detail: { vin, rf, rin }
+    }));
+}
+
+// ربط الأحداث بمتغيرات التحكم
+vinRange.addEventListener('input', updateSimulation);
+rfRange.addEventListener('input', updateSimulation);
+rinRange.addEventListener('input', updateSimulation);
+
+// زر إعادة الضبط
+document.getElementById('resetBtn').addEventListener('click', () => {
+    vinRange.value = 1.0;
+    rfRange.value = 20;
+    rinRange.value = 10;
+    updateSimulation();
+});
+
+// تشغيل الدالة مبدئياً لضبط القيم
+updateSimulation();
+
+// زر المشاركة
+document.getElementById('btnShare').addEventListener('click', async () => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'مكبر العمليات 741 | أساسيات الإلكترونيات التناظرية',
+                text: 'شاهد محاكاة تفاعلية مذهلة لشرح مكبر العمليات LM741 وتكبير الإشارات الكهربائية!',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('مشاركة ملغاة');
+        }
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ رابط الصفحة إلى الحافظة!');
+    }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
