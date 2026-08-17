@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO محركات البحث الأساسية -->
+    <title>أساسيات الإلكترونيات - المقاومة الكهربائية</title>
+    <meta name="description" content="تطبيق تفاعلي تعليمي لمحاكاة عمل المقاومة الكهربائية ودورها في التحكم بتدفق التيار الكهربائي باستخدام Bootstrap و Phaser.">
+    <meta name="keywords" content="المقاومة الكهربائية, أساسيات الإلكترونيات, محاومة, قانون أوم, فيزياء, Phaser, Bootstrap">
+    <meta name="author" content="هيثم زيدان">
+
+    <!-- SEO لوسائل التواصل الاجتماعي (Open Graph / Facebook & Twitter) -->
+    <meta property="og:title" content="أساسيات الإلكترونيات - المقاومة الكهربائية">
+    <meta property="og:description" content="اكتشف كيف تحد المقاومة الكهربائية من تدفق التيار وتحمي مكونات الدائرة من خلال محاكاة تفاعلية.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=Electrical+Resistor+Simulation">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="أساسيات الإلكترونيات - المقاومة الكهربائية">
+    <meta name="twitter:description" content="تطبيق تفاعلي لفهم عمل المقاومة الكهربائية والتحكم بالتيار.">
+
+    <!-- Bootstrap 5 CSS (RTL) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Phaser 3 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        #game-container {
+            width: 100%;
+            height: 360px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: #1a1a1a;
+        }
+        .card-custom {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card-custom:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الشريط العلوي (Navbar) -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 fs-5 fs-md-4 text-truncate">
+                <i class="fa-solid fa-gauge-high text-warning ms-2"></i> أساسيات الإلكترونيات - المقاومة الكهربائية
+            </span>
+            <button id="shareBtn" class="btn btn-outline-light btn-sm flex-shrink-0">
+                <i class="fa-solid fa-share-nodes ms-1"></i> مشاركة
+            </button>
+        </div>
+    </header>
+
+    <!-- شريط التنقل الفرعي / زر العودة إلى الصفحة الرئيسية -->
+    <div class="bg-white border-bottom py-2 shadow-sm">
+        <div class="container d-flex justify-content-start align-items-center">
+            <a href="index.html" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center fw-bold">
+                <i class="fa-solid fa-arrow-right ms-2"></i> العودة إلى الصفحة الرئيسية
+            </a>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="container my-4">
+        <div class="row g-4">
+            
+            <!-- بطاقة تعريف المقاومة وطريقة عملها -->
+            <div class="col-lg-5">
+                <div class="card card-custom h-100 p-3 bg-white">
+                    <div class="card-body">
+                        <h3 class="card-title text-primary mb-3 h4">
+                            <i class="fa-solid fa-bolt text-warning ms-2"></i> بطاقة تعريف المقاومة
+                        </h3>
+                        <p class="text-muted small">تعرف على دور المقاومة في تقييد وتنظيم تدفق التيار الكهربائي في الدوائر.</p>
+                        <hr>
+                        <h5 class="fw-bold text-dark mt-3 fs-6">طريقة العمل:</h5>
+                        <p class="card-text lh-lg small">
+المقاومة الكهربائية (Resistor) هي مكون إلكتروني يعيق مرور التيار الكهربائي بدرجة محددة، وتقاس وحدتها بالأوم Ω.
+                        </p>
+                        <p class="card-text lh-lg small">
+                            <strong>تنظيم التيار:</strong> عند إغلاق المفتاح، تتدفق الإلكترونات سالبة الشحنة <strong>(-)</strong> عبر الأسلاك وتمر عبر المقاومة التي تقوم بتهذيب وتخفيض شدة التيار لحماية المكونات الحساسة كالمصابيح والأجهزة.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- محاكاة المقاومة والأزرار التفاعلية (Phaser) -->
+            <div class="col-lg-7">
+                <div class="card card-custom h-100 p-3 bg-white text-center">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h4 class="card-title text-secondary mb-3 h5">لوحة المحاكاة التفاعلية (انقر على المفتاح للتحكم)</h4>
+                        
+                        <!-- حاوية عرض المحاكاة المتجاوبة -->
+                        <div id="game-container" class="mb-3"></div>
+
+                        <!-- حالة الدائرة والنظام النصية -->
+                        <div>
+                            <span id="statusText" class="badge bg-danger fs-6 px-3 py-2">الحالة: الدائرة مفتوحة (لا يوجد تدفق)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- الشريط السفلي (Footer) -->
+    <footer class="bg-dark text-white text-center py-3 mt-auto shadow-inner">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p class="mb-0 small">
+                جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم: <a href="https://me.haythamzeidan.workers.dev/" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none fw-bold">هيثم زيدان</a>
+            </p>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="btn btn-outline-light btn-sm">
+                <i class="fa-brands fa-github ms-1"></i> تابعني على GitHub
+            </a>
+        </div>
+    </footer>
+
+    <!-- JavaScript الخاص بالتطبيق والمحاكاة -->
+    <script>
+        let isClosed = false; // الحالة الافتراضية للدائرة (مفتوحة)
+
+        class ResistorScene extends Phaser.Scene {
+            constructor() {
+                super('ResistorScene');
+            }
+
+            create() {
+                const w = this.scale.width;
+                const h = this.scale.height;
+                this.w = w;
+                this.h = h;
+
+                // خلفية اللوحة
+                this.add.rectangle(w / 2, h / 2, w, h, 0x111111);
+
+                // رسم أسلاك الدائرة الكهربائية
+                const graphics = this.add.graphics();
+                graphics.lineStyle(5, 0x555555);
+                graphics.strokeRect(90, 50, w - 180, h - 100);
+
+                // مصباح دلالة في أعلى الدائرة
+                this.bulbBg = this.add.circle(w / 2, 50, 18, 0x444444);
+                this.add.text(w / 2 - 7, 38, '💡', { fontSize: '16px' });
+
+                // رسم مكون المقاومة الكهربائية (Resistor) في الجانب الأيمن العلوي
+                this.resistorBody = this.add.rectangle(w - 150, 50, 60, 24, 0xd2b48c).setStrokeStyle(2, 0x8b4513);
+                // خطوط الألوان على المقاومة
+                this.add.rectangle(w - 165, 50, 4, 24, 0xff0000); // أحمر
+                this.add.rectangle(w - 155, 50, 4, 24, 0x8b4513); // بني
+                this.add.rectangle(w - 145, 50, 4, 24, 0xffd700); // ذهبي
+                this.add.text(w - 170, 75, 'المقاومة (Resistor)', { fill: '#aaa', fontSize: '11px' });
+
+                // رسم جسم البطارية في الأسفل كمصدر طاقة
+                this.add.rectangle(w / 2, h - 50, 130, 35, 0x333333).setStrokeStyle(2, 0x777777);
+                this.add.text(w / 2 - 30, h - 58, 'البطارية', { fill: '#fff', fontSize: '13px', fontFamily: 'Segoe UI' });
+                this.add.text(w / 2 - 55, h - 58, '(-)', { fill: '#ff4444', fontSize: '14px', fontWeight: 'bold' });
+                this.add.text(w / 2 + 40, h - 58, '(+)', { fill: '#44bbff', fontSize: '14px', fontWeight: 'bold' });
+
+                // --- المفتاح الكهربائي التفاعلي على اليسار ---
+                this.switchContainer = this.add.container(90, h / 2);
+                const hitZone = this.add.rectangle(0, 0, 50, 70, 0x000000, 0).setInteractive({ useHandCursor: true });
+                this.switchBaseBox = this.add.rectangle(0, 0, 24, 50, 0x333333).setStrokeStyle(2, 0x888888);
+                this.switchBlade = this.add.rectangle(0, -12, 6, 26, 0xff4444).setOrigin(0.5, 1);
+
+                this.switchContainer.add([hitZone, this.switchBaseBox, this.switchBlade]);
+                this.add.text(45, h / 2 - 60, 'مفتاح 🖲️', { fontSize: '12px', fill: '#00ffcc' });
+
+                // حدث النقر على المفتاح للتبديل
+                const toggleCircuit = () => {
+                    isClosed = !isClosed;
+                    this.updateSwitchVisual();
+                };
+
+                hitZone.on('pointerdown', toggleCircuit);
+                this.switchBlade.setInteractive();
+                this.switchBlade.on('pointerdown', toggleCircuit);
+
+                // --- إنشاء الإلكترونات المتحركة مع قطبيتها (-) الواضحة في الأسلاك ---
+                this.electrons = [];
+                for (let i = 0; i < 10; i++) {
+                    let particleContainer = this.add.container(0, 0);
+                    let circle = this.add.circle(0, 0, 8, 0x00d2ff).setStrokeStyle(1, 0xffffff);
+                    let label = this.add.text(-4, -7, '-', { fill: '#ffffff', fontSize: '14px', fontWeight: 'bold' });
+                    particleContainer.add([circle, label]);
+                    particleContainer.visible = false;
+                    
+                    this.electrons.push({ obj: particleContainer, progress: i * (1 / 10) });
+                }
+
+                this.updateSwitchVisual();
+            }
+
+            updateSwitchVisual() {
+                const statusBadge = document.getElementById('statusText');
+
+                if (isClosed) {
+                    this.switchBlade.setRotation(0);
+                    this.switchBlade.setFillStyle(0x00ff66); 
+                    this.bulbBg.setFillStyle(0xffd700); // إضاءة المصباح
+                    this.resistorBody.setStrokeStyle(2, 0x00ffcc);
+                    
+                    if (statusBadge) {
+                        statusBadge.className = "badge bg-success fs-6 px-3 py-2";
+                        statusBadge.innerText = "الحالة: الدائرة مغلقة (المقاومة تنظم التيار ويضيء المصباح ⚡)";
+                    }
+                } else {
+                    this.switchBlade.setRotation(Math.PI / 3); 
+                    this.switchBlade.setFillStyle(0xff4444); 
+                    this.bulbBg.setFillStyle(0x444444); // إطفاء المصباح
+                    this.resistorBody.setStrokeStyle(2, 0x8b4513);
+                    
+                    if (statusBadge) {
+                        statusBadge.className = "badge bg-danger fs-6 px-3 py-2";
+                        statusBadge.innerText = "الحالة: الدائرة مفتوحة (لا يوجد تدفق)";
+                    }
+                }
+            }
+
+            update(time, delta) {
+                if (isClosed) {
+                    // تحريك الإلكترونات بانتظام عبر المقاومة والأسلاك
+                    this.electrons.forEach((item) => {
+                        item.obj.visible = true;
+                        item.progress += 0.003; 
+                        if (item.progress > 1) item.progress = 0;
+
+                        let pos = this.getPathPos(item.progress);
+                        item.obj.x = pos.x;
+                        item.obj.y = pos.y;
+                    });
+                } else {
+                    // إخفاء الإلكترونات عند فتح الدائرة
+                    this.electrons.forEach(item => item.obj.visible = false);
+                }
+            }
+
+            // دالة حساب مسار تدفق الإلكترونات حول المستطيل
+            getPathPos(p) {
+                const w = this.w;
+                const h = this.h;
+                const minX = 90, maxX = w - 90, minY = 50, maxY = h - 50;
+
+                const topLen = maxX - minX;
+                const rightLen = maxY - minY;
+                const bottomLen = maxX - minX;
+                const leftLen = maxY - minY;
+                const totalLen = topLen + rightLen + bottomLen + leftLen;
+
+                let dist = p * totalLen;
+
+                if (dist <= topLen) {
+                    return { x: minX + dist, y: minY };
+                }
+                dist -= topLen;
+                if (dist <= rightLen) {
+                    return { x: maxX, y: minY + dist };
+                }
+                dist -= rightLen;
+                if (dist <= bottomLen) {
+                    return { x: maxX - dist, y: maxY };
+                }
+                dist -= bottomLen;
+                return { x: minX, y: maxY - dist };
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 400,
+            parent: 'game-container',
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH
+            },
+            scene: ResistorScene
+        };
+
+        const game = new Phaser.Game(config);
+
+        // زر المشاركة
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'أساسيات الإلكترونيات - المقاومة الكهربائية',
+                        text: 'تطبيق تفاعلي رائع لمحاكاة المقاومة الكهربائية وتنظيم التيار!',
+                        url: window.location.href,
+                    });
+                } catch (err) {
+                    console.log('تم إلغاء المشاركة');
+                }
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('تم نسخ رابط التطبيق إلى الحافظة!');
+            }
+        });
+    </script>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
