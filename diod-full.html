@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- وسوم SEO وتحسين محركات البحث -->
+    <title>محاكاة مقوم الموجة الكاملة - قنطرة الدايودات</title>
+    <meta name="description" content="تطبيق تفاعلي لمحاكاة مقوم الموجة الكاملة (Bridge Rectifier) وفهم تحويل التيار المتردد AC إلى مستمر DC مع خاصية التنعيم بالمكثف.">
+    <meta name="keywords" content="محاكاة, مقوم الموجة الكاملة, Bridge Rectifier, دايود, إلكترونيات, تيار مستمر, تيار متردد, هندسة كهربائية">
+    <meta name="author" content="Full Stack Developer">
+    <meta name="robots" content="index, follow">
+
+    <!-- وسوم Open Graph لمواقع التواصل الاجتماعي -->
+    <meta property="og:title" content="محاكاة مقوم الموجة الكاملة - قنطرة الدايودات">
+    <meta property="og:description" content="تعلم واكتشف كيفية عمل قنطرة التوحيد وتحويل التيار المتناوب إلى تيار مستمر بطريقة تفاعلية.">
+    <meta property="og:type" content="website">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- مكتبة أيقونات Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #phaser-game-container {
+            width: 100%;
+            min-height: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        }
+        input[type=range] { direction: ltr; }
+        
+        .id-card {
+            background-color: #1e293b;
+            border: 1px solid #8b5cf6;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .id-card-header {
+            background-color: #8b5cf6;
+            color: #ffffff;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        footer {
+            background-color: #020617;
+            border-top: 1px solid #334155;
+        }
+        .btn-github {
+            background-color: #24292e;
+            color: #fff;
+            border: 1px solid #475569;
+            transition: all 0.3s ease;
+        }
+        .btn-github:hover {
+            background-color: #000;
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4 flex-grow-1">
+    <!-- الشريط العلوي مع زر المشاركة -->
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary pb-2">
+        <h2 class="text-info m-0" style="color: #a78bfa !important;">
+⚡ أساسيات الإلكترونيات  | مقوم الموجة الكاملة
+        </h2>
+        <button id="shareBtn" class="btn btn-outline-info btn-sm rounded-pill px-3">
+            <i class="bi bi-share-fill me-1"></i> مشاركة
+        </button>
+    </div>
+
+    <!-- زر العودة إلى الصفحة الرئيسية أسفل الشريط العلوي -->
+    <div class="mb-4">
+        <a href="index.html" class="btn btn-sm btn-dark border-secondary text-light rounded-pill px-3">
+            <i class="bi bi-arrow-right me-1"></i> العودة إلى الصفحة الرئيسية
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        <!-- القسم الأيسر -->
+        <div class="col-lg-8">
+    
+
+            <div class="id-card shadow">
+                <div class="id-card-header">
+                    📑 بطاقة تعريف: قنطرة التوحيد (Bridge Rectifier)
+                </div>
+                <div class="p-3 text-light">
+                    <p class="mb-3">
+                        <strong>الوظيفة الأساسية:</strong> تحويل التيار المتردد (AC) إلى تيار مستمر (DC) نابض بالكامل، من خلال الاستفادة من النصفين الموجب والسالب للموجة باستخدام 4 دايودات.
+                    </p>
+                    <ul class="list-group list-group-flush mb-0 text-light" style="background: transparent;">
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-success">النصف الموجب:</strong> يعمل الدايودان (D1 و D2)، ويمرران التيار باتجاه واحد.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-warning">النصف السالب:</strong> يعمل الدايودان (D3 و D4)، والمفاجأة أنهما يمرران التيار <strong>بنفس الاتجاه</strong> للحمل.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-danger">ضريبة الجهد:</strong> لأن التيار يمر عبر دايودين في كل دورة، يتم خصم <strong>1.4 فولت</strong> (0.7V × 2) من جهد المصدر.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-0">
+                            <strong class="text-info">أداء المكثف:</strong> التموج (Ripple) هنا أقل بكثير من نصف الموجة، لأن المكثف يُشحن مرتين في الدورة الواحدة!
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن -->
+        <div class="col-lg-4">
+            <div class="control-panel h-100 d-flex flex-column">
+                    <div id="phaser-game-container" class="mb-4"></div>
+                <h5 class="text-white mb-4 border-bottom border-secondary pb-2">🎛️ لوحة التحكم</h5>
+                
+                <div class="mb-4">
+                    <label class="text-info fw-bold mb-2 d-flex justify-content-between" style="color: #a78bfa !important;">
+                        <span>سعة الجهد (Amplitude)</span>
+                        <span class="badge" style="background-color: #8b5cf6;" id="ampValue">10 V</span>
+                    </label>
+                    <input type="range" id="ampSlider" min="2" max="20" value="10" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-info fw-bold mb-2 d-flex justify-content-between" style="color: #a78bfa !important;">
+                        <span>التردد (Frequency)</span>
+                        <span class="badge" style="background-color: #8b5cf6;" id="freqValue">3</span>
+                    </label>
+                    <input type="range" id="freqSlider" min="1" max="10" value="3" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4 bg-dark p-3 rounded border border-success">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input fs-4" type="checkbox" id="capacitorToggle" style="cursor: pointer;">
+                        <label class="form-check-label text-success fw-bold ms-2 mt-1" for="capacitorToggle" style="cursor: pointer;">
+                            تفعيل المكثف للتنعيم 🔋
+                        </label>
+                    </div>
+                </div>
+
+                <!-- شاشة الحالة -->
+                <div class="mt-auto">
+                    <label class="text-secondary small fw-bold mb-1">حالة القنطرة اللحظية:</label>
+                    <div id="diodeStatus" class="badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base" style="min-height: 70px;">
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="mt-auto py-3 text-center text-secondary small">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+        <div>
+            تم التصميم والتطوير بواسطة <a href="https://me.haythamzeidan.workers.dev/" class="text-info text-decoration-none fw-bold">هيثم زيدان</a> &copy; 2026 جميع الحقوق محفوظة.
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="btn btn-github btn-sm rounded-pill px-3">
+                <i class="bi bi-github me-1"></i> GitHub
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// البرمجية الخاصة بزر المشاركة
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: document.title,
+                text: 'تفقد تطبيق محاكاة مقوم الموجة الكاملة التفاعلي!',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('تم إلغاء المشاركة');
+        }
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ رابط التطبيق إلى الحافظة بنجاح!');
+    }
+});
+
+window.SimData = {
+    amp: 10,
+    freq: 3,
+    useCap: false
+};
+
+function updateUI() {
+    let ampInput = parseFloat(document.getElementById('ampSlider').value);
+    let freqInput = parseFloat(document.getElementById('freqSlider').value);
+    
+    window.SimData.amp = isNaN(ampInput) ? 10 : ampInput;
+    window.SimData.freq = isNaN(freqInput) ? 3 : freqInput;
+    window.SimData.useCap = document.getElementById('capacitorToggle').checked;
+
+    document.getElementById('ampValue').innerText = window.SimData.amp + " V";
+    document.getElementById('freqValue').innerText = window.SimData.freq;
+}
+
+document.getElementById('ampSlider').addEventListener('input', updateUI);
+document.getElementById('freqSlider').addEventListener('input', updateUI);
+document.getElementById('capacitorToggle').addEventListener('change', updateUI);
+
+class RectifierScene extends Phaser.Scene {
+    constructor() { super('RectifierScene'); }
+
+    create() {
+        this.graphics = this.add.graphics();
+        this.tick = 0;
+        this.capacitorCharge = 0;
+        this.historyIn = new Array(400).fill(0);
+        this.historyOut = new Array(400).fill(0);
+
+        let fontStyle = { font: '14px Tahoma, sans-serif', fill: '#cbd5e1' };
+        this.add.text(400, 20, 'راسم الإشارة (Oscilloscope) - الموجة الكاملة', fontStyle).setOrigin(0.5);
+        
+        this.add.text(230, 40, 'جهد المصدر (AC)', { font: '12px Tahoma', fill: '#ef4444' }).setOrigin(0);
+        this.add.text(230, 60, 'جهد الخرج (DC)', { font: '12px Tahoma', fill: '#22c55e' }).setOrigin(0);
+    }
+
+    update() {
+        if (isNaN(this.tick)) this.tick = 0;
+        this.tick += (window.SimData.freq * 0.015);
+        
+        let amp = window.SimData.amp;
+        let vIn = amp * Math.sin(this.tick);
+        if (isNaN(vIn)) vIn = 0; 
+
+        let absVin = Math.abs(vIn);
+        let vOut = 0;
+        let diodeDrop = 1.4;
+        
+        let d1d2_active = false;
+        let d3d4_active = false;
+
+        if (!window.SimData.useCap) this.capacitorCharge = 0;
+
+        if (window.SimData.useCap) {
+            if (absVin > diodeDrop && (absVin - diodeDrop) > this.capacitorCharge) {
+                this.capacitorCharge = absVin - diodeDrop;
+                if(vIn > 0) d1d2_active = true;
+                else d3d4_active = true;
+            } else {
+                this.capacitorCharge -= this.capacitorCharge * 0.03;
+                if (this.capacitorCharge < 0) this.capacitorCharge = 0;
+            }
+            vOut = this.capacitorCharge;
+        } else {
+            if (absVin > diodeDrop) {
+                vOut = absVin - diodeDrop;
+                if(vIn > 0) d1d2_active = true;
+                else d3d4_active = true;
+            }
+        }
+
+        let statusEl = document.getElementById('diodeStatus');
+        if (d1d2_active) {
+            statusEl.className = "badge bg-success fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "النصف الموجب:\nالدايودان D1 و D2 يمرران التيار ✅";
+        } else if (d3d4_active) {
+            statusEl.className = "badge bg-warning text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "النصف السالب:\nالدايودان D3 و D4 يعكسان التيار ويمررانه ✅";
+        } else if (window.SimData.useCap && absVin > 0 && (absVin - diodeDrop) <= this.capacitorCharge) {
+             statusEl.className = "badge bg-info text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+             statusEl.innerText = "القنطرة مغلقة مؤقتاً\nجهد المكثف يغذي الدائرة 🔋";
+        } else {
+            statusEl.className = "badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = `ينتظر vượt 1.4V\n(الحالي المطلق: ${absVin.toFixed(1)}V) ⚡`;
+        }
+
+        this.graphics.clear();
+        this.historyIn.push(vIn);
+        this.historyIn.shift();
+        this.historyOut.push(vOut);
+        this.historyOut.shift();
+
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillRect(200, 90, 400, 260);
+        
+        this.graphics.lineStyle(1, 0x1e293b, 1);
+        this.graphics.beginPath();
+        for(let i=10; i<400; i+=20) {
+            this.graphics.moveTo(200+i, 90); this.graphics.lineTo(200+i, 350);
+        }
+        for(let i=10; i<260; i+=20) {
+            this.graphics.moveTo(200, 90+i); this.graphics.lineTo(600, 90+i);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.lineStyle(2, 0x475569, 1);
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(200, 220, 600, 220));
+
+        let scaleY = 5.5; 
+        
+        this.graphics.lineStyle(2, 0xef4444, 0.6);
+        this.graphics.beginPath();
+        for(let i=0; i<400; i++) {
+            let y = 220 - (this.historyIn[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(200 + i, y);
+            else this.graphics.lineTo(200 + i, y);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.lineStyle(3, 0x22c55e, 1);
+        this.graphics.beginPath();
+        for(let i=0; i<400; i++) {
+            let y = 220 - (this.historyOut[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(200 + i, y);
+            else this.graphics.lineTo(200 + i, y);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.fillStyle(0x020617, 0.8);
+        this.graphics.fillRect(210, 30, 120, 50);
+        this.graphics.fillStyle(0xef4444, 1);
+        this.graphics.fillCircle(220, 48, 5);
+        this.graphics.fillStyle(0x22c55e, 1);
+        this.graphics.fillCircle(220, 68, 5);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 400,
+    backgroundColor: '#020617',
+    scene: RectifierScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+window.onload = () => {
+    updateUI(); 
+    new Phaser.Game(config);
+};
+</script>
+
+</body>
+</html>
