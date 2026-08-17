@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>البوابات المنطقية | محاكاة تفاعلية للدوائر الرقمية</title>
+    <meta name="description" content="تطبيق محاكاة تفاعلي لتعلم البوابات المنطقية الأساسية (AND, OR, NOT, NAND, NOR, XOR) وفهم جداول الحقيقة وتصميم الدوائر الرقمية بسهولة.">
+    <meta name="keywords" content="بوابات منطقية, دوائر رقمية, محاكاة إلكترونية, logic gates, truth table, تعليم إلكترونيات, فيزياء">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="البوابات المنطقية | محاكاة تفاعلية">
+    <meta property="og:description" content="تعلم كيفية عمل البوابات المنطقية وجدول الحقيقة من خلال محاكاة تفاعلية ممتعة ومبسطة.">
+    <meta property="og:locale" content="ar_AR">
+
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .main-wrapper { flex: 1; }
+        #phaser-game-container { width: 100%; max-width: 800px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); background-color: #1e293b; border: 1px solid #334155; }
+        .control-panel { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; height: 100%; }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        
+        /* Profile Card Styling */
+        .gate-profile-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #3b82f6; border-radius: 12px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15); }
+        .spec-box { background-color: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; }
+        
+        /* Header Styling */
+        .app-header { background-color: #1e293b; border-bottom: 1px solid #334155; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .back-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease-in-out;
+        }
+        .back-nav-link:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        /* Footer Styling */
+        .app-footer { background-color: #1e293b; border-top: 1px solid #334155; color: #94a3b8; margin-top: auto; }
+        .github-btn { display: inline-flex; align-items: center; gap: 8px; background-color: #0f172a; color: #f8fafc; border: 1px solid #475569; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; transition: all 0.2s ease; }
+        .github-btn:hover { background-color: #334155; color: #ffffff; border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+        .footer-link { color: #38bdf8; text-decoration: none; font-weight: 500; }
+        .footer-link:hover { text-decoration: underline; color: #7dd3fc; }
+    </style>
+</head>
+<body>
+
+<!-- الشريط العلوي -->
+<header class="app-header py-3 sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <span class="fs-4 text-info">🔲</span>
+            <h1 class="h5 mb-0 fw-bold text-light">البوابات المنطقية | Logic Gates</h1>
+        </div>
+        <button id="btnShare" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2 px-3">
+<i class="bi bi-share-fill"></i>
+        </button>
+    </div>
+</header>
+
+<div class="main-wrapper">
+    <div class="container py-3">
+        <!-- زر عودة إلى الصفحة الرئيسية -->
+        <div class="mb-3">
+            <a href="index.html" class="back-nav-link">
+                <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                <span>عودة إلى الصفحة الرئيسية</span>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+            
+
+                <!-- بطاقة تعريف البوابات -->
+                <div class="gate-profile-card mt-3 p-3 text-light">
+                    <div class="d-flex align-items-center gap-2 border-bottom border-secondary pb-2 mb-3">
+                        <span class="fs-3">💡</span>
+                        <h3 class="h5 mb-0 text-info fw-bold">نظرة عامة على البوابات المنطقية</h3>
+                    </div>
+                    <div class="row g-2 text-center">
+                        <div class="col-4"><div class="spec-box"><span class="d-block text-muted small">المنطق</span><span class="fw-bold text-warning">ثنائي (Binary)</span></div></div>
+                        <div class="col-4"><div class="spec-box"><span class="d-block text-muted small">القاعدة</span><span class="fw-bold text-info">جبر بول (Boolean)</span></div></div>
+                        <div class="col-4"><div class="spec-box"><span class="d-block text-muted small">الحالات</span><span class="fw-bold text-success">0 و 1</span></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="control-panel">
+                    <div id="phaser-game-container"></div>
+                    <h5 class="text-info fw-bold mb-3">تحكم بالمحاكاة</h5>
+                    <label class="form-label small text-light">نوع البوابة:</label>
+                    <select id="gateSelect" class="form-select bg-dark text-light border-secondary mb-3">
+                        <option value="AND">AND (و)</option>
+                        <option value="OR">OR (أو)</option>
+                        <option value="NOT">NOT (نفي - المدخل A)</option>
+                        <option value="NAND">NAND (ليس و)</option>
+                        <option value="NOR">NOR (ليس أو)</option>
+                        <option value="XOR">XOR (إما أو)</option>
+                    </select>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <button id="toggleA" class="btn btn-outline-warning">مدخل A: 0 (Off)</button>
+                        <button id="toggleB" class="btn btn-outline-warning">مدخل B: 0 (Off)</button>
+                    </div>
+
+                    <div class="alert alert-info border-info text-dark p-2 small">
+                        <strong id="gateName">AND Gate</strong>: <span id="logicDesc">تعطي (1) فقط إذا كان كلا المدخلين (1).</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي -->
+<footer class="app-footer py-3 text-center">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+        <div class="small">
+            جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم <a href="https://me.haythamzeidan.workers.dev/" class="footer-link">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress/Electronics-basics" target="_blank" rel="noopener noreferrer" class="github-btn">
+                <i class="bi bi-github fs-6"></i>
+                <span>عرض على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+class LogicScene extends Phaser.Scene {
+    constructor() { super('LogicScene'); }
+    
+    create() {
+        this.inputA = false; 
+        this.inputB = false; 
+        this.gate = 'AND';
+        this.graphics = this.add.graphics();
+
+        this.gateLabelText = this.add.text(400, 150, "AND", {fontSize: '22px', color: '#38bdf8', fontWeight: 'bold'}).setOrigin(0.5);
+        this.outputStatusText = this.add.text(650, 150, "OFF", {fontSize: '12px', color: '#f8fafc', fontWeight: 'bold'}).setOrigin(0.5);
+    }
+
+    update() {
+        this.graphics.clear();
+        this.drawLogicGate();
+        this.gateLabelText.setText(this.gate);
+        
+        let output = this.calculate();
+        this.outputStatusText.setText(output ? "ON" : "OFF");
+    }
+
+    drawLogicGate() {
+        let output = this.calculate();
+
+        this.graphics.lineStyle(4, 0x64748b, 1);
+        this.graphics.beginPath();
+        this.graphics.moveTo(120, 100);
+        this.graphics.lineTo(300, 100);
+        this.graphics.moveTo(120, 200);
+        this.graphics.lineTo(300, 200);
+        this.graphics.moveTo(500, 150);
+        this.graphics.lineTo(610, 150);
+        this.graphics.strokePath();
+
+        this.graphics.fillStyle(this.inputA ? 0xfacc15 : 0x475569, 1);
+        this.graphics.fillCircle(100, 100, 20);
+
+        this.graphics.fillStyle(this.inputB ? 0xfacc15 : 0x475569, 1);
+        this.graphics.fillCircle(100, 200, 20);
+
+        this.graphics.fillStyle(0x1e293b, 1);
+        this.graphics.lineStyle(3, 0x38bdf8, 1);
+        this.graphics.strokeRect(300, 80, 200, 140);
+
+        if (output) {
+            this.graphics.fillStyle(0xfef08a, 0.4);
+            this.graphics.fillCircle(650, 150, 45);
+            this.graphics.fillStyle(0xfacc15, 1);
+        } else {
+            this.graphics.fillStyle(0x334155, 1);
+        }
+        this.graphics.fillCircle(650, 150, 25);
+    }
+
+    calculate() {
+        let a = this.inputA, b = this.inputB;
+        switch(this.gate) {
+            case 'AND': return a && b;
+            case 'OR': return a || b;
+            case 'NOT': return !a;
+            case 'NAND': return !(a && b);
+            case 'NOR': return !(a || b);
+            case 'XOR': return a !== b;
+            default: return false;
+        }
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 300,
+    backgroundColor: '#0f172a',
+    scene: LogicScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+const game = new Phaser.Game(config);
+
+const gateSelect = document.getElementById('gateSelect');
+const toggleA = document.getElementById('toggleA');
+const toggleB = document.getElementById('toggleB');
+const gateName = document.getElementById('gateName');
+const logicDesc = document.getElementById('logicDesc');
+
+const descs = {
+    AND: "تعطي (1) فقط إذا كان كلا المدخلين (1).",
+    OR: "تعطي (1) إذا كان أحد المدخلين على الأقل (1).",
+    NOT: "تعكس قيمة المدخل A.",
+    NAND: "تعطي (0) فقط إذا كان كلا المدخلين (1).",
+    NOR: "تعطي (1) فقط إذا كان كلا المدخلين (0).",
+    XOR: "تعطي (1) إذا كان المدخلان مختلفين."
+};
+
+gateSelect.addEventListener('change', (e) => {
+    game.scene.scenes[0].gate = e.target.value;
+    gateName.innerText = e.target.value + " Gate";
+    logicDesc.innerText = descs[e.target.value];
+});
+
+toggleA.addEventListener('click', () => { 
+    let scene = game.scene.scenes[0];
+    scene.inputA = !scene.inputA; 
+    toggleA.innerText = `مدخل A: ${scene.inputA ? 1 : 0} (${scene.inputA ? 'On' : 'Off'})`;
+    toggleA.className = scene.inputA ? "btn btn-warning" : "btn btn-outline-warning";
+});
+
+toggleB.addEventListener('click', () => { 
+    let scene = game.scene.scenes[0];
+    scene.inputB = !scene.inputB; 
+    toggleB.innerText = `مدخل B: ${scene.inputB ? 1 : 0} (${scene.inputB ? 'On' : 'Off'})`;
+    toggleB.className = scene.inputB ? "btn btn-warning" : "btn btn-outline-warning";
+});
+
+document.getElementById('btnShare').addEventListener('click', async () => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'البوابات المنطقية | محاكاة تفاعلية',
+                text: 'تعرف على البوابات المنطقية وجدول الحقيقة من خلال محاكاة تفاعلية رائعة!',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('مشاركة ملغاة');
+        }
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ الرابط إلى الحافظة!');
+    }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
