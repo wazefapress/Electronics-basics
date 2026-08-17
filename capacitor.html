@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ================= SEO Tags ================= -->
+    <title>أساسيات الإلكترونيات | المكثف الكهربائي</title>
+    <meta name="description" content="تطبيق ويب تفاعلي لمراقبة كيفية شحن المكثف الكهربائي وعلاقة السعة والجهد بالشحنة والطاقة المخزنة.">
+    <meta name="author" content="هيثم زيدان">
+    <!-- ============================================== -->
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .custom-navbar, .custom-footer {
+            background-color: #1e293b;
+            border-color: #334155 !important;
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+        }
+
+        #phaser-game-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155;
+            height: 100%;
+        }
+        
+        .formula-card { 
+            background-color: #020617; 
+            border: 1px solid #3b82f6; 
+            border-radius: 8px;
+        }
+        
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        
+        /* أشرطة التمرير */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #475569;
+            border-radius: 3px;
+        }
+        
+        #voltageSlider::-webkit-slider-thumb { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        #capSlider::-webkit-slider-thumb { background: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+        
+        .main-content { flex: 1; }
+    </style>
+</head>
+<body>
+
+<!-- الشريط العلوي -->
+<nav class="navbar custom-navbar border-bottom py-3 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1 text-primary fw-bold d-flex align-items-center gap-2">
+            <i class="bi bi-usb-drive-fill fs-4"></i>
+            أساسيات الإلكترونيات | المكثف
+        </span>
+        <!-- زر المشاركة -->
+        <button id="shareButton" class="btn btn-outline-primary d-flex align-items-center gap-2 rounded-pill px-3 py-1 fs-6">
+            <i class="bi bi-share-fill"></i>
+            <span>مشاركة</span>
+        </button>
+    </div>
+</nav>
+
+<!-- زر العودة إلى الصفحة الرئيسية أسفل الشريط العلوي -->
+<div class="container mt-3">
+    <a href="index.html" class="btn btn-outline-primary d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2 text-decoration-none">
+        <i class="bi bi-arrow-right-circle fs-5"></i>
+        <span>العودة إلى الصفحة الرئيسية</span>
+    </a>
+</div>
+
+<!-- المحتوى الرئيسي -->
+<div class="main-content container py-4">
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="display-6 fw-bold text-white">قوانين المكثف: الشحنة والطاقة</h1>
+            <p class="lead text-slate-300 fs-6">اضبط الجهد المطبق وسعة المكثف لمراقبة كثافة الشحنات والطاقة الكهربائية المخزنة (المجال الكهربائي).</p>
+        </div>
+    </div>
+
+    <!-- بطاقة التعريف -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="info-card p-4 shadow-sm border-primary">
+                <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start gap-3">
+                    <div class="text-primary display-4">
+                        <i class="bi bi-battery-charging"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-primary fw-bold mb-2">كيف يعمل المكثف؟</h4>
+                        <p class="mb-1" style="color: #cbd5e1; line-height: 1.8;">
+المكثف يخزن الطاقة الكهربائية في شكل <strong>مجال كهربائي</strong> بين لوحين موصلين. تزداد الشحنة (Q) بزيادة الجهد أو زيادة مساحة الألواح (السعة).
+                        </p>
+                        <ul class="mb-0 small text-slate-300" style="line-height: 1.8;">
+                            <li><strong class="text-info">السعة (C):</strong> تعتمد على الحجم الفيزيائي (مساحة الألواح). كلما زادت، اتسع "الخزان".</li>
+                            <li><strong class="text-primary">الجهد (V):</strong> يمثل قوة الضغط التي تحشر الإلكترونات داخل اللوح.</li>
+                            <li><strong class="text-warning">الطاقة (E):</strong> تتضاعف بشكل أُسي مع زيادة الجهد (تحذير: جهد زائد = انهيار العازل 💥).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- منطقة المحاكاة (Phaser) -->
+        <div class="col-lg-8">
+            <div id="phaser-game-container"></div>
+        </div>
+
+        <!-- لوحة التحكم -->
+        <div class="col-lg-4">
+            <div class="control-panel d-flex flex-column">
+                
+                <!-- القاعدة العلمية -->
+                <div class="formula-card p-3 mb-4 text-center shadow-sm">
+                    <h6 class="text-info mb-2">معادلات المكثف</h6>
+                    <div class="fs-5 fw-bold text-white mb-2" dir="ltr">
+                        <span class="text-success">Q</span> = <span class="text-purple" style="color:#8b5cf6">C</span> × <span class="text-primary">V</span>
+                    </div>
+                    <div class="fs-5 fw-bold text-white mb-1" dir="ltr">
+                        <span class="text-warning">E</span> = ½ <span class="text-purple" style="color:#8b5cf6">C</span> × <span class="text-primary">V</span>²
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary fw-bold d-flex justify-content-between">
+                        <span>🔋 الجهد المطبق (V)</span>
+                        <span id="voltValue" class="badge bg-primary fs-6">12 V</span>
+                    </h6>
+                    <p class="small text-muted mb-1">ضغط البطارية (قوة الدفع)</p>
+                    <input type="range" id="voltageSlider" min="1" max="24" value="12" step="1" class="form-range w-100">
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold d-flex justify-content-between" style="color: #8b5cf6;">
+                        <span>⬛ السعة الكهربائية (C)</span>
+                        <span id="capValue" class="badge fs-6" style="background-color: #8b5cf6;">5 F</span>
+                    </h6>
+                    <p class="small text-muted mb-1">حجم ألواح المكثف (مساحة الخزان)</p>
+                    <input type="range" id="capSlider" min="1" max="10" value="5" step="1" class="form-range w-100">
+                </div>
+
+                <hr class="border-secondary mb-4">
+
+                <!-- النتيجة -->
+                <div class="card bg-dark border-secondary text-center mb-3">
+                    <div class="card-body py-2 d-flex justify-content-around">
+                        <div>
+                            <h6 class="text-success fw-bold mb-1">الشحنة (Q)</h6>
+                            <h4 id="chargeValue" class="fw-bold text-white mb-0">60 <span class="fs-6 text-muted">كولوم</span></h4>
+                        </div>
+                        <div class="border-end border-secondary"></div>
+                        <div>
+                            <h6 class="text-warning fw-bold mb-1">الطاقة (E)</h6>
+                            <h4 id="energyValue" class="fw-bold text-white mb-0">360 <span class="fs-6 text-muted">جول</span></h4>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div id="statusBadge" class="badge bg-success fs-6 w-100 py-2">حالة المكثف: شحن مستقر ⚡</div>
+                    <p id="capDesc" class="small text-muted mt-2 mb-0">المجال الكهربائي مستقر والطاقة المخزنة في الحدود الآمنة.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي -->
+<footer class="custom-footer border-top py-4 mt-auto">
+    <div class="container text-center text-md-start">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0 text-slate-300">
+                &copy; 2026 جميع الحقوق محفوظة | محاكاة وتطوير: 
+                <a href="https://me.haythamzeidan.workers.dev/" class="text-primary text-decoration-none fw-bold mx-1 hover-effect">
+                    هيثم زيدان
+                </a>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="https://github.com/wazefapress" target="_blank" class="btn btn-outline-light rounded-circle p-2 mx-1" aria-label="GitHub Profile">
+                    <i class="bi bi-github fs-5 d-flex"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ==========================================
+// 0. البرمجة الخاصة بـ زر المشاركة
+// ==========================================
+document.getElementById('shareButton').addEventListener('click', async () => {
+    const shareData = {
+        title: document.title,
+        text: 'شاهد تطبيق محاكاة قوانين المكثف الكهربائي التفاعلي!',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.log('تم إلغاء المشاركة أو حدث خطأ:', err);
+        }
+    } else {
+        // Fallback: نسخ الرابط إذا لم تكن الميزة مدعومة
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            alert('تم نسخ رابط الصفحة إلى الحافظة بنجاح!');
+        } catch (err) {
+            alert('عذراً، لم نتمكن من نسخ الرابط تلقائياً.');
+        }
+    }
+});
+
+// ==========================================
+// 1. منطق Phaser 3 (المكثف والخزان)
+// ==========================================
+class CapacitorScene extends Phaser.Scene {
+    constructor() {
+        super('CapacitorScene');
+    }
+
+    create() {
+        this.voltage = 12;
+        this.capacitance = 5;
+        this.charge = this.capacitance * this.voltage;
+        this.energy = 0.5 * this.capacitance * Math.pow(this.voltage, 2);
+
+        this.graphics = this.add.graphics();
+        this.chargesGroup = this.add.group();
+
+        // نصوص توضيحية
+        this.add.text(400, 20, 'الدائرة الكهربائية (المجال الكهربائي والشحنات)', { fontFamily: 'Tahoma', fontSize: '16px', color: '#cbd5e1', rtl: true }).setOrigin(0.5);
+        this.add.text(400, 310, 'التشبيه المائي (سعة الخزان = السعة، ارتفاع الماء = الجهد)', { fontFamily: 'Tahoma', fontSize: '16px', color: '#cbd5e1', rtl: true }).setOrigin(0.5);
+
+        this.batteryLabel = this.add.text(150, 90, 'البطارية (V)', { fontFamily: 'Tahoma', fontSize: '14px', color: '#60a5fa', align: 'center', rtl: true }).setOrigin(0.5);
+        this.capLabel = this.add.text(650, 40, 'المكثف (C)', { fontFamily: 'Tahoma', fontSize: '14px', color: '#a78bfa', align: 'center', rtl: true }).setOrigin(0.5);
+        
+        this.tankVolLabel = this.add.text(250, 450, 'ارتفاع الماء (يمثل الجهد V)', { fontFamily: 'Tahoma', fontSize: '13px', color: '#60a5fa', rtl: true });
+        this.tankCapLabel = this.add.text(400, 570, 'عرض الخزان (يمثل السعة C)', { fontFamily: 'Tahoma', fontSize: '13px', color: '#a78bfa', rtl: true }).setOrigin(0.5);
+        
+        // شارة الحالة داخل Phaser
+        this.fieldStateText = this.add.text(650, 260, 'المجال: مستقر', { fontFamily: 'Tahoma', fontSize: '13px', color: '#22c55e', rtl: true }).setOrigin(0.5);
+
+        // توهج المجال الكهربائي
+        this.electricField = this.add.rectangle(650, 150, 40, 100, 0x38bdf8, 0);
+
+        this.drawVisuals();
+
+        window.addEventListener('updateCapacitor', (e) => {
+            this.voltage = e.detail.v;
+            this.capacitance = e.detail.c;
+            this.charge = e.detail.q;
+            this.energy = e.detail.e;
+            this.drawVisuals();
+        });
+    }
+
+    drawVisuals() {
+        this.graphics.clear();
+        this.chargesGroup.clear(true, true); // تنظيف الشحنات القديمة
+
+        // 1. رسم أسلاك الدائرة
+        this.graphics.lineStyle(6, 0x475569, 1);
+        // سلك علوي (موجب)
+        this.graphics.beginPath();
+        this.graphics.moveTo(150, 120);
+        this.graphics.lineTo(150, 70);
+        this.graphics.lineTo(620, 70);
+        this.graphics.lineTo(620, 150);
+        this.graphics.strokePath();
+        
+        // سلك سفلي (سالب)
+        this.graphics.beginPath();
+        this.graphics.moveTo(150, 180);
+        this.graphics.lineTo(150, 230);
+        this.graphics.lineTo(680, 230);
+        this.graphics.lineTo(680, 150);
+        this.graphics.strokePath();
+
+        // 2. رسم البطارية (طولها يعتمد على الجهد)
+        let batHeight = 30 + (this.voltage * 2);
+        this.graphics.fillStyle(0x1e3a8a, 1);
+        this.graphics.fillRect(130, 150 - (batHeight/2), 40, batHeight);
+        this.graphics.fillStyle(0x3b82f6, 1); // القطب الموجب
+        this.graphics.fillRect(130, 150 - (batHeight/2) - 10, 40, 10);
+        
+        // الخط الفاصل
+        this.graphics.lineStyle(2, 0x334155, 1);
+        this.graphics.lineBetween(50, 280, 750, 280);
+
+        // 3. رسم المكثف (طول الألواح يعتمد على السعة C)
+        let plateHeight = 40 + (this.capacitance * 12);
+        let plateY = 150 - (plateHeight / 2);
+        
+        // اللوح الموجب (يسار)
+        this.graphics.fillStyle(0xef4444, 1);
+        this.graphics.fillRect(615, plateY, 10, plateHeight);
+        
+        // اللوح السالب (يمين)
+        this.graphics.fillStyle(0x3b82f6, 1);
+        this.graphics.fillRect(675, plateY, 10, plateHeight);
+
+        // 4. رسم المجال الكهربائي (العازل)
+        this.electricField.setPosition(650, 150);
+        this.electricField.setSize(50, plateHeight);
+        
+        // 5. رسم الشحنات (+ و -) بناءً على قيمة الشحنة Q
+        let numCharges = Math.min(Math.floor(this.charge / 3), 40); // حد أقصى بصري
+        let stepY = plateHeight / (numCharges || 1);
+        
+        for (let i = 0; i < numCharges; i++) {
+            let cy = plateY + (stepY * i) + (stepY / 2);
+            // شحنة موجبة
+            let plus = this.add.text(605, cy, '+', { fontSize: '14px', color: '#fca5a5' }).setOrigin(0.5);
+            // شحنة سالبة
+            let minus = this.add.text(690, cy, '-', { fontSize: '18px', color: '#93c5fd' }).setOrigin(0.5);
+            this.chargesGroup.addMultiple([plus, minus]);
+        }
+
+        // 6. التشبيه المائي (الخزان)
+        // عرض الخزان يعتمد على السعة C
+        let tankWidth = 60 + (this.capacitance * 20);
+        let tankX = 400 - (tankWidth / 2);
+        let maxTankHeight = 150;
+        
+        // ارتفاع الماء يعتمد على الجهد V
+        let waterHeight = (this.voltage / 24) * maxTankHeight;
+        let waterY = 550 - waterHeight;
+
+        // رسم الماء (الشحنة Q هي المساحة المظللة)
+        this.graphics.fillStyle(0x0ea5e9, 0.7);
+        this.graphics.fillRect(tankX, waterY, tankWidth, waterHeight);
+        
+        // رسم حدود الخزان
+        this.graphics.lineStyle(4, 0x94a3b8, 1);
+        this.graphics.beginPath();
+        this.graphics.moveTo(tankX, 550 - maxTankHeight);
+        this.graphics.lineTo(tankX, 550);
+        this.graphics.lineTo(tankX + tankWidth, 550);
+        this.graphics.lineTo(tankX + tankWidth, 550 - maxTankHeight);
+        this.graphics.strokePath();
+
+        // ==========================================
+        // مطابقة الحالات (الطاقة والمجال الكهربائي)
+        // ==========================================
+        if (this.energy < 200) {
+            // حالة 1: طاقة منخفضة
+            this.electricField.setFillStyle(0x38bdf8, 0.1);
+            this.fieldStateText.setText('المجال: ضعيف ☁️').setColor('#38bdf8');
+        } else if (this.energy < 800) {
+            // حالة 2: طاقة متوسطة
+            this.electricField.setFillStyle(0x22c55e, 0.3);
+            this.fieldStateText.setText('المجال: معتدل ومستقر ⚡').setColor('#22c55e');
+        } else if (this.energy < 2000) {
+            // حالة 3: طاقة عالية
+            this.electricField.setFillStyle(0xeab308, 0.5);
+            this.fieldStateText.setText('المجال: قوي جداً 🔥').setColor('#eab308');
+        } else {
+            // حالة 4: خطر انهيار العازل (Dielectric Breakdown)
+            this.electricField.setFillStyle(0xef4444, 0.7);
+            this.fieldStateText.setText('المجال: خطر انهيار العازل 💥!').setColor('#ef4444');
+            
+            // رسم شرارة افتراضية بسيطة
+            this.graphics.lineStyle(3, 0xffffff, 1);
+            this.graphics.beginPath();
+            this.graphics.moveTo(625, 150);
+            this.graphics.lineTo(640, 130);
+            this.graphics.lineTo(660, 160);
+            this.graphics.lineTo(675, 150);
+            this.graphics.strokePath();
+        }
+
+        // تحديث النصوص
+        this.batteryLabel.setText(`البطارية\n${this.voltage}V`);
+        this.capLabel.setText(`المكثف\n${this.capacitance}F`);
+    }
+
+    update(time, delta) {
+        // تأثير نبض خفيف للمجال الكهربائي في الحالات العالية
+        if (this.energy >= 800) {
+            let pulse = Math.abs(Math.sin(time / 150)) * 0.3;
+            this.electricField.setAlpha(0.5 + pulse);
+        }
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 600, 
+    backgroundColor: '#0f172a',
+    scene: CapacitorScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+const game = new Phaser.Game(config);
+
+// ==========================================
+// 2. تحديث واجهة التحكم والحسابات الرياضية
+// ==========================================
+const voltSlider = document.getElementById('voltageSlider');
+const capSlider = document.getElementById('capSlider');
+const voltValue = document.getElementById('voltValue');
+const capValue = document.getElementById('capValue');
+const chargeValue = document.getElementById('chargeValue');
+const energyValue = document.getElementById('energyValue');
+const statusBadge = document.getElementById('statusBadge');
+const capDesc = document.getElementById('capDesc');
+
+function calculateCapacitor() {
+    let v = parseFloat(voltSlider.value);
+    let c = parseFloat(capSlider.value);
+    
+    // القوانين
+    let q = c * v; // Q = C * V
+    let e = 0.5 * c * Math.pow(v, 2); // E = 0.5 * C * V^2
+
+    voltValue.innerText = v + ' V';
+    capValue.innerText = c + ' F';
+    chargeValue.innerHTML = q + ' <span class="fs-6 text-muted">كولوم</span>';
+    energyValue.innerHTML = Math.round(e) + ' <span class="fs-6 text-muted">جول</span>';
+
+    // تحديث بطاقة الوصف والبادج الخارجي حسب الطاقة E
+    if (e < 200) {
+        statusBadge.className = "badge bg-info text-dark fs-6 w-100 py-2";
+        statusBadge.innerText = "حالة المكثف: شحن ضعيف ☁️";
+        capDesc.innerText = "تخزين طاقة منخفض. المجال الكهربائي بين الألواح ضعيف جداً.";
+    } else if (e < 800) {
+        statusBadge.className = "badge bg-success fs-6 w-100 py-2";
+        statusBadge.innerText = "حالة المكثف: شحن مستقر ⚡";
+        capDesc.innerText = "تناسب جيد بين مساحة الألواح والجهد. تخزين طاقة معتدل وآمن.";
+    } else if (e < 2000) {
+        statusBadge.className = "badge bg-warning text-dark fs-6 w-100 py-2";
+        statusBadge.innerText = "حالة المكثف: شحن عالي 🔥";
+        capDesc.innerText = "تكدس كبير للإلكترونات. المجال الكهربائي قوي جداً ويقترب من الحد الأقصى.";
+    } else {
+        statusBadge.className = "badge bg-danger fs-6 w-100 py-2";
+        statusBadge.innerText = "حالة المكثف: خطر الانهيار 💥";
+        capDesc.innerText = "تحذير: الجهد المطبق مرتفع جداً! المجال الكهربائي قد يخترق المادة العازلة وتحدث شرارة (تلف المكثف).";
+    }
+
+    // إرسال البيانات لمحرك Phaser
+    window.dispatchEvent(new CustomEvent('updateCapacitor', { 
+        detail: { v: v, c: c, q: q, e: e } 
+    }));
+}
+
+voltSlider.addEventListener('input', calculateCapacitor);
+capSlider.addEventListener('input', calculateCapacitor);
+calculateCapacitor(); 
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
