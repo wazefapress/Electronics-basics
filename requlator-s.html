@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- وسوم الـ SEO والتحسين لمركات البحث -->
+    <title>محاكاة منظم الجهد الخافض (Buck Converter) | أداة تفاعلية</title>
+    <meta name="description" content="محاكاة تفاعلية أونلاين لمنظم الجهد التبادلي الخافض (Buck Converter). تعلم كيفية عمل الـ PWM، جهد الدخل والخرج، ومخطط الدائرة الكهربائية.">
+    <meta name="keywords" content="Buck Converter, منظم جهد, إلكترونيات, محاكاة تفاعلية, PWM, الجهد الخافض, الهندسة الكهربائية">
+    <meta name="author" content="اسم المطور">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="محاكاة منظم الجهد الخافض (Buck Converter)">
+    <meta property="og:description" content="أداة محاكاة تفاعلية لشرح وتوضيح مبدأ عمل منظم الجهد التبادلي الخافض.">
+ 
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="محاكاة منظم الجهد الخافض (Buck Converter)">
+    <meta name="twitter:description" content="أداة محاكاة تفاعلية لشرح وتوضيح مبدأ عمل منظم الجهد التبادلي الخافض.">
+
+    <!-- Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        #phaser-game-container {
+            width: 100%;
+            min-height: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        }
+        input[type=range] { direction: ltr; }
+        
+        .id-card {
+            background-color: #1e293b;
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .id-card-header {
+            background-color: #10b981;
+            color: #020617;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .math-badge {
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        /* تنسيقات شريط الترويسة والتذييل */
+        .navbar {
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        footer {
+            margin-top: auto;
+            background-color: #1e293b;
+            border-top: 1px solid #334155;
+        }
+        .btn-github {
+            background-color: #24292e;
+            color: #fff;
+            border: 1px solid #475569;
+            transition: all 0.3s ease;
+        }
+        .btn-github:hover {
+            background-color: #0f172a;
+            color: #34d399;
+            border-color: #34d399;
+        }
+    </style>
+</head>
+<body>
+
+<!-- الشريط العلوي (Navbar) -->
+<nav class="navbar navbar-dark navbar-expand-lg px-3 mb-3">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+            <i class="fa-solid fa-microchip text-success fs-4"></i>
+<span class="fw-bold text-white">  أساسيات الإلكترونيات | منظم الجهد التبادلي الخافض</span>
+        </a>
+        <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-2" onclick="shareApp()">
+            <i class="fa-solid fa-share-nodes"></i>
+            <span></span>
+        </button>
+    </div>
+</nav>
+
+<div class="container pb-4">
+    <!-- زر العودة للصفحة الرئيسية أسفل الشريط العلوي -->
+    <div class="mb-3">
+        <a href="index.html" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span>العودة إلى الصفحة الرئيسية</span>
+        </a>
+    </div>
+
+ 
+   
+    
+    <div class="row g-4">
+        <!-- القسم الأيسر -->
+        <div class="col-lg-8">
+      
+
+            <div class="id-card shadow">
+                <div class="id-card-header">
+                    📑 بطاقة تعريف: منظم الجهد الخافض (Buck Regulator)
+                </div>
+                <div class="p-3 text-light">
+                    <p class="mb-3">
+                        <strong>المبدأ الأساسي:</strong> بدلاً من تبديد الطاقة الزائدة كحرارة (مثل المنظمات الخطية)، يقوم منظم التبديل بفتح وغلق المفتاح بسرعة فائقة (PWM)، مما يسمح بنقل كميات محددة من الطاقة عبر المححث (Inductor).
+                    </p>
+                    <ul class="list-group list-group-flush mb-0 text-light" style="background: transparent;">
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-success">فترة التشغيل (Switch ON):</strong> يمر التيار من المصدر عبر المححث إلى الحمل، ويتم تخزين الطاقة في شكل مجال مغناطيسي.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-warning">فترة الإيقاف (Switch OFF):</strong> ينفتح المفتاح، وتستمر ديود الحرية (Freewheeling Diode) والمححث في تغذية الحمل بالطاقة المخزنة.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-0">
+                            <strong style="color: #34d399;">دورة العمل (Duty Cycle):</strong> التحكم في نسبة زمن الفتح والإغلاق يحدد بدقة قيمة جهد الخرج المستقر (V_out).
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن -->
+        <div class="col-lg-4">
+            <div class="control-panel h-100 d-flex flex-column">
+                  <div id="phaser-game-container" class="mb-4"></div>
+                <h5 class="text-white mb-3 border-bottom border-secondary pb-2">🎛️ لوحة التحكم بالطاقة</h5>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between" style="color: #34d399;">
+                        <span>جهد المصدر (Vin)</span>
+                        <span class="badge text-dark" style="background-color: #34d399;" id="vinValue">12 V</span>
+                    </label>
+                    <input type="range" id="vinSlider" min="5" max="24" value="12" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-warning">
+                        <span>نسبة التشغيل (Duty Cycle - D)</span>
+                        <span class="badge bg-warning text-dark" id="dutyValue">50 %</span>
+                    </label>
+                    <input type="range" id="dutySlider" min="10" max="90" value="50" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-info">
+                        <span>تردد التبديل (Frequency)</span>
+                        <span class="badge bg-info text-dark" id="freqValue">5</span>
+                    </label>
+                    <input type="range" id="freqSlider" min="1" max="10" value="5" step="1" class="form-range">
+                </div>
+
+                <!-- شاشة الحسابات والحالة -->
+                <div class="mt-auto">
+                    <div class="p-2 mb-3 rounded math-badge d-flex justify-content-between text-success">
+                        <span>جهد الخرج المحسوب (Vout):</span>
+                        <strong id="voutCalc">6.00 V</strong>
+                    </div>
+                    
+                    <label class="text-secondary small fw-bold mb-1">حالة المفتاح اللحظية:</label>
+                    <div id="regulatorStatus" class="badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base" style="min-height: 70px;">
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="py-3 mt-5">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-secondary small">
+        <div>
+            © 2026 جميع الحقوق محفوظة | تصميم وتطوير <a href="https://me.haythamzeidan.workers.dev/" class="text-success text-decoration-none fw-bold" target="_blank">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" class="btn btn-github btn-sm d-inline-flex align-items-center gap-2">
+                <i class="fa-brands fa-github"></i>
+                <span>تابعني على على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// دالة المشاركة والتفاعل مع المتصفح
+function shareApp() {
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            text: 'تحقق من محاكاة منظم الجهد الخافض (Buck Converter) التفاعلية!',
+            url: window.location.href
+        }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ رابط التطبيق إلى الحافظة!');
+    }
+}
+
+window.SimData = {
+    vin: 12,
+    duty: 50,
+    freq: 5
+};
+
+function updateUI() {
+    let vinInput = parseFloat(document.getElementById('vinSlider').value);
+    let dutyInput = parseFloat(document.getElementById('dutySlider').value);
+    let freqInput = parseFloat(document.getElementById('freqSlider').value);
+    
+    window.SimData.vin = isNaN(vinInput) ? 12 : vinInput;
+    window.SimData.duty = isNaN(dutyInput) ? 50 : dutyInput;
+    window.SimData.freq = isNaN(freqInput) ? 5 : freqInput;
+
+    document.getElementById('vinValue').innerText = window.SimData.vin + " V";
+    document.getElementById('dutyValue').innerText = window.SimData.duty + " %";
+    document.getElementById('freqValue').innerText = window.SimData.freq;
+
+    let dFraction = window.SimData.duty / 100;
+    let vOut = window.SimData.vin * dFraction;
+
+    document.getElementById('voutCalc').innerText = vOut.toFixed(2) + " V";
+}
+
+document.getElementById('vinSlider').addEventListener('input', updateUI);
+document.getElementById('dutySlider').addEventListener('input', updateUI);
+document.getElementById('freqSlider').addEventListener('input', updateUI);
+
+class RegulatorScene extends Phaser.Scene {
+    constructor() { super('RegulatorScene'); }
+
+    create() {
+        this.graphics = this.add.graphics();
+        this.tick = 0;
+        this.historyIn = new Array(300).fill(12);
+        this.historyOut = new Array(300).fill(6);
+
+        let fontStyle = { font: '14px Tahoma, sans-serif', fill: '#cbd5e1' };
+        this.add.text(260, 20, 'أوسيلوسكوب النظام (موجة الدخل والخرج)', fontStyle).setOrigin(0.5);
+        this.add.text(660, 20, 'مخطط الدائرة المبسط', fontStyle).setOrigin(0.5);
+        
+        this.add.text(120, 40, 'جهد المصدر الثابت (Vin)', { font: '12px Tahoma', fill: '#ef4444' }).setOrigin(0);
+        this.add.text(120, 60, 'جهد الخرج المستقر (Vout)', { font: '12px Tahoma', fill: '#34d399' }).setOrigin(0);
+        
+        this.add.text(75, 120, '24V', { font: '12px Tahoma', fill: '#64748b' });
+        this.add.text(75, 240, '12V', { font: '11px Tahoma', fill: '#64748b' });
+        this.add.text(75, 360, '0V', { font: '12px Tahoma', fill: '#64748b' });
+    }
+
+    update() {
+        if (isNaN(this.tick)) this.tick = 0;
+        this.tick += 1;
+
+        let vin = window.SimData.vin;
+        let duty = window.SimData.duty / 100;
+        let freq = window.SimData.freq;
+
+        let period = Math.floor(150 / freq);
+        if (period < 10) period = 10;
+        let timeInPeriod = this.tick % period;
+        let isOn = (timeInPeriod / period) < duty;
+
+        let targetVout = vin * duty;
+        let ripple = (Math.sin(this.tick * 0.5) * 0.3);
+        let vOut = targetVout + ripple;
+        if (vOut < 0) vOut = 0;
+
+        let statusEl = document.getElementById('regulatorStatus');
+        if (isOn) {
+            statusEl.className = "badge bg-success fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "المفتاح مغلق (ON) ⚡\nالمصدر يغذي الحمل ويشحن المححث";
+        } else {
+            statusEl.className = "badge bg-warning text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "المفتاح مفتوح (OFF) 🔋\nالمححث والديود يغذيان الحمل بالطاقة المخزنة";
+        }
+
+        this.historyIn.push(vin);
+        this.historyIn.shift();
+        this.historyOut.push(vOut);
+        this.historyOut.shift();
+
+        this.graphics.clear();
+
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillRect(130, 100, 300, 260);
+        
+        this.graphics.lineStyle(1, 0x1e293b, 1);
+        this.graphics.beginPath();
+        for(let i=10; i<300; i+=20) {
+            this.graphics.moveTo(130+i, 100); this.graphics.lineTo(130+i, 360);
+        }
+        for(let i=10; i<260; i+=20) {
+            this.graphics.moveTo(130, 100+i); this.graphics.lineTo(430, 100+i);
+        }
+        this.graphics.strokePath();
+
+        let scaleY = 260 / 24;
+        let baseY = 360; 
+        
+        this.graphics.lineStyle(2, 0xef4444, 0.8);
+        this.graphics.beginPath();
+        for(let i=0; i<300; i++) {
+            let y = baseY - (this.historyIn[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(130 + i, y);
+            else this.graphics.lineTo(130 + i, y);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.lineStyle(3, 0x34d399, 1);
+        this.graphics.beginPath();
+        for(let i=0; i<300; i++) {
+            let y = baseY - (this.historyOut[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(130 + i, y);
+            else this.graphics.lineTo(130 + i, y);
+        }
+        this.graphics.strokePath();
+
+        this.graphics.fillStyle(0x1e293b, 1);
+        this.graphics.fillRoundedRect(480, 100, 280, 260, 16);
+
+        let switchColor = isOn ? 0x34d399 : 0x64748b;
+        this.graphics.fillStyle(switchColor, 1);
+        this.graphics.fillRect(520, 140, 60, 30);
+        this.add.text(550, 155, 'MOSFET', { font: '11px Tahoma', fill: '#020617', fontStyle: 'bold' }).setOrigin(0.5);
+
+        this.graphics.fillStyle(0xf59e0b, 1);
+        this.graphics.fillRect(630, 140, 50, 30);
+        this.add.text(655, 155, 'Inductor', { font: '11px Tahoma', fill: '#020617', fontStyle: 'bold' }).setOrigin(0.5);
+
+        this.graphics.fillStyle(0x38bdf8, 1);
+        this.graphics.fillRect(630, 260, 50, 40);
+        this.add.text(655, 280, 'Load', { font: '11px Tahoma', fill: '#020617', fontStyle: 'bold' }).setOrigin(0.5);
+
+        this.graphics.lineStyle(2, 0x94a3b8, 1);
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(490, 155, 520, 155));
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(580, 155, 630, 155));
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(655, 170, 655, 260));
+
+        let stateText = isOn ? "المفتاح مغلق (يمر التيار)" : "المفتاح مفتوح (يفصل التيار)";
+        let stateColor = isOn ? '#34d399' : '#f59e0b';
+        this.add.text(620, 330, stateText, { font: '13px Tahoma', fill: stateColor, fontStyle: 'bold' }).setOrigin(0.5);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 420,
+    backgroundColor: '#020617',
+    scene: RegulatorScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+window.onload = () => {
+    updateUI(); 
+    new Phaser.Game(config);
+};
+</script>
+
+</body>
+</html>
