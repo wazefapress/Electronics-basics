@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO & Metadata -->
+    <title>محاكاة البطارية والمصباح التفاعلي (Battery & Lamp Simulation)</title>
+    <meta name="description" content="تطبيق محاكاة تفاعلي لفيزياء البطارية والمصباح الكهربائي، يحاكي هبوط الجهد، المقاومة الداخلية، وحالة الشحن SoC باستخدام مكتبة Phaser.js.">
+    <meta name="keywords" content="محاكاة فيزياء, بطارية, مصباح, هبوط الجهد, المقاومة الداخلية, Phaser.js, الدوائر الكهربائية">
+    <meta name="author" content="Your Name / Dev Team">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph (Facebook / LinkedIn) -->
+    <meta property="og:title" content="محاكاة البطارية والمصباح التفاعلي">
+    <meta property="og:description" content="محاكاة تفاعلية لحساب هبوط الجهد وتأثير المقاومة الداخلية على إضاءة المصباح.">
+    <meta property="og:type" content="website">
+
+    <!-- Font Awesome Icons & Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            flex: 1;
+        }
+        #phaser-game-container {
+            width: 100%;
+            min-height: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        }
+        input[type=range] { direction: ltr; }
+        
+        .id-card {
+            background-color: #1e293b;
+            border: 1px solid #eab308;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .id-card-header {
+            background-color: #eab308;
+            color: #020617;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .math-badge {
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .btn-github {
+            background-color: #24292e;
+            color: #fff;
+            border: 1px solid #444c56;
+            transition: all 0.3s ease;
+        }
+        .btn-github:hover {
+            background-color: #2f363d;
+            color: #58a6ff;
+            border-color: #58a6ff;
+        }
+        footer {
+            background-color: #020617;
+            border-top: 1px solid #1e293b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-content container py-4">
+    <!-- الشريط العلوي والتمرير -->
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
+        <h2 class="m-0 fs-3" style="color: #facc15;">
+🔋💡 أساسيات الإلكترونيات | البطارية Battery 
+        </h2>
+        
+        <!-- زر المشاركة العلوي -->
+        <button id="shareButton" class="btn btn-outline-warning btn-sm d-flex align-items-center gap-2">
+            <i class="fa-solid fa-share-nodes"></i>
+          
+        </button>
+    </div>
+
+    <!-- زر العودة إلى الصفحة الرئيسية -->
+    <div class="mb-4">
+        <a href="index.html" class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span>العودة إلى الصفحة الرئيسية</span>
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        <!-- القسم الأيسر -->
+        <div class="col-lg-8">
+         
+
+            <div class="id-card shadow">
+                <div class="id-card-header">
+                    📑 بطاقة تعريف: نظام البطارية والمصباح
+                </div>
+                <div class="p-3 text-light">
+                    <p class="mb-3">
+                        <strong>آلية العمل:</strong> يغذي جهد الأطراف (V) المصباح الخارجي عبر الأسلاك، وتتحدد شدة إضاءة المصباح بدقة حسب مقدار الجهد الواصل إليه.
+                    </p>
+                    <ul class="list-group list-group-flush mb-0 text-light" style="background: transparent;">
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-warning">هبوط الجهد (I \ r):</strong> ارتفاع المقاومة الداخلية أو تيار الحمل يسبب ضياع جزء من الجهد داخلياً، مما يضعف إضاءة المصباح.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-info">حالة الشحن (SoC):</strong> مع استمرار التفريغ يقل الجهد الاسمي للبطارية (V_oc)، ويخفت ضوء المصباح تدريجياً.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-0">
+                            <strong style="color: #facc15;">الوضع المزدوج:</strong> في وضع "الشحن"، ينطفئ المصباح ويتم تزويد البطارية بالطاقة لتعويض النقص.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن -->
+        <div class="col-lg-4">
+            <div class="control-panel h-100 d-flex flex-column">
+               <div id="phaser-game-container" class="mb-4"></div>
+                <h5 class="text-white mb-3 border-bottom border-secondary pb-2">🎛️ لوحة التحكم</h5>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between" style="color: #facc15;">
+                        <span>وضع التشغيل</span>
+                    </label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="opMode" id="modeDischarge" autocomplete="off" checked>
+                        <label class="btn btn-outline-warning" for="modeDischarge">تفريغ وإنارة (Discharge)</label>
+
+                        <input type="radio" class="btn-check" name="opMode" id="modeCharge" autocomplete="off">
+                        <label class="btn btn-outline-success" for="modeCharge">شحن (Charge)</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-info">
+                        <span>المقاومة الداخلية (r)</span>
+                        <span class="badge bg-info text-dark" id="rValue">0.5 Ω</span>
+                    </label>
+                    <input type="range" id="rSlider" min="0.1" max="2.0" value="0.5" step="0.1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-danger">
+                        <span>تيار الحمل (I)</span>
+                        <span class="badge bg-danger text-white" id="iValue">2.0 A</span>
+                    </label>
+                    <input type="range" id="iSlider" min="0.1" max="5.0" value="2.0" step="0.1" class="form-range">
+                </div>
+
+                <!-- شاشة الحسابات والحالة -->
+                <div class="mt-auto">
+                    <div class="p-2 mb-2 rounded math-badge d-flex justify-content-between text-warning">
+                        <span>جهد الأطراف (V):</span>
+                        <strong id="vTermCalc">11.00 V</strong>
+                    </div>
+                    <div class="p-2 mb-3 rounded math-badge d-flex justify-content-between text-success">
+                        <span>حالة الشحن (SoC):</span>
+                        <strong id="socCalc">85.0 %</strong>
+                    </div>
+                    
+                    <label class="text-secondary small fw-bold mb-1">حالة النظام اللحظية:</label>
+                    <div id="batteryStatus" class="badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base" style="min-height: 70px;">
+                        جاري التشغيل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="mt-auto py-3 text-center text-secondary small">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+        <div>
+            حقوق التصميم والتطوير محفوظة &copy; 2026 | تطوير بواسطة <a href="https://me.haythamzeidan.workers.dev/" class="text-warning text-decoration-none fw-bold">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="btn btn-github btn-sm d-inline-flex align-items-center gap-2 rounded-pill px-3">
+                <i class="fa-brands fa-github fs-6"></i>
+                <span>تابعني على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// تفعيل خاصية المشاركة
+document.getElementById('shareButton').addEventListener('click', async () => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: document.title,
+                text: 'تفقد محاكاة البطارية والمصباح التفاعلية الممتازة!',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('تم إلغاء المشاركة');
+        }
+    } else {
+        // بديل عند عدم دعم Navigations Share API
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ رابط المحاكاة إلى الحافظة بنجاح!');
+    }
+});
+
+window.SimData = {
+    mode: 'discharge',
+    internalR: 0.5,
+    current: 2.0,
+    soc: 85.0,
+    nominalVoc: 12.0
+};
+
+function updateUI() {
+    let rInput = parseFloat(document.getElementById('rSlider').value);
+    let iInput = parseFloat(document.getElementById('iSlider').value);
+    let isCharging = document.getElementById('modeCharge').checked;
+    
+    window.SimData.internalR = isNaN(rInput) ? 0.5 : rInput;
+    window.SimData.current = isNaN(iInput) ? 2.0 : iInput;
+    window.SimData.mode = isCharging ? 'charge' : 'discharge';
+
+    document.getElementById('rValue').innerText = window.SimData.internalR.toFixed(1) + " Ω";
+    document.getElementById('iValue').innerText = window.SimData.current.toFixed(1) + " A";
+
+    let voc = (window.SimData.soc / 100) * window.SimData.nominalVoc;
+    if (voc < 3.0) voc = 3.0;
+
+    let vTerm = window.SimData.mode === 'discharge' 
+        ? voc - (window.SimData.current * window.SimData.internalR)
+        : voc + (window.SimData.current * window.SimData.internalR);
+
+    if (vTerm < 0) vTerm = 0;
+
+    document.getElementById('vTermCalc').innerText = vTerm.toFixed(2) + " V";
+    document.getElementById('socCalc').innerText = window.SimData.soc.toFixed(1) + " %";
+}
+
+document.getElementById('rSlider').addEventListener('input', updateUI);
+document.getElementById('iSlider').addEventListener('input', updateUI);
+document.getElementById('modeCharge').addEventListener('change', updateUI);
+document.getElementById('modeDischarge').addEventListener('change', updateUI);
+
+class BatteryLampScene extends Phaser.Scene {
+    constructor() { super('BatteryLampScene'); }
+
+    create() {
+        this.graphics = this.add.graphics();
+        this.historyVoltage = new Array(300).fill(11.0);
+
+        let fontStyle = { font: '14px Tahoma, sans-serif', fill: '#cbd5e1' };
+        this.add.text(260, 20, 'أوسيلوسكوب جهد الأطراف (V_term)', fontStyle).setOrigin(0.5);
+        this.add.text(660, 20, 'دائرة البطارية والمصباح المتصل', fontStyle).setOrigin(0.5);
+        
+        this.add.text(120, 40, 'الجهد (Volt)', { font: '12px Tahoma', fill: '#eab308' }).setOrigin(0);
+        
+        this.add.text(75, 120, '15V', { font: '12px Tahoma', fill: '#64748b' });
+        this.add.text(75, 240, '7.5V', { font: '11px Tahoma', fill: '#64748b' });
+        this.add.text(75, 360, '0V', { font: '12px Tahoma', fill: '#64748b' });
+    }
+
+    update(time, delta) {
+        if (!delta || isNaN(delta)) delta = 16.6;
+
+        let r = window.SimData.internalR;
+        let i = window.SimData.current;
+        let mode = window.SimData.mode;
+
+        let socSpeed = 0.05 * (delta / 16.6);
+        if (mode === 'discharge') {
+            window.SimData.soc -= (i * 0.02) * socSpeed;
+            if (window.SimData.soc < 5) window.SimData.soc = 5;
+        } else {
+            window.SimData.soc += (i * 0.02) * socSpeed;
+            if (window.SimData.soc > 100) window.SimData.soc = 100;
+        }
+
+        let voc = (window.SimData.soc / 100) * 12.0;
+        let vTerm = mode === 'discharge' ? voc - (i * r) : voc + (i * r);
+        if (vTerm < 0) vTerm = 0;
+
+        let statusEl = document.getElementById('batteryStatus');
+        if (mode === 'discharge') {
+            statusEl.className = "badge bg-warning text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "جاري التفريغ وإنارة المصباح ⚡\nالبطارية تمد المصباح بالطاقة الكهربائية";
+        } else {
+            statusEl.className = "badge bg-success fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "جاري شحن البطارية 🔌\nالمصباح مطفأ ويتم تعويض الطاقة المخزنة";
+        }
+
+        updateUI();
+
+        this.historyVoltage.push(vTerm);
+        this.historyVoltage.shift();
+
+        this.graphics.clear();
+
+        // 1. الأوسيلوسكوب
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillRect(130, 100, 300, 260);
+        
+        this.graphics.lineStyle(1, 0x1e293b, 1);
+        this.graphics.beginPath();
+        for(let x=10; x<300; x+=20) {
+            this.graphics.moveTo(130+x, 100); this.graphics.lineTo(130+x, 360);
+        }
+        for(let y=10; y<260; y+=20) {
+            this.graphics.moveTo(130, 100+y); this.graphics.lineTo(430, 100+y);
+        }
+        this.graphics.strokePath();
+
+        let scaleY = 260 / 15;
+        let baseY = 360; 
+        
+        this.graphics.lineStyle(3, 0xeab308, 1);
+        this.graphics.beginPath();
+        for(let idx=0; idx<300; idx++) {
+            let val = this.historyVoltage[idx];
+            let y = baseY - (val * scaleY);
+            if (idx === 0) this.graphics.moveTo(130 + idx, y);
+            else this.graphics.lineTo(130 + idx, y);
+        }
+        this.graphics.strokePath();
+
+        // 2. رسم نظام البطارية والمصباح المتصل
+        this.graphics.fillStyle(0x1e293b, 1);
+        this.graphics.fillRoundedRect(480, 100, 280, 260, 16);
+
+        // صندوق البطارية
+        this.graphics.lineStyle(2, 0x475569, 1);
+        this.graphics.strokeRect(505, 140, 75, 130);
+
+        let fillHeight = 120 * (window.SimData.soc / 100);
+        let fillColor = window.SimData.soc > 25 ? 0x22c55e : 0xef4444;
+        this.graphics.fillStyle(fillColor, 0.4);
+        this.graphics.fillRect(510, 265 - fillHeight, 65, fillHeight);
+
+        this.graphics.fillStyle(0x94a3b8, 1);
+        this.graphics.fillRect(530, 125, 25, 15);
+        this.add.text(542, 115, 'البطارية', { font: '11px Tahoma', fill: '#cbd5e1' }).setOrigin(0.5);
+
+        // أسلاك التوصيل
+        this.graphics.lineStyle(2, 0x38bdf8, 1);
+        this.graphics.beginPath();
+        this.graphics.moveTo(542, 125);
+        this.graphics.lineTo(542, 105);
+        this.graphics.lineTo(690, 105);
+        this.graphics.lineTo(690, 170);
+        this.graphics.strokePath();
+
+        this.graphics.beginPath();
+        this.graphics.moveTo(542, 270);
+        this.graphics.lineTo(542, 290);
+        this.graphics.lineTo(690, 290);
+        this.graphics.lineTo(690, 250);
+        this.graphics.strokePath();
+
+        // حساب سطوع المصباح
+        let brightnessRatio = mode === 'discharge' ? (vTerm / 12.0) : 0.0;
+        if (brightnessRatio > 1) brightnessRatio = 1;
+        if (brightnessRatio < 0.05) brightnessRatio = 0.05;
+
+        // رسم المصباح وهالته الضوئية
+        let lampX = 690, lampY = 210;
+        let glowRadius = 20 + (brightnessRatio * 35);
+
+        this.graphics.fillStyle(0xfde047, brightnessRatio * 0.4);
+        this.graphics.fillCircle(lampX, lampY, glowRadius);
+
+        this.graphics.fillStyle(0xfacc15, brightnessRatio * 0.8 + 0.2);
+        this.graphics.fillCircle(lampX, lampY, 20);
+
+        this.graphics.fillStyle(0x64748b, 1);
+        this.graphics.fillRect(lampX - 8, lampY + 15, 16, 25);
+
+        let lightPercent = (brightnessRatio * 100).toFixed(0);
+        if (mode === 'charge') lightPercent = "0 (شحن)";
+        
+        this.add.text(690, 325, `شدة إضاءة المصباح: ${lightPercent}%`, { font: '12px Tahoma', fill: '#cbd5e1', fontStyle: 'bold' }).setOrigin(0.5);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 420,
+    backgroundColor: '#020617',
+    scene: BatteryLampScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+window.onload = () => {
+    updateUI(); 
+    new Phaser.Game(config);
+};
+</script>
+
+</body>
+</html>
