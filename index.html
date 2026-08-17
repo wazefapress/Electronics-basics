@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- كود SEO الأساسي -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تطبيق أساسيات الإلكترونيات: دليلك الشامل لتعلم مفاهيم الإلكترونيات، الذرة، البطاريات، الترانزستورات، والمزيد.">
+    <meta name="keywords" content="إلكترونيات, الذرة, قانون أوم, الترانزستور, البوابات المنطقية, مكبر العمليات, هندسة إلكترونية">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="أساسيات الإلكترونيات">
+    <meta property="og:description" content="تطبيق تعليمي شامل لأساسيات ومكونات الدوائر الإلكترونية.">
+    
+    <title>أساسيات الإلكترونيات</title>
+
+    <!-- Bootstrap 5 RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .chapter-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            color: #0d6efd;
+        }
+        .icon-large {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">
+</head>
+<body>
+
+    <!-- الشريط العلوي (Navbar) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">أساسيات الإلكترونيات</a>
+          <div class="d-flex gap-2">
+    <button id="shareBtn" class="btn btn-light btn-sm fw-bold" type="button">
+        <i class="fas fa-share-alt"></i> مشاركة
+    </button>
+    <button id="installBtn" class="btn btn-warning btn-sm fw-bold" type="button" style="display: none;">
+        <i class="fas fa-download"></i> تثبيت التطبيق
+    </button>
+</div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="container my-4 flex-grow-1">
+        
+        <!-- بطاقة تعريف الإلكترونات -->
+        <div class="card shadow-sm mb-4 border-0 border-start border-primary border-4">
+            <div class="card-body">
+                <h5 class="card-title text-primary fw-bold">
+                    <i class="fas fa-info-circle"></i> ما هي الإلكترونات؟
+                </h5>
+                <p class="card-text mb-0 text-muted">
+                    الإلكترونات هي جسيمات دون ذرية تحمل شحنة كهربائية سالبة أساسية. تُعتبر المكون الأساسي للتيار الكهربائي، حيث تدور حول نواة الذرة في مدارات محددة، وحركتها أو انتقالها من ذرة لأخرى هو ما يولد الطاقة الكهربائية ويشغل كافة الدوائر والمكونات الإلكترونية.
+                </p>
+            </div>
+        </div>
+
+        <!-- شبكة الفصول الدراسية (Grid) -->
+        <!-- استخدام col-6 لعرض عنصرين في الشاشات الصغيرة، و col-md-3 و col-lg-2 للشاشات الأكبر -->
+        <div class="row g-3">
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="atom.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-atom icon-large"></i>
+                    <h6 class="fw-bold mb-0">الذرة</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="battery.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-car-battery icon-large"></i>
+                    <h6 class="fw-bold mb-0">البطارية</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="power.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-bolt icon-large"></i>
+                    <h6 class="fw-bold mb-0">القدرة الكهربائية</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="ohm-law.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-calculator icon-large"></i>
+                    <h6 class="fw-bold mb-0">قانون أوم</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="resistor.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-wave-square icon-large"></i>
+                    <h6 class="fw-bold mb-0">المقاومة</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="capacitor.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-grip-lines-vertical icon-large"></i>
+                    <h6 class="fw-bold mb-0">المكثف</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="diod.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-caret-right icon-large"></i>
+                    <h6 class="fw-bold mb-0">المقوم</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="zener.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-bolt-lightning icon-large"></i>
+                    <h6 class="fw-bold mb-0">مقوم زنر</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="diod-half.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-water icon-large"></i>
+                    <h6 class="fw-bold mb-0">مقوم نصف موجه</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="diod-full.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-water icon-large" style="transform: scaleX(-1);"></i>
+                    <h6 class="fw-bold mb-0">مقوم موجة كاملة</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="transistor-amp.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-volume-up icon-large"></i>
+                    <h6 class="fw-bold mb-0">الترانزستور كمكبر</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="transistor-key.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-toggle-on icon-large"></i>
+                    <h6 class="fw-bold mb-0">الترانزستور كمفتاح</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="requlator.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-sliders-h icon-large"></i>
+                    <h6 class="fw-bold mb-0">منظم الجهد</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="requlator-s.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-sort-amount-down icon-large"></i>
+                    <h6 class="fw-bold mb-0">منظم جهد خافض</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="timer.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-stopwatch icon-large"></i>
+                    <h6 class="fw-bold mb-0">المؤقت 555</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="op-amp741.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-microchip icon-large"></i>
+                    <h6 class="fw-bold mb-0">مكبر العمليات 741</h6>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="logic-gates.html" class="card chapter-card h-100 text-center p-3 border-0 shadow-sm">
+                    <i class="fas fa-project-diagram icon-large"></i>
+                    <h6 class="fw-bold mb-0">البوابات المنطقية</h6>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- الشريط السفلي (Footer) -->
+    <footer class="bg-dark text-white py-3 mt-auto">
+        <div class="container text-center">
+            <p class="mb-1">
+                تصميم وتطوير: <a href="https://me.haythamzeidan.workers.dev/" target="_blank" class="text-warning text-decoration-none fw-bold">هيثم زيدان</a> &copy; 2026
+            </p>
+            <div>
+                <a href="https://github.com/wazefapress" target="_blank" class="text-light text-decoration-none">
+                    <i class="fab fa-github fs-4"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // 1. تفعيل زر المشاركة
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'أساسيات الإلكترونيات',
+                    text: 'تطبيق رائع لتعلم أساسيات ومكونات الدوائر الإلكترونية!',
+                    url: window.location.href
+                });
+            } catch (error) {
+                console.log('حدث خطأ أثناء المشاركة:', error);
+            }
+        } else {
+            alert('عذراً، ميزة المشاركة غير مدعومة في متصفحك. يمكنك نسخ الرابط للمشاركة.');
+        }
+    });
+
+    // 2. تفعيل زر التثبيت (PWA)
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    // هذا الحدث يعمل تلقائياً إذا كان المتصفح يرى أن الموقع جاهز للتثبيت كتطبيق
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // إظهار زر التثبيت
+        installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('تم قبول تثبيت التطبيق');
+            }
+            deferredPrompt = null;
+            installBtn.style.display = 'none'; // إخفاء الزر بعد التثبيت
+        }
+    });
+
+    // 3. تسجيل الـ Service Worker لكي يعمل التثبيت
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('ServiceWorker registration successful');
+            }).catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }
+</script>
+</body>
+</html>
