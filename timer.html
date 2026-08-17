@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>محاكاة المؤقت 555 (Astable Mode) - تفاعلي</title>
+    <meta name="description" content="أداة محاكاة تفاعلية أونلاين لدائرة المؤقت 555 في وضع توليد النبضات (Astable Mode) لحساب التردد ودورة العمل وتجربة الإشارات عبر الأوسيلوسكوب.">
+    <meta name="keywords" content="المؤقت 555, Timer 555, Astable Mode, إلكترونيات, محاكاة دائرة 555, أوسيلوسكوب, حساب التردد">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="محاكاة المؤقت 555 - أداة تفاعلية">
+    <meta property="og:description" content="قم بتجربة حسابات وتأثير المقاومات والمكثف على تردد ودورة عمل المؤقت 555 تفاعلياً.">
+
+
+    <!-- Twitter SEO -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="محاكاة المؤقت 555 (Astable Mode)">
+    <meta name="twitter:description" content="أداة محاكاة تفاعلية لدائرة المؤقت 555 برسم أوسيلوسكوب مباشر.">
+
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #phaser-game-container {
+            width: 100%;
+            min-height: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        }
+        input[type=range] { direction: ltr; }
+        
+        .id-card {
+            background-color: #1e293b;
+            border: 1px solid #06b6d4;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .id-card-header {
+            background-color: #06b6d4;
+            color: #020617;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .math-badge {
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .btn-nav-home {
+            transition: all 0.2s ease-in-out;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .btn-nav-home:hover {
+            color: #22d3ee;
+        }
+        footer {
+            background-color: #020617;
+            border-top: 1px solid #334155;
+            margin-top: auto;
+        }
+        .github-link {
+            color: #22d3ee;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+        .github-link:hover {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <!-- الشريط العلوي مع زر المشاركة -->
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary pb-2">
+        <h2 class="m-0" style="color: #22d3ee;">
+⏱️ أساسيات الإلكترونيات | المؤقت 555
+        </h2>
+        <button id="shareButton" class="btn btn-outline-info btn-sm rounded-pill px-3">
+      <i class="bi bi-share-fill me-1"> </i> 
+        </button>
+    </div>
+
+    <!-- زر الرجوع إلى الصفحة الرئيسية -->
+    <div class="mb-4">
+        <a href="index.html" class="btn-nav-home d-inline-flex align-items-center gap-2 fw-semibold">
+            <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+            <span>العودة إلى الصفحة الرئيسية</span>
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        <!-- القسم الأيسر -->
+        <div class="col-lg-8">
+         
+
+            <div class="id-card shadow">
+                <div class="id-card-header">
+                    📑 بطاقة تعريف: المؤقت 555 (Astable Mode)
+                </div>
+                <div class="p-3 text-light">
+                    <p class="mb-3">
+                        <strong>المبدأ الأساسي:</strong> يعتمد المؤقت 555 على شحن وتفريغ مكثف (C) بين ثلث وثلثي جهد المصدر (Vcc) لتوليد نبضات مربعة مستمرة.
+                    </p>
+                    <ul class="list-group list-group-flush mb-0 text-light" style="background: transparent;">
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-warning">زمن الشحن (النبضة العالية - High):</strong> يتم شحن المكثف عبر المقاومتين <span class="text-info">(R1 + R2)</span>. الخرج يكون (ON).
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-secondary">زمن التفريغ (النبضة المنخفضة - Low):</strong> يتم تفريغ المكثف عبر المقاومة <span class="text-info">(R2)</span> فقط. الخرج يكون (OFF).
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-0">
+                            <strong style="color: #22d3ee;">تحديث مباشر:</strong> الآن أي تغيير في قيم المقاومات أو سعة المكثف سيؤثر فوراً على سرعة الوميض والتردد والرسومات البيانية.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن -->
+        <div class="col-lg-4">
+            <div class="control-panel h-100 d-flex flex-column">
+               <div id="phaser-game-container" class="mb-4"></div>
+                <h5 class="text-white mb-3 border-bottom border-secondary pb-2">🎛️ لوحة التحكم بالعناصر</h5>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between" style="color: #22d3ee;">
+                        <span>المقاومة الأولى (R1)</span>
+                        <span class="badge text-dark" style="background-color: #22d3ee;" id="r1Value">10 kΩ</span>
+                    </label>
+                    <input type="range" id="r1Slider" min="1" max="100" value="10" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between" style="color: #22d3ee;">
+                        <span>المقاومة الثانية (R2)</span>
+                        <span class="badge text-dark" style="background-color: #22d3ee;" id="r2Value">10 kΩ</span>
+                    </label>
+                    <input type="range" id="r2Slider" min="1" max="100" value="10" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-warning">
+                        <span>سعة المكثف (C)</span>
+                        <span class="badge bg-warning text-dark" id="cValue">10 µF</span>
+                    </label>
+                    <input type="range" id="cSlider" min="1" max="100" value="10" step="1" class="form-range">
+                </div>
+
+                <!-- شاشة الحسابات والحالة -->
+                <div class="mt-auto">
+                    <div class="p-2 mb-2 rounded math-badge d-flex justify-content-between text-success">
+                        <span>التردد الفعلي (Frequency):</span>
+                        <strong id="freqCalc">0.00 Hz</strong>
+                    </div>
+                    <div class="p-2 mb-3 rounded math-badge d-flex justify-content-between text-info">
+                        <span>دورة العمل (Duty Cycle):</span>
+                        <strong id="dutyCalc">0.0 %</strong>
+                    </div>
+                    
+                    <label class="text-secondary small fw-bold mb-1">حالة الدائرة اللحظية:</label>
+                    <div id="timerStatus" class="badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base" style="min-height: 70px;">
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="py-3 text-center text-secondary">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div>
+                      جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم: <a href="https://me.haythamzeidan.workers.dev/" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none fw-bold">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="github-link d-inline-flex align-items-center gap-1 fw-bold">
+                <i class="bi bi-github fs-5"></i>
+                <span>تابعني على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// إعداد كود زر المشاركة
+document.getElementById('shareButton').addEventListener('click', async () => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'محاكاة المؤقت 555',
+                text: 'جرب تطبيق محاكاة المؤقت 555 التفاعلي لحساب التردد ودورة العمل!',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('فشلت عملية المشاركة:', err);
+        }
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ رابط الصفحة إلى الحافظة بنجاح!');
+    }
+});
+
+window.SimData = {
+    r1: 10,  // kOhm
+    r2: 10,  // kOhm
+    c: 10    // uF
+};
+
+function updateUI() {
+    let r1Input = parseFloat(document.getElementById('r1Slider').value);
+    let r2Input = parseFloat(document.getElementById('r2Slider').value);
+    let cInput = parseFloat(document.getElementById('cSlider').value);
+    
+    window.SimData.r1 = isNaN(r1Input) ? 10 : r1Input;
+    window.SimData.r2 = isNaN(r2Input) ? 10 : r2Input;
+    window.SimData.c = isNaN(cInput) ? 10 : cInput;
+
+    document.getElementById('r1Value').innerText = window.SimData.r1 + " kΩ";
+    document.getElementById('r2Value').innerText = window.SimData.r2 + " kΩ";
+    document.getElementById('cValue').innerText = window.SimData.c + " µF";
+
+    // الحسابات الفيزيائية الدقيقة
+    let r1 = window.SimData.r1 * 1000; // أوم
+    let r2 = window.SimData.r2 * 1000; // أوم
+    let c = window.SimData.c * 0.000001; // فاراد
+
+    let tHigh = 0.693 * (r1 + r2) * c;
+    let tLow = 0.693 * r2 * c;
+    let period = tHigh + tLow;
+    let freq = 1 / period;
+    let dutyCycle = (tHigh / period) * 100;
+
+    document.getElementById('freqCalc').innerText = freq.toFixed(2) + " Hz";
+    document.getElementById('dutyCalc').innerText = dutyCycle.toFixed(1) + " %";
+}
+
+document.getElementById('r1Slider').addEventListener('input', updateUI);
+document.getElementById('r2Slider').addEventListener('input', updateUI);
+document.getElementById('cSlider').addEventListener('input', updateUI);
+
+class TimerScene extends Phaser.Scene {
+    constructor() { super('TimerScene'); }
+
+    create() {
+        this.graphics = this.add.graphics();
+        this.historyCap = new Array(300).fill(3.0);
+        this.historyOut = new Array(300).fill(9.0);
+        
+        this.Vc = 3.0;
+        this.isCharging = true;
+        this.Vcc = 9.0;
+
+        let fontStyle = { font: '14px Tahoma, sans-serif', fill: '#cbd5e1' };
+        this.add.text(260, 20, 'الأوسيلوسكوب', fontStyle).setOrigin(0.5);
+        this.add.text(660, 20, 'الخرج (Pin 3)', fontStyle).setOrigin(0.5);
+        
+        this.add.text(120, 40, 'جهد المكثف (شحن/تفريغ)', { font: '12px Tahoma', fill: '#f59e0b' }).setOrigin(0);
+        this.add.text(120, 60, 'جهد الخرج المربع (Square Wave)', { font: '12px Tahoma', fill: '#22c55e' }).setOrigin(0);
+        
+        this.add.text(75, 120, '9V', { font: '12px Tahoma', fill: '#64748b' });
+        this.add.text(75, 200, '6V (2/3)', { font: '11px Tahoma', fill: '#cbd5e1' });
+        this.add.text(75, 280, '3V (1/3)', { font: '11px Tahoma', fill: '#cbd5e1' });
+        this.add.text(75, 360, '0V', { font: '12px Tahoma', fill: '#64748b' });
+    }
+
+    update(time, delta) {
+        if (!delta || isNaN(delta)) delta = 16.6;
+
+        let r1 = window.SimData.r1; // kOhm
+        let r2 = window.SimData.r2; // kOhm
+        let c = window.SimData.c;   // uF
+
+        // الثابت الزمني الحقيقي بالمللي ثانية (kOhm * uF = ms)
+        let tau_charge = (r1 + r2) * c;
+        let tau_discharge = r2 * c;
+
+        if (tau_charge < 1) tau_charge = 1;
+        if (tau_discharge < 1) tau_discharge = 1;
+
+        // ضبط معامل مقياس الحركة المرئي ليتناسب مع النطاق الزمني
+        let speedMultiplier = 1.2;
+
+        if (this.isCharging) {
+            let target = this.Vcc;
+            let diff = target - this.Vc;
+            let step = (diff / tau_charge) * delta * speedMultiplier;
+            this.Vc += step;
+            
+            if (this.Vc >= (2/3) * this.Vcc) {
+                this.Vc = (2/3) * this.Vcc;
+                this.isCharging = false;
+            }
+        } else {
+            let target = 0;
+            let diff = this.Vc - target;
+            let step = (diff / tau_discharge) * delta * speedMultiplier;
+            this.Vc -= step;
+            
+            if (this.Vc <= (1/3) * this.Vcc) {
+                this.Vc = (1/3) * this.Vcc;
+                this.isCharging = true;
+            }
+        }
+
+        let Vout = this.isCharging ? this.Vcc : 0;
+
+        // تحديث النصوص والحالة
+        let statusEl = document.getElementById('timerStatus');
+        if (this.isCharging) {
+            statusEl.className = "badge bg-warning text-dark fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "المكثف يشحن ⚡\nالخرج (ON) - يمر عبر R1 و R2";
+        } else {
+            statusEl.className = "badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "المكثف يفرغ 📉\nالخرج (OFF) - يمر عبر R2 فقط";
+        }
+
+        // المصفوفات
+        this.historyCap.push(this.Vc);
+        this.historyCap.shift();
+        this.historyOut.push(Vout);
+        this.historyOut.shift();
+
+        this.graphics.clear();
+
+        // 1. الأوسيلوسكوب
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillRect(130, 100, 300, 260);
+        
+        // الشبكة
+        this.graphics.lineStyle(1, 0x1e293b, 1);
+        this.graphics.beginPath();
+        for(let i=10; i<300; i+=20) {
+            this.graphics.moveTo(130+i, 100); this.graphics.lineTo(130+i, 360);
+        }
+        for(let i=10; i<260; i+=20) {
+            this.graphics.moveTo(130, 100+i); this.graphics.lineTo(430, 100+i);
+        }
+        this.graphics.strokePath();
+
+        // خطوط العتبة (Threshold 2/3) و (Trigger 1/3)
+        this.graphics.lineStyle(1, 0x475569, 0.8);
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(130, 200, 430, 200)); // 6V
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(130, 280, 430, 280)); // 3V
+
+        let scaleY = 260 / 9; 
+        let baseY = 360; 
+        
+        // رسم موجة المكثف (برتقالي)
+        this.graphics.lineStyle(2, 0xf59e0b, 1);
+        this.graphics.beginPath();
+        for(let i=0; i<300; i++) {
+            let y = baseY - (this.historyCap[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(130 + i, y);
+            else this.graphics.lineTo(130 + i, y);
+        }
+        this.graphics.strokePath();
+
+        // رسم موجة الخرج (أخضر)
+        this.graphics.lineStyle(2, 0x22c55e, 0.8);
+        this.graphics.beginPath();
+        for(let i=0; i<300; i++) {
+            let y = baseY - (this.historyOut[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(130 + i, y);
+            else this.graphics.lineTo(130 + i, y);
+        }
+        this.graphics.strokePath();
+
+        // 2. رسم LED وميضي تفاعلي
+        this.graphics.fillStyle(0x1e293b, 1);
+        this.graphics.fillRoundedRect(480, 100, 280, 260, 16);
+        
+        let isON = this.isCharging;
+
+        if (isON) {
+            this.graphics.fillStyle(0x22c55e, 0.2);
+            this.graphics.fillCircle(620, 210, 70);
+            this.graphics.fillStyle(0x22c55e, 0.4);
+            this.graphics.fillCircle(620, 210, 50);
+            this.graphics.fillStyle(0x4ade80, 1);
+            this.graphics.fillCircle(620, 210, 30);
+        } else {
+            this.graphics.fillStyle(0x064e3b, 1);
+            this.graphics.fillCircle(620, 210, 30);
+        }
+
+        this.graphics.fillStyle(0x94a3b8, 1);
+        this.graphics.fillRect(605, 235, 30, 15);
+        this.graphics.lineStyle(2, 0x64748b, 1);
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(610, 250, 610, 300));
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(630, 250, 630, 300));
+
+        let textState = isON ? "الخرج HIGH (الـ LED يضيء)" : "الخرج LOW (الـ LED ينطفئ)";
+        let colorState = isON ? '#4ade80' : '#64748b';
+        this.add.text(620, 320, textState, { font: '16px Tahoma', fill: colorState, fontStyle: 'bold' }).setOrigin(0.5);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 420,
+    backgroundColor: '#020617',
+    scene: TimerScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+window.onload = () => {
+    updateUI(); 
+    new Phaser.Game(config);
+};
+</script>
+
+</body>
+</html>
