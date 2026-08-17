@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ================= SEO Tags ================= -->
+    <title>أساسيات الإلكترونيات | محاكاة مستويات سطوع المصباح وحساب القدرة</title>
+    <meta name="description" content="تطبيق ويب تفاعلي لمراقبة درجات ومستويات سطوع المصباح حسب قانون القدرة الكهربائية (الواط) مع تشبيه التوربين المائي.">
+    <meta name="keywords" content="سطوع المصباح, قانون القدرة, الواط, أساسيات الإلكترونيات, فيزياء, محاكاة تفاعلية, Phaser 3, Bootstrap 5">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+    <!-- ============================================== -->
+
+    <!-- استدعاء Bootstrap 5 و Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- استدعاء Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .custom-navbar, .custom-footer {
+            background-color: #1e293b;
+            border-color: #334155 !important;
+        }
+
+        .info-card {
+            background-color: #1e293b;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+        }
+
+        #phaser-game-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155;
+            height: 100%;
+        }
+        
+        .formula-card { 
+            background-color: #020617; 
+            border: 1px solid #f59e0b; 
+            border-radius: 8px;
+        }
+        
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        
+        /* أشرطة التمرير */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #475569;
+            border-radius: 3px;
+        }
+        #currentSlider::-webkit-slider-thumb { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        
+        .main-content { flex: 1; }
+    </style>
+</head>
+<body>
+
+<!-- الشريط العلوي -->
+<nav class="navbar custom-navbar border-bottom py-3 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1 text-warning fw-bold d-flex align-items-center gap-2">
+            <i class="bi bi-brightness-high-fill fs-4"></i>
+            أساسيات الإلكترونيات | قانون القدرة
+        </span>
+
+        <!-- زر المشاركة -->
+        <button id="shareButton" class="btn btn-outline-warning btn-sm d-flex align-items-center gap-2 shadow-sm" onclick="shareApp()">
+            <i class="bi bi-share-fill"></i>
+            <span>مشاركة</span>
+        </button>
+    </div>
+</nav>
+
+<!-- المحتوى الرئيسي -->
+<div class="main-content container py-4">
+
+    <!-- زر العودة إلى الصفحة الرئيسية -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="index.html" class="btn btn-outline-warning d-inline-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-arrow-right"></i>
+                <span>العودة إلى الصفحة الرئيسية</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1 class="display-6 fw-bold text-white">محاكاة درجات سطوع المصباح (قانون القدرة)</h1>
+            <p class="lead text-slate-300 fs-6">اضبط الجهد والتيار لمشاهدة التحول المباشر في حالات السطوع والتوهج البصري للمصباح.</p>
+        </div>
+    </div>
+
+    <!-- بطاقة التعريف -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="info-card p-4 shadow-sm">
+                <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start gap-3">
+                    <div class="text-warning display-4">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-warning fw-bold mb-2">تطابق حالات السطوع مع القدرة الناتجة (P)</h4>
+                        <p class="mb-1" style="color: #cbd5e1; line-height: 1.8;">
+                            يتغير شكل وهالة المصباح بناءً على حالة القدرة المحسوبة P=V×I
+                        </p>
+                        <ul class="mb-0 small text-slate-300" style="line-height: 1.8;">
+                            <li><strong class="text-warning">سطوع خافت (أقل من 30 واط):</strong> إضاءة خفيفة وهالة ضئيلة.</li>
+                            <li><strong class="text-success">سطوع متوسط (30 - 99 واط):</strong> توهج أصفر متوازن ومستقر.</li>
+                            <li><strong class="text-info">سطوع عالي (100 - 179 واط):</strong> لُب أبيض متوهج وهالة ذهبية واسعة.</li>
+                            <li><strong class="text-danger">سطوع فائق (180 واط فأكثر):</strong> توهج أقصى مع هالة تحذيرية حمراء.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- منطقة المحاكاة (Phaser) -->
+        <div class="col-lg-8">
+            <div id="phaser-game-container"></div>
+        </div>
+
+        <!-- لوحة التحكم -->
+        <div class="col-lg-4">
+            <div class="control-panel d-flex flex-column">
+                
+                <!-- القاعدة العلمية -->
+                <div class="formula-card p-3 mb-4 text-center shadow-sm">
+                    <h5 class="text-warning mb-1">المعادلة الرياضية</h5>
+                    <div class="fs-4 fw-bold text-white mb-2" dir="ltr">
+                        <span class="text-warning">P</span> = 
+                        <span class="text-primary">V</span> × 
+                        <span class="text-success">I</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary fw-bold d-flex justify-content-between">
+                        <span>🔋 الجهد الكهربائي (V)</span>
+                        <span id="voltValue" class="badge bg-primary fs-6">12</span>
+                    </h6>
+                    <p class="small text-muted mb-1">ضغط البطارية</p>
+                    <input type="range" id="voltageSlider" min="1" max="24" value="12" step="1" class="form-range w-100">
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-success fw-bold d-flex justify-content-between">
+                        <span>⚡ التيار الكهربائي (I)</span>
+                        <span id="currentValue" class="badge bg-success fs-6">3</span>
+                    </h6>
+                    <p class="small text-muted mb-1">غزارة الشحنات</p>
+                    <input type="range" id="currentSlider" min="1" max="10" value="3" step="1" class="form-range w-100">
+                </div>
+
+                <hr class="border-secondary mb-4">
+
+                <!-- نتيجة القدرة والحالة المطابقة -->
+                <div class="card bg-dark border-warning text-center">
+                    <div class="card-body py-3">
+                        <h6 class="text-warning fw-bold mb-1">💡 القدرة الناتجة (P)</h6>
+                        <h2 id="powerValue" class="display-5 fw-bold text-white mb-1">36 <span class="fs-5">واط</span></h2>
+                        <div id="statusBadge" class="badge bg-success fs-6 my-2">الحالة: سطوع متوسط 🔆</div>
+                        <p id="powerDesc" class="small text-muted mb-0">إضاءة متوازنة ومستقرة للمصباح.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي -->
+<footer class="custom-footer border-top py-4 mt-auto">
+    <div class="container text-center text-md-start">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0 text-slate-300">
+                &copy; 2026 جميع الحقوق محفوظة | تطوير وتصميم: 
+                <a href="https://me.haythamzeidan.workers.dev/" class="text-warning text-decoration-none fw-bold mx-1 hover-effect">
+هيثم زيدان
+                </a>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="https://github.com/wazefapress" target="_blank" class="btn btn-outline-light rounded-circle p-2 mx-1" aria-label="GitHub Profile">
+                    <i class="bi bi-github fs-5 d-flex"></i>
+                </a>
+        
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ==========================================
+// دالة المشاركة Web Share API / Copy Link
+// ==========================================
+function shareApp() {
+    const shareData = {
+        title: 'أساسيات الإلكترونيات | محاكاة مستويات سطوع المصباح',
+        text: 'شاهد هذه المحاكاة التفاعلية لمراقبة درجات ومستويات سطوع المصباح وحساب القدرة الكهربائية!',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData).catch((error) => console.log('خطأ في المشاركة:', error));
+    } else {
+        // خيار احتياطي عند عدم دعم Web Share API: نسخ الرابط
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            const btn = document.getElementById('shareButton');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<i class="bi bi-check-lg"></i><span>تم نسخ الرابط!</span>`;
+            btn.classList.replace('btn-outline-warning', 'btn-success');
+
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.classList.replace('btn-success', 'btn-outline-warning');
+            }, 2500);
+        });
+    }
+}
+
+// ==========================================
+// 1. منطق Phaser 3 (ربط حالات السطوع)
+// ==========================================
+class PowerLawScene extends Phaser.Scene {
+    constructor() {
+        super('PowerLawScene');
+    }
+
+    create() {
+        this.voltage = 12;
+        this.current = 3;
+        this.power = this.voltage * this.current;
+
+        this.graphics = this.add.graphics();
+
+        // مسار الدائرة
+        this.circuitPath = new Phaser.Curves.Path(150, 220);
+        this.circuitPath.lineTo(150, 70);
+        this.circuitPath.lineTo(650, 70);
+        this.circuitPath.lineTo(650, 220);
+        this.circuitPath.lineTo(150, 220);
+
+        this.electrons = [];
+        const numElectrons = 30;
+        for (let i = 0; i < numElectrons; i++) {
+            let e = this.add.circle(0, 0, 5, 0x10b981);
+            e.t = i / numElectrons; 
+            this.electrons.push(e);
+        }
+
+        // طبقات إضاءة المصباح (الداخلية والخارجية)
+        this.bulbGlowOuter = this.add.circle(650, 70, 65, 0xf59e0b, 0);
+        this.bulbGlow = this.add.circle(650, 70, 40, 0xfacc15, 0);
+        this.bulbCenter = this.add.circle(650, 70, 16, 0x334155);
+
+        // العجلة المائية (التوربين)
+        this.wheel = this.add.container(650, 480);
+        let wheelBase = this.add.circle(0, 0, 30, 0x1e293b);
+        wheelBase.setStrokeStyle(4, 0x475569);
+        this.wheel.add(wheelBase);
+        for(let i=0; i<8; i++) {
+            let spoke = this.add.rectangle(0, 0, 70, 6, 0x64748b);
+            spoke.angle = i * (360/8);
+            this.wheel.add(spoke);
+        }
+
+        // قطرات الماء
+        this.waterDrops = [];
+        const numDrops = 40;
+        for (let i = 0; i < numDrops; i++) {
+            let d = this.add.circle(0, 0, 6, 0x60a5fa); 
+            d.t = i / numDrops;
+            this.waterDrops.push(d);
+        }
+
+        this.add.text(400, 20, 'تأثير القدرة على حالة المصباح', { fontFamily: 'Tahoma', fontSize: '16px', color: '#cbd5e1', rtl: true }).setOrigin(0.5);
+        this.add.text(400, 310, 'تشبيه تدفق الماء وقوة التوربين', { fontFamily: 'Tahoma', fontSize: '16px', color: '#cbd5e1', rtl: true }).setOrigin(0.5);
+
+        this.batteryLabel = this.add.text(80, 145, 'بطارية\n12V', { fontFamily: 'Tahoma', fontSize: '14px', color: '#60a5fa', align: 'center', rtl: true }).setOrigin(0.5);
+        this.bulbLabel = this.add.text(725, 60, 'مصباح\n36W', { fontFamily: 'Tahoma', fontSize: '14px', color: '#f59e0b', align: 'center', rtl: true }).setOrigin(0.5);
+        
+        // شارة الحالة داخل Phaser
+        this.bulbStateText = this.add.text(650, 130, 'الحالة: متوسط', { fontFamily: 'Tahoma', fontSize: '13px', color: '#22c55e', rtl: true }).setOrigin(0.5);
+
+        this.tankLabel = this.add.text(80, 450, 'خزان ماء\n(جهد)', { fontFamily: 'Tahoma', fontSize: '14px', color: '#60a5fa', align: 'center', rtl: true }).setOrigin(0.5);
+        this.turbineLabel = this.add.text(730, 480, 'توربين\n(قدرة)', { fontFamily: 'Tahoma', fontSize: '14px', color: '#f59e0b', align: 'center', rtl: true }).setOrigin(0.5);
+
+        this.updatePaths();
+        this.drawVisuals();
+
+        window.addEventListener('updatePowerCircuit', (e) => {
+            this.voltage = e.detail.v;
+            this.current = e.detail.i;
+            this.power = e.detail.p;
+            this.updatePaths();
+            this.updateText();
+            this.drawVisuals();
+        });
+    }
+
+    updatePaths() {
+        let tankY = 520 - (this.voltage * 6);
+        this.currentTankY = tankY;
+
+        this.waterPath = new Phaser.Curves.Path(150, tankY);
+        this.waterPath.lineTo(630, tankY);
+        this.waterPath.lineTo(630, 460);
+    }
+
+    drawVisuals() {
+        this.graphics.clear();
+
+        // رسم السلك
+        this.graphics.lineStyle(12, 0x475569, 1);
+        this.circuitPath.draw(this.graphics);
+
+        // رسم البطارية
+        let batHeight = 40 + (this.voltage * 2);
+        this.graphics.fillStyle(0x1e3a8a, 1);
+        this.graphics.fillRect(130, 145 - (batHeight/2), 40, batHeight);
+        this.graphics.fillStyle(0x3b82f6, 1);
+        this.graphics.fillRect(130, 145 - (batHeight/2) - 10, 40, 10);
+
+        // الخط الفاصل
+        this.graphics.lineStyle(2, 0x334155, 1);
+        this.graphics.lineBetween(50, 280, 750, 280);
+
+        // رسم خزان الماء والأنبوب
+        this.graphics.fillStyle(0x2563eb, 0.8);
+        this.graphics.fillRect(120, this.currentTankY - 30, 60, 40);
+        this.graphics.fillStyle(0x475569, 1);
+        this.graphics.fillRect(170, this.currentTankY - 10, 440, 20);
+
+        // ==========================================
+        // مطابقة مدى السطوع بصرياً بحسب الحالة
+        // ==========================================
+        if (this.power < 30) {
+            // حالة 1: سطوع خافت
+            this.bulbCenter.setFillStyle(0x854d0e); 
+            this.bulbGlow.setAlpha(0.25).setScale(0.8).setFillStyle(0xeab308);
+            this.bulbGlowOuter.setAlpha(0);
+            this.bulbStateText.setText('السطوع: خافت 🌑').setColor('#eab308');
+        } else if (this.power < 100) {
+            // حالة 2: سطوع متوسط
+            this.bulbCenter.setFillStyle(0xfacc15); 
+            this.bulbGlow.setAlpha(0.6).setScale(1.1).setFillStyle(0xfacc15);
+            this.bulbGlowOuter.setAlpha(0.25).setScale(1.2).setFillStyle(0xf59e0b);
+            this.bulbStateText.setText('السطوع: متوسط 🔆').setColor('#22c55e');
+        } else if (this.power < 180) {
+            // حالة 3: سطوع عالي
+            this.bulbCenter.setFillStyle(0xffffff); 
+            this.bulbGlow.setAlpha(0.85).setScale(1.4).setFillStyle(0xf59e0b);
+            this.bulbGlowOuter.setAlpha(0.45).setScale(1.6).setFillStyle(0xef4444);
+            this.bulbStateText.setText('السطوع: عالي ☀️').setColor('#38bdf8');
+        } else {
+            // حالة 4: سطوع فائق / حمولة قصوى
+            this.bulbCenter.setFillStyle(0xffffff); 
+            this.bulbGlow.setAlpha(1.0).setScale(1.8).setFillStyle(0xef4444);
+            this.bulbGlowOuter.setAlpha(0.75).setScale(2.2).setFillStyle(0xd97706);
+            this.bulbStateText.setText('السطوع: فائق 💥').setColor('#ef4444');
+        }
+    }
+
+    updateText() {
+        this.batteryLabel.setText(`بطارية\n${this.voltage}V`);
+        this.bulbLabel.setText(`مصباح\n${this.power}W`);
+        this.tankLabel.setY(this.currentTankY - 10);
+    }
+
+    update(time, delta) {
+        let currentSpeed = this.current * 0.00015 * delta;
+        let turbineSpeed = this.power * 0.03;
+
+        this.wheel.angle += turbineSpeed;
+
+        this.electrons.forEach(e => {
+            e.t += currentSpeed;
+            if (e.t >= 1) e.t = 0; 
+            let pos = this.circuitPath.getPoint(e.t);
+            if(pos) { e.x = pos.x; e.y = pos.y; }
+        });
+
+        this.waterDrops.forEach(d => {
+            d.t += currentSpeed;
+            if (d.t >= 1) d.t = 0; 
+            
+            let dropSpread = this.current * 1.5; 
+            
+            if(this.waterPath) {
+                let pos = this.waterPath.getPoint(d.t);
+                if(pos) { 
+                    d.x = pos.x; 
+                    d.y = pos.y + (Math.random() * dropSpread - dropSpread/2); 
+                }
+            }
+            d.setScale(1 + (this.current/10));
+        });
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 600, 
+    backgroundColor: '#0f172a',
+    scene: PowerLawScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+const game = new Phaser.Game(config);
+
+// ==========================================
+// 2. تحديث الواجهة وتحديث شارات الحالة
+// ==========================================
+const voltSlider = document.getElementById('voltageSlider');
+const currSlider = document.getElementById('currentSlider');
+const voltValue = document.getElementById('voltValue');
+const currValue = document.getElementById('currentValue');
+const powerValue = document.getElementById('powerValue');
+const statusBadge = document.getElementById('statusBadge');
+const powerDesc = document.getElementById('powerDesc');
+
+function calculatePower() {
+    let v = parseFloat(voltSlider.value);
+    let i = parseFloat(currSlider.value);
+    let p = v * i;
+
+    voltValue.innerText = v;
+    currValue.innerText = i;
+    powerValue.innerHTML = p + ' <span class="fs-5">واط</span>';
+
+    // تحديث بطاقة الوصف والبادج الخارجي حسب الحالة
+    if (p < 30) {
+        statusBadge.className = "badge bg-warning text-dark fs-6 my-2";
+        statusBadge.innerText = "الحالة: سطوع خافت 🌑";
+        powerDesc.innerText = "قدرة منخفضة جداً. التوهج خفيف والعجلة تدور ببطء شديد.";
+    } else if (p < 100) {
+        statusBadge.className = "badge bg-success fs-6 my-2";
+        statusBadge.innerText = "الحالة: سطوع متوسط 🔆";
+        powerDesc.innerText = "توهج متوازن ومستقر. مناسب للتشغيل الاعتيادي.";
+    } else if (p < 180) {
+        statusBadge.className = "badge bg-info text-dark fs-6 my-2";
+        statusBadge.innerText = "الحالة: سطوع عالي ☀️";
+        powerDesc.innerText = "إضاءة قوية جداً وتدفق عالي للطاقة في الدائرة.";
+    } else {
+        statusBadge.className = "badge bg-danger fs-6 my-2";
+        statusBadge.innerText = "الحالة: سطوع فائق 💥";
+        powerDesc.innerText = "أقصى مستوى توهج للفيلامينت! أقصى سرعة لدوران التوربين.";
+    }
+
+    window.dispatchEvent(new CustomEvent('updatePowerCircuit', { 
+        detail: { v: v, i: i, p: p } 
+    }));
+}
+
+voltSlider.addEventListener('input', calculatePower);
+currSlider.addEventListener('input', calculatePower);
+calculatePower(); 
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
