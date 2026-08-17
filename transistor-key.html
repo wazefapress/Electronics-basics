@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>محاكاة الترانزستور كمفتاح إلكتروني (NPN Switch Simulation)</title>
+    <meta name="description" content="محاكاة تفاعلية لتوضيح آلية عمل الترانزستور (NPN) كمفتاح إلكتروني في حالات القطع والإشباع وقراءة الإشارات عبر الأوسيلوسكوب.">
+    <meta name="keywords" content="ترانزستور, محاكاة, مفتاح إلكتروني, NPN, أردوينو, إلكترونيات, Phaser.js, هندسة كهربائية">
+    <meta name="author" content="هيثم زيدان">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook / WhatsApp SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="محاكاة الترانزستور كمفتاح إلكتروني">
+    <meta property="og:description" content="تطبيق تفاعلي لشرح عمل الترانزستور كمفتاح مع رسم بياني للنبضات وحالة الحمل بشكل حيوي.">
+    <meta property="og:site_name" content="تطبيقات المحاكاة التعليمية">
+
+    <!-- Twitter Card SEO -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="محاكاة الترانزستور كمفتاح إلكتروني">
+    <meta name="twitter:description" content="تعلم كيفية عمل الترانزستور في وضع القطع والإشباع عبر هذه المحاكاة التفاعلية.">
+
+    <!-- Bootstrap 5 RTL & FontAwesome Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Phaser.js Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #phaser-game-container {
+            width: 100%;
+            min-height: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #020617;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100% !important; height: auto !important; }
+        .control-panel { 
+            background-color: #1e293b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid #334155; 
+        }
+        input[type=range] { direction: ltr; }
+        
+        .id-card {
+            background-color: #1e293b;
+            border: 1px solid #3b82f6; 
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .id-card-header {
+            background-color: #3b82f6;
+            color: #ffffff;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .back-home-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .back-home-link:hover {
+            color: #93c5fd !important;
+            transform: translateX(4px);
+        }
+        footer {
+            margin-top: auto;
+            background-color: #020617;
+            border-top: 1px solid #1e293b;
+        }
+        .github-btn {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        .github-btn:hover {
+            background-color: #334155;
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <!-- الشريط العلوي مع زر المشاركة -->
+    <div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-3">
+        <h2 class="m-0" style="color: #60a5fa; font-size: 1.75rem;">
+💡 أساسيات الإلكترونيات  | الترانزستور (NPN) كمفتاح إلكتروني
+        </h2>
+        <button onclick="shareApp()" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" id="shareBtn">
+            <i class="fa-solid font-sharp fa-share-nodes"></i>
+            <span></span>
+        </button>
+    </div>
+
+    <!-- رابط العودة إلى الصفحة الرئيسية أسفل الشريط العلوي -->
+    <div class="mb-4">
+        <a href="index.html" class="text-decoration-none text-info d-inline-flex align-items-center gap-2 small fw-semibold back-home-link">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span>العودة إلى الصفحة الرئيسية</span>
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        <!-- القسم الأيسر -->
+        <div class="col-lg-8">
+        
+
+            <div class="id-card shadow">
+                <div class="id-card-header">
+                    📑 بطاقة تعريف: عمل الترانزستور كمفتاح (Switch)
+                </div>
+                <div class="p-3 text-light">
+                    <p class="mb-3">
+                        <strong>المبدأ الأساسي:</strong> بدلاً من تكبير الإشارة، نستخدم الترانزستور كبوابة تفتح وتغلق بالكامل. يستخدم هذا المبدأ في الدوائر الرقمية، الميكروكنترولر (مثل الأردوينو)، وتشغيل المحركات.
+                    </p>
+                    <ul class="list-group list-group-flush mb-0 text-light" style="background: transparent;">
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-danger">حالة القطع (OFF):</strong> عندما يكون جهد الدخل (القاعدة) صفر، الترانزستور لا يمرر تياراً. جهد المجمع (Vce) يساوي 5V، والحمل (الـ LED) ينطفئ.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong class="text-success">حالة الإشباع (ON):</strong> عندما يكون جهد الدخل 5V، يُفتح الترانزستور بالكامل. يهبط جهد المجمع (Vce) إلى حوالي 0.2V، ويمر التيار ليُضيء الـ LED.
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-0">
+                            <strong class="text-info">الملاحظة الذهبية:</strong> إشارة الخرج (Vce) تكون <strong>معكوسة</strong> مقارنة بإشارة الدخل! عندما يكون الدخل 5V، يكون الخرج 0V، والعكس صحيح.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن -->
+        <div class="col-lg-4">
+            <div class="control-panel h-100 d-flex flex-column">
+                <div id="phaser-game-container" class="mb-4"></div>
+                <h5 class="text-white mb-4 border-bottom border-secondary pb-2">🎛️ لوحة التحكم بالمفتاح</h5>
+                
+                <div class="mb-4 bg-dark p-3 rounded border border-primary">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input fs-4" type="checkbox" id="autoToggle" checked style="cursor: pointer;">
+                        <label class="form-check-label text-primary fw-bold ms-2 mt-1" for="autoToggle" style="cursor: pointer;">
+                            إرسال نبضات تلقائية (PWM) ⏱️
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-info fw-bold mb-2 d-flex justify-content-between">
+                        <span>سرعة النبضات (التردد)</span>
+                        <span class="badge bg-primary" id="freqValue">3</span>
+                    </label>
+                    <input type="range" id="freqSlider" min="1" max="10" value="3" step="1" class="form-range">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex justify-content-between text-danger">
+                        <span>جهد الدخل اليدوي (Vin)</span>
+                        <span class="badge bg-danger" id="vinValue">0.0 V</span>
+                    </label>
+                    <input type="range" id="vinSlider" min="0" max="5" value="0" step="0.1" class="form-range" disabled>
+                    <small class="text-secondary mt-1 d-block">أوقف النبضات التلقائية لتتحكم يدوياً بالمفتاح.</small>
+                </div>
+
+                <!-- شاشة الحالة -->
+                <div class="mt-auto">
+                    <label class="text-secondary small fw-bold mb-1">حالة الحمل والترانزستور:</label>
+                    <div id="transistorStatus" class="badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base" style="min-height: 70px;">
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="py-3 text-center text-secondary small">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div>
+            حقوق التطوير والتصميم محفوظة &copy; 2026 | تم التطوير بواسطة 
+            <a href="https://me.haythamzeidan.workers.dev/" target="_blank" rel="noopener noreferrer" class="text-info text-decoration-none fw-bold">هيثم زيدان</a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" rel="noopener noreferrer" class="btn btn-sm github-btn rounded-pill px-3 d-inline-flex align-items-center gap-2">
+                <i class="fa-brands fa-github fs-6"></i>
+                <span>تابعني على GitHub</span>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// دالة المشاركة التفاعلية
+function shareApp() {
+    const shareData = {
+        title: 'محاكاة الترانزستور كمفتاح إلكتروني',
+        text: 'شاهد هذه المحاكاة التفاعلية لعمل الترانزستور كمفتاح!',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        const btn = document.getElementById('shareBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>تم نسخ الرابط!</span>`;
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+        }, 2000);
+    }
+}
+
+window.SimData = {
+    isAuto: true,
+    freq: 3,
+    manualVin: 0
+};
+
+function updateUI() {
+    let freqInput = parseFloat(document.getElementById('freqSlider').value);
+    let vinInput = parseFloat(document.getElementById('vinSlider').value);
+    let autoCheck = document.getElementById('autoToggle').checked;
+    
+    window.SimData.freq = isNaN(freqInput) ? 3 : freqInput;
+    window.SimData.manualVin = isNaN(vinInput) ? 0 : vinInput;
+    window.SimData.isAuto = autoCheck;
+
+    document.getElementById('vinSlider').disabled = window.SimData.isAuto;
+
+    document.getElementById('freqValue').innerText = window.SimData.freq;
+    document.getElementById('vinValue').innerText = window.SimData.manualVin.toFixed(1) + " V";
+}
+
+document.getElementById('freqSlider').addEventListener('input', updateUI);
+document.getElementById('vinSlider').addEventListener('input', updateUI);
+document.getElementById('autoToggle').addEventListener('change', updateUI);
+
+class SwitchScene extends Phaser.Scene {
+    constructor() { super('SwitchScene'); }
+
+    create() {
+        this.graphics = this.add.graphics();
+        this.tick = 0;
+        this.historyIn = new Array(300).fill(0);
+        this.historyOut = new Array(300).fill(5);
+
+        let fontStyle = { font: '14px Tahoma, sans-serif', fill: '#cbd5e1' };
+        this.add.text(260, 20, 'الأوسيلوسكوب', fontStyle).setOrigin(0.5);
+        this.add.text(660, 20, 'الحمل (الخرج)', fontStyle).setOrigin(0.5);
+        
+        this.add.text(120, 40, 'جهد الدخل (Vin) - القاعدة', { font: '12px Tahoma', fill: '#ef4444' }).setOrigin(0);
+        this.add.text(120, 60, 'جهد المجمع (Vce)', { font: '12px Tahoma', fill: '#22c55e' }).setOrigin(0);
+        
+        // تسميات المحاور
+        this.add.text(75, 120, '5V', { font: '12px Tahoma', fill: '#64748b' });
+        this.add.text(75, 320, '0V', { font: '12px Tahoma', fill: '#64748b' });
+    }
+
+    update() {
+        if (isNaN(this.tick)) this.tick = 0;
+        this.tick += 1;
+        
+        let vin = 0;
+        
+        // توليد النبضات (موجة مربعة) أو أخذ القيمة اليدوية
+        if (window.SimData.isAuto) {
+            let period = Math.floor(200 / window.SimData.freq);
+            if (period < 10) period = 10;
+            let timeInPeriod = this.tick % period;
+            vin = (timeInPeriod < period / 2) ? 5 : 0;
+            
+            // تحديث شريط التمرير اليدوي بصرياً ليتوافق مع النبضات
+            document.getElementById('vinSlider').value = vin;
+            document.getElementById('vinValue').innerText = vin.toFixed(1) + " V";
+        } else {
+            vin = window.SimData.manualVin;
+        }
+
+        let vce = 5.0; // افتراضياً في حالة القطع
+        let isON = false;
+
+        // عتبة تشغيل الترانزستور
+        if (vin >= 0.7) {
+            vce = 0.2; // منطقة الإشباع
+            isON = true;
+        }
+
+        // تحديث النصوص والحالة
+        let statusEl = document.getElementById('transistorStatus');
+        if (isON) {
+            statusEl.className = "badge bg-success fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "حالة الإشباع (Saturation) ✅\nالمفتاح مغلق - يمر التيار للـ LED يضيء!";
+        } else {
+            statusEl.className = "badge bg-secondary fs-6 w-100 py-3 text-wrap lh-base mt-2";
+            statusEl.innerText = "حالة القطع (Cut-off) 🌑\nالمفتاح مفتوح - لا يمر تيار - الـ LED مطفأ!";
+        }
+
+        // مسح ورسم
+        this.graphics.clear();
+        this.historyIn.push(vin);
+        this.historyIn.shift();
+        this.historyOut.push(vce);
+        this.historyOut.shift();
+
+        // 1. رسم منطقة الأوسيلوسكوب
+        this.graphics.fillStyle(0x0f172a, 1);
+        this.graphics.fillRect(100, 100, 300, 240);
+        
+        this.graphics.lineStyle(1, 0x1e293b, 1);
+        this.graphics.beginPath();
+        for(let i=10; i<300; i+=20) {
+            this.graphics.moveTo(100+i, 100); this.graphics.lineTo(100+i, 340);
+        }
+        for(let i=10; i<240; i+=20) {
+            this.graphics.moveTo(100, 100+i); this.graphics.lineTo(400, 100+i);
+        }
+        this.graphics.strokePath();
+
+        let scaleY = 40; // 5 فولت موزعة على 200 بكسل = 40 بكسل لكل فولت
+        let baseY = 320; // نقطة الصفر
+        
+        // رسم موجة الدخل (حمراء)
+        this.graphics.lineStyle(2, 0xef4444, 1);
+        this.graphics.beginPath();
+        for(let i=0; i<300; i++) {
+            let y = baseY - (this.historyIn[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(100 + i, y);
+            else this.graphics.lineTo(100 + i, y);
+        }
+        this.graphics.strokePath();
+
+        // رسم موجة الخرج (خضراء)
+        this.graphics.lineStyle(3, 0x22c55e, 1);
+        this.graphics.beginPath();
+        for(let i=0; i<300; i++) {
+            let y = baseY - (this.historyOut[i] * scaleY);
+            if (i === 0) this.graphics.moveTo(100 + i, y);
+            else this.graphics.lineTo(100 + i, y);
+        }
+        this.graphics.strokePath();
+
+        // مفاتيح الألوان
+        this.graphics.fillStyle(0x020617, 0.8);
+        this.graphics.fillRect(110, 30, 180, 50);
+        this.graphics.fillStyle(0xef4444, 1);
+        this.graphics.fillCircle(120, 48, 5);
+        this.graphics.fillStyle(0x22c55e, 1);
+        this.graphics.fillCircle(120, 68, 5);
+
+        // 2. رسم منطقة الحمل (LED)
+        this.graphics.fillStyle(0x1e293b, 1);
+        this.graphics.fillRoundedRect(450, 100, 280, 240, 16);
+        
+        // رسم الـ LED
+        if (isON) {
+            // هالة الضوء
+            this.graphics.fillStyle(0xeab308, 0.2);
+            this.graphics.fillCircle(590, 200, 70);
+            this.graphics.fillStyle(0xeab308, 0.4);
+            this.graphics.fillCircle(590, 200, 50);
+            // جسم المصباح المضاء
+            this.graphics.fillStyle(0xfde047, 1);
+            this.graphics.fillCircle(590, 200, 30);
+        } else {
+            // جسم المصباح المطفأ
+            this.graphics.fillStyle(0x475569, 1);
+            this.graphics.fillCircle(590, 200, 30);
+        }
+
+        // قاعدة الـ LED والدائرة
+        this.graphics.fillStyle(0x94a3b8, 1);
+        this.graphics.fillRect(575, 225, 30, 15);
+        this.graphics.lineStyle(2, 0x64748b, 1);
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(580, 240, 580, 290));
+        this.graphics.strokeLineShape(new Phaser.Geom.Line(600, 240, 600, 290));
+
+        let textState = isON ? "الحمل يعمل (ON)" : "الحمل متوقف (OFF)";
+        let colorState = isON ? '#fde047' : '#94a3b8';
+        this.add.text(590, 300, textState, { font: '16px Tahoma', fill: colorState, fontStyle: 'bold' }).setOrigin(0.5);
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    parent: 'phaser-game-container',
+    width: 800,
+    height: 400,
+    backgroundColor: '#020617',
+    scene: SwitchScene,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
+};
+
+window.onload = () => {
+    updateUI(); 
+    new Phaser.Game(config);
+};
+</script>
+
+</body>
+</html>
