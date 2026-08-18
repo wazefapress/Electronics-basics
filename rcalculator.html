@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- أكواد SEO (Search Engine Optimization) -->
+    <title>أساسيات الإلكترونيات | حاسبة المقاومة</title>
+    <meta name="description" content="تطبيق تفاعلي لحساب قيمة المقاومة الكهربائية بأنواعها (مقاومة الألوان 4 و 5 حزم، والمقاومات السطحية SMD). أداة أساسية لمهندسي وفنيي الإلكترونيات والطلاب.">
+    <meta name="keywords" content="حاسبة المقاومة, أساسيات الإلكترونيات, مقاومة الألوان, مقاومة SMD, حساب المقاومات, كود الألوان للمقاومات, تعليم الإلكترونيات, هيثم زيدان">
+    <meta name="author" content="هيثم زيدان">
+    <meta property="og:title" content="أساسيات الإلكترونيات | حاسبة المقاومة">
+    <meta property="og:description" content="أداة تفاعلية سريعة ودقيقة لحساب قيم المقاومات الإلكترونية.">
+    <meta property="og:type" content="website">
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Phaser.js -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #f8f9fa; 
+            font-family: system-ui, -apple-system, sans-serif; 
+        }
+        #phaser-container { 
+            display: flex; 
+            justify-content: center; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: #e9ecef; 
+        }
+        select { font-size: 0.9rem !important; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- الشريط العلوي (Header) -->
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">
+            <i class="bi bi-cpu"></i> أساسيات الإلكترونيات | حاسبة المقاومة
+        </span>
+        <button class="btn btn-outline-light btn-sm" onclick="shareApp()">
+            <i class="bi bi-share"></i> مشاركة
+        </button>
+    </div>
+</nav>
+
+<!-- المحتوى الرئيسي -->
+<div class="container flex-grow-1 mt-4">
+    
+    <!-- زر العودة للصفحة الرئيسية -->
+    <div class="mb-3">
+        <a href="index.html" class="btn btn-secondary btn-sm shadow-sm">
+            <i class="bi bi-arrow-right-circle"></i> العودة إلى الصفحة الرئيسية
+        </a>
+    </div>
+
+    <!-- مساحة عرض Phaser -->
+    <div id="phaser-container" class="shadow-sm border"></div>
+
+    <!-- لوحة التحكم -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="color-tab" data-bs-toggle="tab" data-bs-target="#color-pane" type="button" role="tab">مقاومة الألوان</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="smd-tab" data-bs-toggle="tab" data-bs-target="#smd-pane" type="button" role="tab">المقاومة السطحية (SMD)</button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        
+                        <!-- قسم مقاومة الألوان -->
+                        <div class="tab-pane fade show active" id="color-pane" role="tabpanel">
+                            
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input mode-radio" type="radio" name="bandCount" id="band4" value="4" checked>
+                                    <label class="form-check-label" for="band4">4 حزم</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input mode-radio" type="radio" name="bandCount" id="band5" value="5">
+                                    <label class="form-check-label" for="band5">5 حزم (دقة عالية)</label>
+                                </div>
+                            </div>
+
+                            <form id="color-form" class="row g-2 justify-content-center">
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted" style="font-size: 0.85rem;">الحزمة 1 (رقم 1)</label>
+                                    <select class="form-select band-select shadow-sm" id="c_band1">
+                                        <option value="brown" style="background:brown;color:white" selected>بني (1)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted" style="font-size: 0.85rem;">الحزمة 2 (رقم 2)</label>
+                                    <select class="form-select band-select shadow-sm" id="c_band2">
+                                        <option value="black" style="background:black;color:white" selected>أسود (0)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (1)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md" id="div_band3" style="display: none;">
+                                    <label class="form-label text-muted" style="font-size: 0.85rem;">الحزمة 3 (رقم 3)</label>
+                                    <select class="form-select band-select shadow-sm" id="c_band3">
+                                        <option value="black" style="background:black;color:white" selected>أسود (0)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (1)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted" id="lbl_multiplier" style="font-size: 0.85rem;">الحزمة 3 (المضاعف)</label>
+                                    <select class="form-select band-select shadow-sm" id="c_multiplier">
+                                        <option value="black" style="background:black;color:white">أسود (x1)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (x10)</option>
+                                        <option value="red" style="background:red;color:white" selected>أحمر (x100)</option>
+                                        <option value="orange" style="background:orange">برتقالي (x1K)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (x10K)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (x100K)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (x1M)</option>
+                                        <option value="gold" style="background:gold">ذهبي (x0.1)</option>
+                                        <option value="silver" style="background:silver">فضي (x0.01)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted" id="lbl_tolerance" style="font-size: 0.85rem;">الحزمة 4 (الخطأ)</label>
+                                    <select class="form-select band-select shadow-sm" id="c_tolerance">
+                                        <option value="brown" style="background:brown;color:white">بني (±1%)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (±2%)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (±0.5%)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (±0.25%)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (±0.1%)</option>
+                                        <option value="gold" style="background:gold" selected>ذهبي (±5%)</option>
+                                        <option value="silver" style="background:silver">فضي (±10%)</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- قسم المقاومة السطحية -->
+                        <div class="tab-pane fade" id="smd-pane" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="smd-code" class="form-label text-muted">أدخل كود SMD (مثال: 103, 4R7, 1002)</label>
+                             <input type="text" class="form-control text-center shadow-sm" id="smd-code" placeholder="103" maxlength="4">
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <hr>
+                    <div class="text-center mt-3 bg-light p-3 rounded border">
+                        <h4 class="text-primary mb-0">القيمة: <span id="result-value" class="fw-bold text-dark">1K Ω ±5%</span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="bg-dark text-light py-4 border-top border-secondary">
+    <div class="container text-center">
+        <div class="mb-2">
+            <span class="text-muted">تطوير وتصميم: </span>
+            <a href="https://me.haythamzeidan.workers.dev/" target="_blank" class="text-info text-decoration-none fw-bold">
+                هيثم زيدان
+            </a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-github"></i> مشاريع GitHub
+            </a>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // --- دالة المشاركة Web Share API ---
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'حاسبة المقاومة التفاعلية',
+                text: 'جرب هذه الحاسبة التفاعلية السريعة لمعرفة قيم مقاومات الألوان و SMD.',
+                url: window.location.href
+            }).catch((error) => console.log('حدث خطأ أثناء المشاركة', error));
+        } else {
+            alert('عذراً، ميزة المشاركة غير مدعومة في متصفحك الحالي. يمكنك نسخ رابط الصفحة مباشرة.');
+        }
+    }
+
+    // --- منطق Phaser وحساب المقاومة ---
+    const colorCode = { black:0, brown:1, red:2, orange:3, yellow:4, green:5, blue:6, violet:7, gray:8, white:9 };
+    const multiplier = { black:1, brown:10, red:100, orange:1000, yellow:10000, green:100000, blue:1000000, gold:0.1, silver:0.01 };
+    const tolerance = { brown:'1%', red:'2%', green:'0.5%', blue:'0.25%', violet:'0.1%', gold:'5%', silver:'10%' };
+
+    const hexColors = {
+        black: 0x000000, brown: 0x8B4513, red: 0xFF0000, orange: 0xFFA500,
+        yellow: 0xFFFF00, green: 0x008000, blue: 0x0000FF, violet: 0xEE82EE,
+        gray: 0x808080, white: 0xFFFFFF, gold: 0xFFD700, silver: 0xC0C0C0
+    };
+
+    class ResistorScene extends Phaser.Scene {
+        constructor() { super({ key: 'ResistorScene' }); }
+
+        create() {
+            this.graphics = this.add.graphics();
+            this.smdText = this.add.text(300, 100, '', { font: 'bold 40px Arial', fill: '#ffffff' }).setOrigin(0.5);
+            this.drawColorResistor(['brown', 'black', 'red', 'gold']);
+        }
+
+        drawColorResistor(colors) {
+            this.graphics.clear();
+            this.smdText.setText('');
+
+            this.graphics.fillStyle(0x7F8C8D, 1);
+            this.graphics.fillRect(100, 95, 400, 10);
+
+            this.graphics.fillStyle(0xE5C29F, 1);
+            this.graphics.fillRoundedRect(180, 50, 240, 100, 20);
+
+            let bandPositions = [];
+            let bandWidth = 15; 
+
+            if(colors.length === 4) {
+                bandPositions = [210, 260, 310, 375]; 
+            } else {
+                bandPositions = [200, 240, 280, 320, 375];
+            }
+
+            colors.forEach((color, index) => {
+                this.graphics.fillStyle(hexColors[color], 1);
+                this.graphics.fillRect(bandPositions[index], 50, bandWidth, 100);
+            });
+        }
+
+        drawSMDResistor(code) {
+            this.graphics.clear();
+            this.graphics.fillStyle(0x2C3E50, 1);
+            this.graphics.fillRect(200, 50, 200, 100);
+            this.graphics.fillStyle(0xBDC3C7, 1);
+            this.graphics.fillRect(180, 50, 30, 100); 
+            this.graphics.fillRect(390, 50, 30, 100); 
+            this.smdText.setText(code);
+        }
+    }
+
+    const config = {
+        type: Phaser.AUTO, width: 600, height: 200,
+        parent: 'phaser-container', transparent: true, scene: ResistorScene
+    };
+    const game = new Phaser.Game(config);
+
+    const resultDOM = document.getElementById('result-value');
+
+    function formatResistance(val) {
+        if (isNaN(val)) return "قيمة غير صالحة";
+        if (val >= 1000000) return (val / 1000000) + 'M';
+        if (val >= 1000) return (val / 1000) + 'K';
+        return Number.isInteger(val) ? val : val.toFixed(2);
+    }
+
+    function updateColorResistor() {
+        const bandCount = parseInt(document.querySelector('input[name="bandCount"]:checked').value);
+        
+        const b1 = document.getElementById('c_band1').value;
+        const b2 = document.getElementById('c_band2').value;
+        const b3 = document.getElementById('c_band3').value;
+        const mul = document.getElementById('c_multiplier').value;
+        const tol = document.getElementById('c_tolerance').value;
+
+        let val = 0;
+        let colorsToDraw = [];
+
+        if (bandCount === 4) {
+            document.getElementById('div_band3').style.display = 'none';
+            document.getElementById('lbl_multiplier').innerText = 'الحزمة 3 (المضاعف)';
+            document.getElementById('lbl_tolerance').innerText = 'الحزمة 4 (الخطأ)';
+
+            val = ((colorCode[b1] * 10) + colorCode[b2]) * multiplier[mul];
+            colorsToDraw = [b1, b2, mul, tol];
+        } else {
+            document.getElementById('div_band3').style.display = 'block';
+            document.getElementById('lbl_multiplier').innerText = 'الحزمة 4 (المضاعف)';
+            document.getElementById('lbl_tolerance').innerText = 'الحزمة 5 (الخطأ)';
+
+            val = ((colorCode[b1] * 100) + (colorCode[b2] * 10) + colorCode[b3]) * multiplier[mul];
+            colorsToDraw = [b1, b2, b3, mul, tol];
+        }
+        
+        resultDOM.innerText = `${formatResistance(val)} Ω ±${tolerance[tol] || '5%'}`;
+
+        const scene = game.scene.keys['ResistorScene'];
+        if(scene && scene.graphics) scene.drawColorResistor(colorsToDraw);
+    }
+
+    function updateSMDResistor() {
+        let code = document.getElementById('smd-code').value.toUpperCase().trim();
+        const scene = game.scene.keys['ResistorScene'];
+        
+        // التحقق مما إذا كان مربع الإدخال فارغاً بسبب الحذف
+        if (code === "") {
+            resultDOM.innerText = "0 Ω";
+            if(scene && scene.graphics) scene.drawSMDResistor('');
+            return; // إنهاء الدالة هنا إذا كان الحقل فارغاً
+        }
+
+        let val = 0;
+
+        // معالجة كود SMD
+        if (code.includes('R')) {
+            val = parseFloat(code.replace('R', '.'));
+        } else if (code.length === 3 || code.length === 4) {
+            const digits = parseInt(code.slice(0, -1));
+            const mult = Math.pow(10, parseInt(code.slice(-1)));
+            val = digits * mult;
+        } else {
+             // في حال كتابة كود غير مكتمل أو غير صحيح التنسيق (مثل كتابة حرف واحد فقط)
+             val = NaN; 
+        }
+
+        // عرض النتيجة
+        resultDOM.innerText = isNaN(val) ? "كود غير مكتمل" : `${formatResistance(val)} Ω`;
+
+        // تحديث الرسم
+        if(scene && scene.graphics) scene.drawSMDResistor(code);
+    }
+    document.querySelectorAll('.band-select').forEach(select => {
+        select.addEventListener('change', updateColorResistor);
+    });
+
+    document.querySelectorAll('.mode-radio').forEach(radio => {
+        radio.addEventListener('change', updateColorResistor);
+    });
+
+    document.getElementById('smd-code').addEventListener('input', function(e) {
+    // إجبار النص على أن يكون بأحرف كبيرة (Uppercase)
+    // وحذف أي رمز لا يطابق الأرقام من 0-9 أو حرف R
+    this.value = this.value.toUpperCase().replace(/[^0-9R]/g, '');
+    
+    // بعد تنظيف النص، نقوم باستدعاء دالة الحساب
+    updateSMDResistor();
+});
+    document.getElementById('color-tab').addEventListener('shown.bs.tab', updateColorResistor);
+    document.getElementById('smd-tab').addEventListener('shown.bs.tab', updateSMDResistor);
+
+</script>
+</body>
+</html>
