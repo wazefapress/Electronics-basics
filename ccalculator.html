@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>أساسيات الإلكترونيات | حاسبة المكثف</title>
+    <meta name="description" content="تطبيق تفاعلي لحساب قيم المكثف السيراميكية والملونة (مكثفات البوليستر) وتحويل وحدات السعة.">
+    <meta name="author" content="هيثم زيدان">
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Phaser.js -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #f8f9fa; 
+            font-family: system-ui, -apple-system, sans-serif; 
+        }
+        #phaser-container { 
+            display: flex; 
+            justify-content: center; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: #e9ecef; 
+        }
+        .result-box {
+            background-color: #ffffff;
+            border-right: 4px solid #0d6efd;
+        }
+        select { font-size: 0.85rem !important; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">
+            <i class="bi bi-lightning-charge"></i> أساسيات الإلكترونيات | حاسبة المكثف
+        </span>
+        <button class="btn btn-outline-light btn-sm" onclick="shareApp()">
+            <i class="bi bi-share"></i> مشاركة
+        </button>
+    </div>
+</nav>
+
+<div class="container flex-grow-1 mt-4">
+    
+    <div class="mb-3">
+        <a href="index.html" class="btn btn-secondary btn-sm shadow-sm">
+            <i class="bi bi-arrow-right-circle"></i> العودة إلى الصفحة الرئيسية
+        </a>
+    </div>
+
+    <!-- مساحة عرض Phaser -->
+    <div id="phaser-container" class="shadow-sm border"></div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-11">
+            <div class="card shadow">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="code-tab" data-bs-toggle="tab" data-bs-target="#code-pane" type="button" role="tab">المكثف السيراميكي (أرقام)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="color-tab" data-bs-toggle="tab" data-bs-target="#color-pane" type="button" role="tab">المكثف الملون (5 حزم)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="unit-tab" data-bs-toggle="tab" data-bs-target="#unit-pane" type="button" role="tab">محول الوحدات</button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        
+                        <!-- قسم السيراميك -->
+                        <div class="tab-pane fade show active" id="code-pane" role="tabpanel">
+                            <div class="row align-items-center mb-3">
+                                <div class="col-md-8 mx-auto text-center">
+                                    <label class="form-label text-muted">أدخل الكود المطبوع على المكثف (مثال: 104, 473, 222K)</label>
+                                    <input type="text" class="form-control form-control-lg text-center shadow-sm" id="cap-code" placeholder="104K" maxlength="5" style="letter-spacing: 2px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- قسم مكثف الألوان -->
+                        <div class="tab-pane fade" id="color-pane" role="tabpanel">
+                            <form id="color-form" class="row g-2 justify-content-center mb-3">
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted">رقم 1</label>
+                                    <select class="form-select cap-band shadow-sm" id="c_band1">
+                                        <option value="brown" style="background:brown;color:white">بني (1)</option>
+                                        <option value="red" style="background:red;color:white" selected>أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted">رقم 2</label>
+                                    <select class="form-select cap-band shadow-sm" id="c_band2">
+                                        <option value="black" style="background:black;color:white">أسود (0)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (1)</option>
+                                        <option value="red" style="background:red;color:white" selected>أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted">المضاعف</label>
+                                    <select class="form-select cap-band shadow-sm" id="c_multiplier">
+                                        <option value="black" style="background:black;color:white">أسود (x1)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (x10)</option>
+                                        <option value="red" style="background:red;color:white" selected>أحمر (x100)</option>
+                                        <option value="orange" style="background:orange">برتقالي (x1K)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (x10K)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted">الخطأ</label>
+                                    <select class="form-select cap-band shadow-sm" id="c_tolerance">
+                                        <option value="black" style="background:black;color:white">أسود (±20%)</option>
+                                        <option value="white" style="background:white">أبيض (±10%)</option>
+                                        <option value="green" style="background:green;color:white" selected>أخضر (±5%)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (±2%)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (±1%)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md">
+                                    <label class="form-label text-muted">الجهد (V)</label>
+                                    <select class="form-select cap-band shadow-sm" id="c_voltage">
+                                        <option value="brown" style="background:brown;color:white">بني (100V)</option>
+                                        <option value="red" style="background:red;color:white" selected>أحمر (250V)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (400V)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (630V)</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- قسم محول الوحدات -->
+                        <div class="tab-pane fade" id="unit-pane" role="tabpanel">
+                            <div class="row g-3 justify-content-center mt-2 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label text-muted">القيمة</label>
+                                    <input type="number" class="form-control" id="convert-value" placeholder="مثال: 0.1">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted">الوحدة الحالية</label>
+                                    <select class="form-select" id="convert-unit">
+                                        <option value="uF">ميكرو فاراد (µF)</option>
+                                        <option value="nF">نانو فاراد (nF)</option>
+                                        <option value="pF">بيكو فاراد (pF)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- مربع النتيجة الموحد لحاسبة الأكواد والألوان -->
+                        <div id="result-container" class="mt-4 p-3 result-box shadow-sm rounded">
+                            <h5 class="text-primary mb-3"><i class="bi bi-calculator"></i> القيمة المحسوبة:</h5>
+                            <div class="row text-center fw-bold fs-5 text-dark" id="calc-results-row">
+                                <div class="col-12 col-md-4 mb-2"><span id="val-pf" class="text-danger">0 pF</span></div>
+                                <div class="col-12 col-md-4 mb-2"><span id="val-nf" class="text-success">0 nF</span></div>
+                                <div class="col-12 col-md-4 mb-2"><span id="val-uf" class="text-primary">0 µF</span></div>
+                            </div>
+                            <hr>
+                            <div class="text-center text-muted fw-bold">
+                                نسبة الخطأ: <span id="val-tolerance" class="text-dark">غير محدد</span> 
+                                <span id="val-voltage-wrapper" style="display:none;"> | الجهد: <span id="val-voltage" class="text-danger">250V</span></span>
+                            </div>
+                        </div>
+
+                        <!-- مربع النتيجة الخاص بمحول الوحدات -->
+                        <div id="converter-results-container" class="mt-4 p-3 bg-light border rounded" style="display:none;">
+                            <h5 class="text-center mb-3">التحويل:</h5>
+                            <ul class="list-group list-group-flush text-center fw-bold fs-5" id="conversion-results">
+                                <li class="list-group-item bg-transparent">...</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="bg-dark text-light py-4 border-top border-secondary mt-auto">
+    <div class="container text-center">
+        <div class="mb-3">
+            <span class="text-muted">تطوير وتصميم: </span>
+            <a href="https://me.haythamzeidan.workers.dev/" target="_blank" class="text-info text-decoration-none fw-bold fs-5">
+                هيثم زيدان
+            </a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" class="btn btn-outline-light btn-sm mx-1 shadow-sm">
+                <i class="bi bi-github"></i> مشاريع GitHub
+            </a>
+           
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'حاسبة المكثف',
+                text: 'أداة سهلة وسريعة لمعرفة قيم المكثف وتحويل وحدات السعة.',
+                url: window.location.href
+            }).catch(console.error);
+        }
+    }
+
+    const hexColors = {
+        black: 0x000000, brown: 0x8B4513, red: 0xFF0000, orange: 0xFFA500,
+        yellow: 0xFFFF00, green: 0x008000, blue: 0x0000FF, violet: 0xEE82EE,
+        gray: 0x808080, white: 0xFFFFFF
+    };
+
+    // أكواد ألوان المكثف
+    const capColors = { black:0, brown:1, red:2, orange:3, yellow:4, green:5, blue:6, violet:7, gray:8, white:9 };
+    const capMultiplier = { black:1, brown:10, red:100, orange:1000, yellow:10000 };
+    const capTolColors = { black:'±20%', white:'±10%', green:'±5%', red:'±2%', brown:'±1%' };
+    const capVoltColors = { brown:'100V', red:'250V', yellow:'400V', blue:'630V' };
+
+    const tolCodes = { 'B':'±0.1pF', 'C':'±0.25pF', 'D':'±0.5pF', 'F':'±1%', 'G':'±2%', 'J':'±5%', 'K':'±10%', 'M':'±20%', 'Z':'+80%, -20%' };
+
+    let currentMode = 'code'; // code, color, unit
+
+    class CapacitorScene extends Phaser.Scene {
+        constructor() { super({ key: 'CapacitorScene' }); }
+
+        create() {
+            this.graphics = this.add.graphics();
+            this.capText = this.add.text(300, 85, '', { font: 'bold 32px Arial', fill: '#000000' }).setOrigin(0.5);
+            this.drawCeramicCapacitor(''); 
+        }
+
+        // رسم المكثف السيراميكي
+        drawCeramicCapacitor(code) {
+            this.graphics.clear();
+            this.capText.setVisible(true);
+            
+            // الأرجل
+            this.graphics.lineStyle(6, 0x95A5A6, 1);
+            this.graphics.beginPath();
+            this.graphics.moveTo(270, 110); this.graphics.lineTo(270, 180);
+            this.graphics.moveTo(330, 110); this.graphics.lineTo(330, 180);
+            this.graphics.strokePath();
+
+            // الجسم
+            this.graphics.fillStyle(0xD35400, 1); 
+            this.graphics.fillCircle(300, 85, 55);
+            this.graphics.fillStyle(0xE67E22, 1);
+            this.graphics.fillCircle(285, 70, 15);
+            
+            this.capText.setText(code);
+        }
+
+        // رسم مكثف الألوان (Tropical Fish / Polyester)
+        drawColorCapacitor(colors) {
+            this.graphics.clear();
+            this.capText.setVisible(false); // إخفاء النص
+
+            // الأرجل من الأسفل
+            this.graphics.lineStyle(6, 0x95A5A6, 1);
+            this.graphics.beginPath();
+            this.graphics.moveTo(250, 120); this.graphics.lineTo(250, 180);
+            this.graphics.moveTo(350, 120); this.graphics.lineTo(350, 180);
+            this.graphics.strokePath();
+
+            // الجسم (مستطيل أبيض سكري)
+            this.graphics.fillStyle(0xF5F5DC, 1);
+            this.graphics.fillRoundedRect(220, 30, 160, 90, 10);
+
+            // الحزم اللونية (5 حزم عمودية)
+            let bandPositions = [230, 260, 290, 320, 350];
+            colors.forEach((color, index) => {
+                this.graphics.fillStyle(hexColors[color], 1);
+                this.graphics.fillRect(bandPositions[index], 30, 20, 90);
+            });
+        }
+    }
+
+    const config = {
+        type: Phaser.AUTO, width: 600, height: 200,
+        parent: 'phaser-container', transparent: true, scene: CapacitorScene
+    };
+    const game = new Phaser.Game(config);
+
+    // --- منطق عرض النتائج ---
+    function displayResults(valPf, tolerance, voltage = null) {
+        if(isNaN(valPf)) {
+            document.getElementById('val-pf').innerText = "خطأ";
+            document.getElementById('val-nf').innerText = "-";
+            document.getElementById('val-uf').innerText = "-";
+            return;
+        }
+
+        document.getElementById('val-pf').innerText = valPf.toLocaleString() + ' pF';
+        document.getElementById('val-nf').innerText = (valPf / 1000).toLocaleString() + ' nF';
+        document.getElementById('val-uf').innerText = (valPf / 1000000).toLocaleString() + ' µF';
+        document.getElementById('val-tolerance').innerText = tolerance;
+        
+        if(voltage) {
+            document.getElementById('val-voltage-wrapper').style.display = 'inline';
+            document.getElementById('val-voltage').innerText = voltage;
+        } else {
+            document.getElementById('val-voltage-wrapper').style.display = 'none';
+        }
+    }
+
+    // --- تحديث كود السيراميك ---
+    function updateCeramicCode() {
+        let input = document.getElementById('cap-code');
+        input.value = input.value.toUpperCase().replace(/[^0-9BCDFGJKMZ]/g, '');
+        let code = input.value;
+
+        const scene = game.scene.keys['CapacitorScene'];
+        if(scene) scene.drawCeramicCapacitor(code);
+
+        if (code === '') {
+            displayResults(0, "غير محدد");
+            return;
+        }
+
+        let letters = code.match(/[A-Z]/g) || [];
+        let numbers = code.replace(/[A-Z]/g, '');
+        let tolCode = letters.length > 0 ? letters[0] : null;
+
+        let valPf = NaN;
+        if (numbers.length <= 2) {
+            valPf = parseInt(numbers);
+        } else if (numbers.length === 3) {
+            let base = parseInt(numbers.slice(0, 2));
+            let multiplier = Math.pow(10, parseInt(numbers.slice(2, 3)));
+            valPf = base * multiplier;
+        }
+
+        let tolerance = tolCode && tolCodes[tolCode] ? tolCodes[tolCode] + ` (${tolCode})` : "±20%";
+        displayResults(valPf, tolerance);
+    }
+
+    // --- تحديث كود الألوان ---
+    function updateColorCode() {
+        const b1 = document.getElementById('c_band1').value;
+        const b2 = document.getElementById('c_band2').value;
+        const mult = document.getElementById('c_multiplier').value;
+        const tol = document.getElementById('c_tolerance').value;
+        const volt = document.getElementById('c_voltage').value;
+
+        const scene = game.scene.keys['CapacitorScene'];
+        if(scene) scene.drawColorCapacitor([b1, b2, mult, tol, volt]);
+
+        let valPf = ((capColors[b1] * 10) + capColors[b2]) * capMultiplier[mult];
+        let tolerance = capTolColors[tol];
+        let voltage = capVoltColors[volt];
+
+        displayResults(valPf, tolerance, voltage);
+    }
+
+    // --- تحديث محول الوحدات ---
+    function updateConverter() {
+        let val = parseFloat(document.getElementById('convert-value').value);
+        let unit = document.getElementById('convert-unit').value;
+        let resultsList = document.getElementById('conversion-results');
+
+        if (isNaN(val)) {
+            resultsList.innerHTML = '<li class="list-group-item bg-transparent text-muted">أدخل رقماً...</li>';
+            return;
+        }
+
+        let uF, nF, pF;
+        if (unit === 'uF') { uF = val; nF = val * 1000; pF = val * 1000000; } 
+        else if (unit === 'nF') { uF = val / 1000; nF = val; pF = val * 1000; } 
+        else { uF = val / 1000000; nF = val / 1000; pF = val; }
+
+        resultsList.innerHTML = `
+            <li class="list-group-item text-primary">${uF.toLocaleString('en-US', {maximumFractionDigits: 6})} <b>µF</b></li>
+            <li class="list-group-item text-success">${nF.toLocaleString('en-US', {maximumFractionDigits: 6})} <b>nF</b></li>
+            <li class="list-group-item text-danger">${pF.toLocaleString('en-US', {maximumFractionDigits: 6})} <b>pF</b></li>
+        `;
+    }
+
+    // --- مستمعات الأحداث ---
+    document.getElementById('cap-code').addEventListener('input', updateCeramicCode);
+    
+    document.querySelectorAll('.cap-band').forEach(select => {
+        select.addEventListener('change', updateColorCode);
+    });
+
+    document.getElementById('convert-value').addEventListener('input', updateConverter);
+    document.getElementById('convert-unit').addEventListener('change', updateConverter);
+
+    // إدارة تبديل التبويبات (Tabs)
+    document.getElementById('code-tab').addEventListener('shown.bs.tab', () => {
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('converter-results-container').style.display = 'none';
+        updateCeramicCode();
+    });
+
+    document.getElementById('color-tab').addEventListener('shown.bs.tab', () => {
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('converter-results-container').style.display = 'none';
+        updateColorCode();
+    });
+
+    document.getElementById('unit-tab').addEventListener('shown.bs.tab', () => {
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('converter-results-container').style.display = 'block';
+        
+        // إخفاء رسمة المكثف عند فتح محول الوحدات
+        const scene = game.scene.keys['CapacitorScene'];
+        if(scene) scene.graphics.clear();
+        if(scene) scene.capText.setVisible(false);
+    });
+
+</script>
+</body>
+</html>
