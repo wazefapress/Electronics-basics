@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>أساسيات الإلكترونيات | حاسبة الملفات (Inductors)</title>
+    <meta name="description" content="تطبيق تفاعلي لحساب قيم الملفات (Inductors) السطحية والملونة بالنقاط وتحويل وحدات المحاثة.">
+    <meta name="author" content="هيثم زيدان">
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Phaser.js -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    
+    <style>
+        body { 
+            background-color: #f8f9fa; 
+            font-family: system-ui, -apple-system, sans-serif; 
+        }
+        #phaser-container { 
+            display: flex; 
+            justify-content: center; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: #e9ecef; 
+        }
+        .result-box {
+            background-color: #ffffff;
+            border-right: 4px solid #198754; 
+        }
+        select { font-size: 0.85rem !important; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">
+            <i class="bi bi-bezier2"></i> أساسيات الإلكترونيات | حاسبة الملفات
+        </span>
+        <button class="btn btn-outline-light btn-sm" onclick="shareApp()">
+            <i class="bi bi-share"></i> مشاركة
+        </button>
+    </div>
+</nav>
+
+<div class="container flex-grow-1 mt-4">
+    
+    <div class="mb-3">
+        <a href="index.html" class="btn btn-secondary btn-sm shadow-sm">
+            <i class="bi bi-arrow-right-circle"></i> العودة إلى الصفحة الرئيسية
+        </a>
+    </div>
+
+    <!-- مساحة عرض Phaser -->
+    <div id="phaser-container" class="shadow-sm border"></div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-11">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="code-tab" data-bs-toggle="tab" data-bs-target="#code-pane" type="button" role="tab">الملف السطحي (SMD)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="color-tab" data-bs-toggle="tab" data-bs-target="#color-pane" type="button" role="tab">ملف الألوان (نقاط)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="unit-tab" data-bs-toggle="tab" data-bs-target="#unit-pane" type="button" role="tab">محول الوحدات</button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        
+                        <!-- قسم أكواد الأرقام (SMD) -->
+                        <div class="tab-pane fade show active" id="code-pane" role="tabpanel">
+                            <div class="row align-items-center mb-3">
+                                <div class="col-md-8 mx-auto text-center">
+                                    <label class="form-label text-muted">أدخل الكود المطبوع (مثال: 101, 4R7, 330, 221K)</label>
+                                    <input type="text" class="form-control form-control-lg text-center shadow-sm" id="ind-code" placeholder="مثال: 4R7" maxlength="5" style="letter-spacing: 2px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- قسم الملف المحوري بالنقاط (Dots) -->
+                        <div class="tab-pane fade" id="color-pane" role="tabpanel">
+                            <form id="color-form" class="row g-2 justify-content-center mb-3">
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label text-muted">النقطة 1</label>
+                                    <select class="form-select ind-band shadow-sm" id="i_band1">
+                                        <option value="black" style="background:black;color:white">أسود (0)</option>
+                                        <option value="brown" style="background:brown;color:white" selected>بني (1)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label text-muted">النقطة 2</label>
+                                    <select class="form-select ind-band shadow-sm" id="i_band2">
+                                        <option value="black" style="background:black;color:white" selected>أسود (0)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (1)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (2)</option>
+                                        <option value="orange" style="background:orange">برتقالي (3)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (4)</option>
+                                        <option value="green" style="background:green;color:white">أخضر (5)</option>
+                                        <option value="blue" style="background:blue;color:white">أزرق (6)</option>
+                                        <option value="violet" style="background:violet">بنفسجي (7)</option>
+                                        <option value="gray" style="background:gray;color:white">رمادي (8)</option>
+                                        <option value="white" style="background:white">أبيض (9)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label text-muted">نقطة المضاعف</label>
+                                    <select class="form-select ind-band shadow-sm" id="i_multiplier">
+                                        <option value="black" style="background:black;color:white" selected>أسود (x1)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (x10)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (x100)</option>
+                                        <option value="orange" style="background:orange">برتقالي (x1K)</option>
+                                        <option value="yellow" style="background:yellow">أصفر (x10K)</option>
+                                        <option value="gold" style="background:#FFD700;color:black">ذهبي (x0.1)</option>
+                                        <option value="silver" style="background:#C0C0C0;color:black">فضي (x0.01)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label text-muted">نقطة الخطأ</label>
+                                    <select class="form-select ind-band shadow-sm" id="i_tolerance">
+                                        <option value="black" style="background:black;color:white">أسود (±20%)</option>
+                                        <option value="silver" style="background:#C0C0C0;color:black" selected>فضي (±10%)</option>
+                                        <option value="gold" style="background:#FFD700;color:black">ذهبي (±5%)</option>
+                                        <option value="red" style="background:red;color:white">أحمر (±2%)</option>
+                                        <option value="brown" style="background:brown;color:white">بني (±1%)</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- قسم محول الوحدات -->
+                        <div class="tab-pane fade" id="unit-pane" role="tabpanel">
+                            <div class="row g-3 justify-content-center mt-2 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label text-muted">القيمة</label>
+                                    <input type="number" class="form-control" id="convert-value" placeholder="مثال: 100">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted">الوحدة الحالية</label>
+                                    <select class="form-select" id="convert-unit">
+                                        <option value="H">هنري (H)</option>
+                                        <option value="mH">ملي هنري (mH)</option>
+                                        <option value="uH" selected>مايكرو هنري (µH)</option>
+                                        <option value="nH">نانو هنري (nH)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- مربع النتيجة -->
+                        <div id="result-container" class="mt-4 p-3 result-box shadow-sm rounded">
+                            <h5 class="text-success mb-3"><i class="bi bi-calculator"></i> قيمة المحاثة (Inductance):</h5>
+                            <div class="row text-center fw-bold fs-5 text-dark">
+                                <div class="col-12 col-md-4 mb-2"><span id="val-uh" class="text-primary">10 µH</span></div>
+                                <div class="col-12 col-md-4 mb-2"><span id="val-mh" class="text-success">0.01 mH</span></div>
+                                <div class="col-12 col-md-4 mb-2"><span id="val-nh" class="text-danger">10,000 nH</span></div>
+                            </div>
+                            <hr>
+                            <div class="text-center text-muted fw-bold">
+                                نسبة الخطأ (Tolerance): <span id="val-tolerance" class="text-dark">غير محدد</span> 
+                            </div>
+                        </div>
+
+                        <!-- مربع النتيجة لمحول الوحدات -->
+                        <div id="converter-results-container" class="mt-4 p-3 bg-light border rounded" style="display:none;">
+                            <h5 class="text-center mb-3">التحويل:</h5>
+                            <ul class="list-group list-group-flush text-center fw-bold fs-5" id="conversion-results">
+                                <li class="list-group-item bg-transparent">...</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط السفلي (Footer) -->
+<footer class="bg-dark text-light py-4 border-top border-secondary mt-auto">
+    <div class="container text-center">
+        <div class="mb-3">
+            <span class="text-muted">تطوير وتصميم: </span>
+            <a href="https://me.haythamzeidan.workers.dev/" target="_blank" class="text-success text-decoration-none fw-bold fs-5">
+                هيثم زيدان
+            </a>
+        </div>
+        <div>
+            <a href="https://github.com/wazefapress" target="_blank" class="btn btn-outline-light btn-sm mx-1 shadow-sm">
+                <i class="bi bi-github"></i> مشاريع GitHub
+            </a>
+            
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'حاسبة الملفات',
+                text: 'أداة سهلة وسريعة لمعرفة قيم الملفات السطحية والملونة بالنقاط وتحويل وحداتها.',
+                url: window.location.href
+            }).catch(console.error);
+        }
+    }
+
+    const hexColors = {
+        black: 0x000000, brown: 0x8B4513, red: 0xFF0000, orange: 0xFFA500,
+        yellow: 0xFFFF00, green: 0x008000, blue: 0x0000FF, violet: 0xEE82EE,
+        gray: 0x808080, white: 0xFFFFFF, gold: 0xFFD700, silver: 0xC0C0C0
+    };
+
+    const indColors = { black:0, brown:1, red:2, orange:3, yellow:4, green:5, blue:6, violet:7, gray:8, white:9 };
+    const indMultiplier = { black:1, brown:10, red:100, orange:1000, yellow:10000, gold:0.1, silver:0.01 };
+    const indTolColors = { black:'±20%', silver:'±10%', gold:'±5%', red:'±2%', brown:'±1%' };
+    
+    const letterTol = { 'J': '±5%', 'K': '±10%', 'M': '±20%' };
+
+    class InductorScene extends Phaser.Scene {
+        constructor() { super({ key: 'InductorScene' }); }
+
+        create() {
+            this.graphics = this.add.graphics();
+            this.indText = this.add.text(300, 100, '', { font: 'bold 28px Arial', fill: '#FFFFFF' }).setOrigin(0.5);
+            this.drawSMDInductor(''); 
+        }
+
+        // رسم الملف السطحي (SMD)
+        drawSMDInductor(code) {
+            this.graphics.clear();
+            this.indText.setVisible(true);
+            
+            this.graphics.fillStyle(0x95A5A6, 1);
+            this.graphics.fillRoundedRect(190, 50, 40, 100, 5); 
+            this.graphics.fillRoundedRect(370, 50, 40, 100, 5); 
+
+            this.graphics.fillStyle(0x2C3E50, 1); 
+            this.graphics.fillRoundedRect(210, 50, 180, 100, 8);
+            
+            this.indText.setText(code);
+        }
+
+        // رسم الملف بنظام النقاط اللونية (Dots)
+        drawDotInductor(colors) {
+            this.graphics.clear();
+            this.indText.setVisible(false);
+
+            // الأسلاك
+            this.graphics.lineStyle(4, 0x95A5A6, 1);
+            this.graphics.beginPath();
+            this.graphics.moveTo(100, 100); this.graphics.lineTo(500, 100);
+            this.graphics.strokePath();
+
+            // جسم الملف
+            this.graphics.fillStyle(0x73C6B6, 1);
+            this.graphics.fillRoundedRect(180, 50, 240, 100, 40);
+
+            let dotPositions = [225, 275, 325, 375]; 
+            
+            colors.forEach((color, index) => {
+                this.graphics.fillStyle(hexColors[color], 1);
+                this.graphics.fillCircle(dotPositions[index], 100, 15);
+                
+                // لمعة دائرية خفيفة
+                this.graphics.fillStyle(0xFFFFFF, 0.3);
+                this.graphics.fillCircle(dotPositions[index] - 4, 96, 5);
+            });
+        }
+    }
+
+    const config = {
+        type: Phaser.AUTO, width: 600, height: 200,
+        parent: 'phaser-container', transparent: true, scene: InductorScene
+    };
+    const game = new Phaser.Game(config);
+
+    function displayResults(valUh, tolerance) {
+        if(isNaN(valUh)) {
+            document.getElementById('val-uh').innerText = "خطأ";
+            document.getElementById('val-mh').innerText = "-";
+            document.getElementById('val-nh').innerText = "-";
+            return;
+        }
+
+        let nH = valUh * 1000;
+        let mH = valUh / 1000;
+
+        document.getElementById('val-uh').innerText = formatNumber(valUh) + ' µH';
+        document.getElementById('val-mh').innerText = formatNumber(mH) + ' mH';
+        document.getElementById('val-nh').innerText = formatNumber(nH) + ' nH';
+        document.getElementById('val-tolerance').innerText = tolerance;
+    }
+
+    function formatNumber(num) {
+        return num.toLocaleString('en-US', {maximumFractionDigits: 4});
+    }
+
+    function updateSMDCode() {
+        let input = document.getElementById('ind-code');
+        input.value = input.value.toUpperCase().replace(/[^0-9RJKM]/g, '');
+        let code = input.value;
+
+        const scene = game.scene.keys['InductorScene'];
+        if(scene) scene.drawSMDInductor(code);
+
+        if (code === '') {
+            displayResults(0, "غير محدد");
+            return;
+        }
+
+        let letters = code.match(/[JKM]/g) || [];
+        let numbersAndR = code.replace(/[JKM]/g, '');
+        let tolCode = letters.length > 0 ? letters[0] : null;
+        let tolerance = tolCode && letterTol[tolCode] ? letterTol[tolCode] + ` (${tolCode})` : "غير محدد";
+
+        let valUh = NaN;
+
+        if (numbersAndR.includes('R')) {
+            valUh = parseFloat(numbersAndR.replace('R', '.'));
+        } else if (numbersAndR.length <= 2) {
+            valUh = parseInt(numbersAndR);
+        } else if (numbersAndR.length === 3) {
+            let base = parseInt(numbersAndR.slice(0, 2));
+            let mult = Math.pow(10, parseInt(numbersAndR.slice(2, 3)));
+            valUh = base * mult;
+        }
+
+        displayResults(valUh, tolerance);
+    }
+
+    function updateColorCode() {
+        const b1 = document.getElementById('i_band1').value;
+        const b2 = document.getElementById('i_band2').value;
+        const mult = document.getElementById('i_multiplier').value;
+        const tol = document.getElementById('i_tolerance').value;
+
+        const scene = game.scene.keys['InductorScene'];
+        // استدعاء دالة النقاط بدلاً من الحزم
+        if(scene) scene.drawDotInductor([b1, b2, mult, tol]);
+
+        let valUh = ((indColors[b1] * 10) + indColors[b2]) * indMultiplier[mult];
+        let tolerance = indTolColors[tol];
+
+        displayResults(valUh, tolerance);
+    }
+
+    function updateConverter() {
+        let val = parseFloat(document.getElementById('convert-value').value);
+        let unit = document.getElementById('convert-unit').value;
+        let resultsList = document.getElementById('conversion-results');
+
+        if (isNaN(val)) {
+            resultsList.innerHTML = '<li class="list-group-item bg-transparent text-muted">أدخل رقماً...</li>';
+            return;
+        }
+
+        let H, mH, uH, nH;
+        if (unit === 'H') { H = val; mH = val * 1000; uH = val * 1000000; nH = val * 1000000000; } 
+        else if (unit === 'mH') { H = val / 1000; mH = val; uH = val * 1000; nH = val * 1000000; } 
+        else if (unit === 'uH') { H = val / 1000000; mH = val / 1000; uH = val; nH = val * 1000; }
+        else { H = val / 1000000000; mH = val / 1000000; uH = val / 1000; nH = val; }
+
+        resultsList.innerHTML = `
+            <li class="list-group-item text-dark">${formatNumber(H)} <b>H</b> (هنري)</li>
+            <li class="list-group-item text-success">${formatNumber(mH)} <b>mH</b> (ملي)</li>
+            <li class="list-group-item text-primary">${formatNumber(uH)} <b>µH</b> (مايكرو)</li>
+            <li class="list-group-item text-danger">${formatNumber(nH)} <b>nH</b> (نانو)</li>
+        `;
+    }
+
+    document.getElementById('ind-code').addEventListener('input', updateSMDCode);
+    
+    document.querySelectorAll('.ind-band').forEach(select => {
+        select.addEventListener('change', updateColorCode);
+    });
+
+    document.getElementById('convert-value').addEventListener('input', updateConverter);
+    document.getElementById('convert-unit').addEventListener('change', updateConverter);
+
+    document.getElementById('code-tab').addEventListener('shown.bs.tab', () => {
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('converter-results-container').style.display = 'none';
+        updateSMDCode();
+    });
+
+    document.getElementById('color-tab').addEventListener('shown.bs.tab', () => {
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('converter-results-container').style.display = 'none';
+        updateColorCode();
+    });
+
+    document.getElementById('unit-tab').addEventListener('shown.bs.tab', () => {
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('converter-results-container').style.display = 'block';
+        
+        const scene = game.scene.keys['InductorScene'];
+        if(scene) scene.graphics.clear();
+        if(scene) scene.indText.setVisible(false);
+    });
+
+    updateSMDCode();
+
+</script>
+</body>
+</html>
