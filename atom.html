@@ -11,17 +11,6 @@
     <meta name="author" content="هيثم زيدان">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph / Facebook SEO -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="أساسيات الإلكترونيات | الذرة والبنية الذرية والتحرير">
-    <meta property="og:description" content="تعلم أساسيات الإلكترونيات وكيفية حركة الإلكترونات وتوليد التيار الكهربائي من خلال محاكاة تفاعلية ممتعة.">
-    <meta property="og:locale" content="ar_AR">
-
-    <!-- Twitter SEO -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="أساسيات الإلكترونيات | الذرة">
-    <meta name="twitter:description" content="محاكاة تفاعلية لتعلم البنية الذرية وكيفية انطلاق الإلكترونات لتوليد الكهرباء.">
-
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -31,8 +20,8 @@
     
     <style>
         body { 
-            background-color: #0f172a; 
-            color: #f8fafc; 
+            background-color: #f8fafc; /* خلفية فاتحة جداً */
+            color: #1e293b; /* نص داكن */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -47,30 +36,32 @@
             margin: 0 auto;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* ظل ناعم */
+            background-color: #ffffff; /* خلفية المحاكاة بيضاء */
+            border: 1px solid #e2e8f0;
         }
         .control-panel { 
-            background-color: #1e293b; 
+            background-color: #ffffff; 
             border-radius: 12px; 
             padding: 20px; 
-            border: 1px solid #334155;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
             height: 100%;
         }
         canvas { display: block; width: 100% !important; height: auto !important; }
-        .atom-card { background-color: #0f172a; border: 1px solid #334155; }
+        .atom-card { background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; }
         
         /* Atom Profile Card Styling */
         .atom-profile-card {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid #3b82f6;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #bae6fd;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);
+            color: #1e293b;
         }
         .atom-spec-box {
-            background-color: rgba(30, 41, 59, 0.8);
-            border: 1px solid #334155;
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 10px;
             text-align: center;
@@ -78,38 +69,38 @@
         
         /* Header Styling */
         .app-header {
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         .back-nav-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: #38bdf8;
+            color: #0284c7;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease-in-out;
         }
         .back-nav-link:hover {
-            color: #7dd3fc;
+            color: #0369a1;
             text-decoration: underline;
         }
 
         /* Footer Styling */
         .app-footer {
-            background-color: #1e293b;
-            border-top: 1px solid #334155;
-            color: #94a3b8;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
             margin-top: auto;
         }
         .github-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background-color: #0f172a;
-            color: #f8fafc;
-            border: 1px solid #475569;
+            background-color: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
             padding: 6px 14px;
             border-radius: 20px;
             text-decoration: none;
@@ -117,19 +108,19 @@
             transition: all 0.2s ease;
         }
         .github-btn:hover {
-            background-color: #334155;
-            color: #ffffff;
-            border-color: #38bdf8;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+            background-color: #f1f5f9;
+            color: #0f172a;
+            border-color: #94a3b8;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
         }
         .footer-link {
-            color: #38bdf8;
+            color: #0284c7;
             text-decoration: none;
             font-weight: 500;
         }
         .footer-link:hover {
             text-decoration: underline;
-            color: #7dd3fc;
+            color: #0369a1;
         }
     </style>
 </head>
@@ -139,12 +130,11 @@
 <header class="app-header py-3 sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
-            <span class="fs-4 text-info">⚛️</span>
-            <h1 class="h5 mb-0 fw-bold text-light">أساسيات الإلكترونيات | الذرة</h1>
+            <span class="fs-4">⚛️</span>
+            <h1 class="h5 mb-0 fw-bold text-dark">أساسيات الإلكترونيات | الذرة</h1>
         </div>
-        <button id="btnShare" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2 px-3">
+        <button id="btnShare" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 px-3">
             <i class="bi bi-share-fill"></i>
-           
         </button>
     </div>
 </header>
@@ -161,22 +151,19 @@
 
         <div class="row mb-3">
             <div class="col-12 text-center">
-
-                <p class="lead text-slate-300 fs-6">شاهد كيف تتكامل بنية الذرة مع مصادر الطاقة لتوليد تيار كهربائي لإضاءة مصباح!</p>
+                <p class="lead text-secondary fs-6">شاهد كيف تتكامل بنية الذرة مع مصادر الطاقة لتوليد تيار كهربائي لإضاءة مصباح!</p>
             </div>
         </div>
 
         <div class="row g-4">
             <!-- منطقة المحاكاة وبطاقة تعريف الذرة -->
             <div class="col-lg-8">
-               
-
                 <!-- بطاقة تعريف الذرة (Atom Profile Card) -->
-                <div class="atom-profile-card mt-3 p-3 text-light">
-                    <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-2 mb-3">
+                <div class="atom-profile-card mt-3 p-3">
+                    <div class="d-flex align-items-center justify-content-between border-bottom border-light pb-2 mb-3">
                         <div class="d-flex align-items-center gap-2">
                             <span class="fs-3">🆔</span>
-                            <h3 class="h5 mb-0 text-info fw-bold">بطاقة تعريف الذرة (Atom Profile Card)</h3>
+                            <h3 class="h5 mb-0 text-primary fw-bold">بطاقة تعريف الذرة (Atom Profile Card)</h3>
                         </div>
                         <span class="badge bg-primary px-3 py-1 fs-6">عنصر الفلور (Fluorine - F)</span>
                     </div>
@@ -184,46 +171,46 @@
                     <div class="row g-2 mb-3 text-center">
                         <div class="col-4 col-sm-2">
                             <div class="atom-spec-box">
-                                <span class="d-block text-muted small">الرمز</span>
+                                <span class="d-block text-secondary small">الرمز</span>
                                 <span class="fw-bold text-warning fs-5">F</span>
                             </div>
                         </div>
                         <div class="col-4 col-sm-2">
                             <div class="atom-spec-box">
-                                <span class="d-block text-muted small">العدد الذري</span>
-                                <span class="fw-bold text-info fs-5">9</span>
+                                <span class="d-block text-secondary small">العدد الذري</span>
+                                <span class="fw-bold text-primary fs-5">9</span>
                             </div>
                         </div>
                         <div class="col-4 col-sm-2">
                             <div class="atom-spec-box">
-                                <span class="d-block text-muted small">البروتونات</span>
+                                <span class="d-block text-secondary small">البروتونات</span>
                                 <span class="fw-bold text-danger fs-5">9 🔴</span>
                             </div>
                         </div>
                         <div class="col-4 col-sm-2">
                             <div class="atom-spec-box">
-                                <span class="d-block text-muted small">النيوترونات</span>
-                                <span class="fw-bold fs-5" style="color: #a855f7;">10 🟣</span>
+                                <span class="d-block text-secondary small">النيوترونات</span>
+                                <span class="fw-bold fs-5" style="color: #9333ea;">10 🟣</span>
                             </div>
                         </div>
                         <div class="col-4 col-sm-2">
                             <div class="atom-spec-box">
-                                <span class="d-block text-muted small">الإلكترونات</span>
+                                <span class="d-block text-secondary small">الإلكترونات</span>
                                 <span id="idCardElectrons" class="fw-bold text-warning fs-5">9 🟡</span>
                             </div>
                         </div>
                         <div class="col-4 col-sm-2">
                             <div class="atom-spec-box">
-                                <span class="d-block text-muted small">التكافؤ</span>
+                                <span class="d-block text-secondary small">التكافؤ</span>
                                 <span class="fw-bold text-success fs-5">1-</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row g-2 small text-muted">
+                    <div class="row g-2 small text-dark">
                         <div class="col-md-6">
-                            <div class="p-2 border border-secondary rounded bg-dark">
-                                <strong class="text-info d-block mb-1">📍 التوزيع الإلكتروني للمدارات:</strong>
+                            <div class="p-2 border border-light rounded bg-white">
+                                <strong class="text-primary d-block mb-1">📍 التوزيع الإلكتروني للمدارات:</strong>
                                 <ul>
                                     <li><b>المدار الأول (K):</b> 2 إلكترون</li>
                                     <li><b>المدار الثاني (L):</b> 4 إلكترونات</li>
@@ -232,8 +219,8 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="p-2 border border-secondary rounded bg-dark">
-                                <strong class="text-info d-block mb-1">⚡ خصائص الشحنة والحالة:</strong>
+                            <div class="p-2 border border-light rounded bg-white">
+                                <strong class="text-primary d-block mb-1">⚡ خصائص الشحنة والحالة:</strong>
                                 <ul>
                                     <li><b>الحالة الطبيعية:</b> متعادلة كهربائياً (عدد البروتونات = عدد الإلكترونات).</li>
                                     <li><b>عند فقدان إلكترون:</b> تتحول الذرة إلى <span class="text-warning fw-bold">أيون موجب</span> وتولد تياراً كهربائياً.</li>
@@ -250,20 +237,20 @@
                     <div>
                         <!-- تعريف الذرة الأشمل -->
                         <div class="card atom-card mb-3 p-3">
-                            <h3 class="h6 text-info fw-bold mb-2">⚛️ ما هي الذرة؟ (بنيتها وأسرارها)</h3>
-                            <p class="small text-muted mb-2" style="line-height: 1.6;">
+                            <h3 class="h6 text-primary fw-bold mb-2">⚛️ ما هي الذرة؟ (بنيتها وأسرارها)</h3>
+                            <p class="small text-secondary mb-2" style="line-height: 1.6;">
                                 الذرة هي اللبنة الأساسية لكل مواد الكون، وتتكون من قسمين رئيسيين:
                             </p>
-                            <ul class="small text-muted ps-3 mb-2" style="line-height: 1.5;">
-                                <li><b>النواة (في المركز):</b> تحوي <span class="text-danger">بروتونات موجبة</span> و<span style="color:#a855f7;">نيوترونات متعادلة</span>، وهي المسؤولة عن كتلة الذرة.</li>
+                            <ul class="small text-secondary ps-3 mb-2" style="line-height: 1.5;">
+                                <li><b>النواة (في المركز):</b> تحوي <span class="text-danger">بروتونات موجبة</span> و<span style="color:#9333ea;">نيوترونات متعادلة</span>، وهي المسؤولة عن كتلة الذرة.</li>
                                 <li><b>الإلكترونات (<span class="text-warning">نقاط صفراء</span>):</b> جسيمات سالبة الشحنة تدور بسرعة هائلة في مدارات خارجية واسعة.</li>
                             </ul>
-                            <p class="small text-muted mb-0" style="line-height: 1.5;">
+                            <p class="small text-secondary mb-0" style="line-height: 1.5;">
                                 💡 <b>السر في الكهرباء:</b> عندما نطبق طاقة خارجية، تتحرر هذه الإلكترونات وتندفع في السلك لتشكل <b>التيار الكهربائي</b>!
                             </p>
                         </div>
- <div id="phaser-game-container"></div>
-                        <h3 class="h6 mb-2 text-info border-bottom border-secondary pb-2">اختر مصدر الطاقة للتحرير</h3>
+                        <div id="phaser-game-container"></div>
+                        <h3 class="h6 mt-3 mb-2 text-primary border-bottom border-light pb-2">اختر مصدر الطاقة للتحرير</h3>
                         
                         <!-- أزرار مصادر الطاقة -->
                         <div class="d-grid gap-2 mb-3">
@@ -279,15 +266,15 @@
                         </div>
 
                         <!-- حالة المصباح -->
-                        <div class="card bg-dark border-secondary mb-3 text-center">
+                        <div class="card bg-light border-light mb-3 text-center">
                             <div class="card-body py-2">
-                                <span class="small text-muted d-block mb-1">حالة المصباح والتدفق:</span>
+                                <span class="small text-secondary d-block mb-1">حالة المصباح والتدفق:</span>
                                 <span id="lampStateBadge" class="badge bg-secondary fs-6 px-3 py-2">⚪ مطفأ (0 إلكترونات)</span>
                             </div>
                         </div>
 
                         <!-- صندوق الشرح العلمي التفاعلي -->
-                        <div id="explanationBox" class="alert alert-info border-info text-dark small mb-2 p-2">
+                        <div id="explanationBox" class="alert alert-primary border-primary text-dark small mb-2 p-2">
                             <strong>التوجيه:</strong> <span>اضغط على مصادر الطاقة لتحرير الإلكترونات تدريجياً (من 1 إلى 9 إلكترونات).</span>
                         </div>
                     </div>
@@ -319,10 +306,6 @@
 </footer>
 
 <script>
-// ==========================================
-// 1. منطق Phaser 3 (المحاكاة البصرية)
-// ==========================================
-
 class AtomCircuitScene extends Phaser.Scene {
     constructor() {
         super('AtomCircuitScene');
@@ -366,7 +349,7 @@ class AtomCircuitScene extends Phaser.Scene {
         this.graphics.strokePath();
 
         this.add.text(this.wireStartX + 90, this.wireY - 40, "سلك نحاسي (مسار التيار)", { 
-            fontFamily: 'Tahoma', fontSize: '13px', color: '#94a3b8' 
+            fontFamily: 'Tahoma', fontSize: '13px', color: '#475569' 
         });
     }
 
@@ -466,7 +449,7 @@ class AtomCircuitScene extends Phaser.Scene {
         this.graphics.clear();
         this.drawWire();
 
-        this.graphics.lineStyle(1, 0x334155, 0.6);
+        this.graphics.lineStyle(1, 0x94a3b8, 0.6);
         this.orbitRadii.forEach(r => {
             this.graphics.strokeCircle(this.atomX, this.atomY, r);
         });
@@ -518,7 +501,7 @@ class AtomCircuitScene extends Phaser.Scene {
             this.graphics.fillCircle(this.lampX, this.lampY, 35 + (intensity * 35));
         }
 
-        let bulbColor = 0x475569; 
+        let bulbColor = 0x94a3b8; 
         if (intensity === 0.3) bulbColor = 0xfde047; 
         if (intensity === 0.6) bulbColor = 0xfacc15; 
         if (intensity === 1.0) bulbColor = 0xfef08a; 
@@ -526,7 +509,7 @@ class AtomCircuitScene extends Phaser.Scene {
         this.graphics.fillStyle(bulbColor, 1);
         this.graphics.fillCircle(this.lampX, this.lampY, 25);
         
-        this.graphics.fillStyle(0x94a3b8, 1);
+        this.graphics.fillStyle(0x64748b, 1);
         this.graphics.fillRect(this.lampX - 10, this.lampY + 20, 20, 15);
     }
 }
@@ -536,16 +519,12 @@ const config = {
     parent: 'phaser-game-container',
     width: 800,
     height: 400,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff', // خلفية المحاكاة أصبحت بيضاء
     scene: AtomCircuitScene,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }
 };
 
 const game = new Phaser.Game(config);
-
-// ==========================================
-// 2. تحديث الواجهة والشرح العلمي
-// ==========================================
 
 const lampStateBadge = document.getElementById('lampStateBadge');
 const explanationBox = document.querySelector('#explanationBox span');
@@ -584,14 +563,12 @@ window.addEventListener('updateLampState', (e) => {
     lampStateBadge.innerText = text;
     lampStateBadge.className = className;
     
-    // تحديث عدد الإلكترونات المتبقية في بطاقة التعريف
     const remainingElectrons = 9 - count;
     if (idCardElectrons) {
         idCardElectrons.innerText = `${remainingElectrons} 🟡`;
     }
 });
 
-// زر المشاركة
 document.getElementById('btnShare').addEventListener('click', async () => {
     if (navigator.share) {
         try {
