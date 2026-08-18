@@ -46,18 +46,7 @@
   - Cache Storage
   - Web Manifest
 
-## 📂 هيكلية المشروع (Project Structure)
 
-```text
-📁 electronics-app
-├── 📄 index.html             # الصفحة الرئيسية (الفهرس وبطاقة التعريف)
-├── 📄 manifest.json          # ملف تعريف الـ PWA
-├── 📄 sw.js                  # الـ Service Worker (للتعامل مع الكاش والـ Offline)
-├── 📄 atom.html              # (صفحات الفصول الدراسية...)
-├── 📄 battery.html           
-├── 📄 logic-gates.html       
-├── 📄 ...                    # باقي ملفات الفصول
-└── 📄 README.md              # هذا الملف
 
 
 ```
