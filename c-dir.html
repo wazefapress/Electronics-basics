@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موسوعة العناصر الإلكترونية الشاملة</title>
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-3px); }
+        .badge-symbol { font-family: monospace; font-size: 0.95rem; }
+        
+        .back-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease-in-out;
+        }
+        .back-nav-link:hover {
+            color: #0369a1;
+            text-decoration: underline;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            width: 100%;
+            height: 90px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .canvas-container canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Footer Styling */
+        .app-footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            margin-top: auto;
+        }
+        .github-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .github-btn:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            border-color: #94a3b8;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        .footer-link {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
+            color: #0369a1;
+        }
+    </style>
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+        <div class="container">
+            <span class="navbar-brand fw-bold"><i class="bi bi-cpu text-warning me-2"></i> الدليل الشامل للعناصر الإلكترونية</span>
+            <span class="badge bg-secondary" id="totalCount">0 عنصر</span>
+             <button id="shareBtn" class="btn btn-light btn-sm fw-bold" type="button">
+        <i class="fas fa-share-alt"></i> مشاركة
+    </button>
+        </div>
+        
+    </nav>
+
+    <div class="main-wrapper flex-grow-1">
+        <div class="container py-4">
+            
+            <!-- زر عودة إلى الصفحة الرئيسية -->
+            <div class="mb-3">
+                <a href="index.html" class="back-nav-link">
+                    <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                    <span>عودة إلى الصفحة الرئيسية</span>
+                </a>
+            </div>
+
+            <!-- Search & Filter Controls -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-7">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="ابحث باسم العنصر، الرمز، أو الاستخدام...">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <select id="categoryFilter" class="form-select shadow-sm">
+                        <option value="all">جميع التصنيفات</option>
+                        <option value="passive">عناصر سلبية (Passive)</option>
+                        <option value="active">أشباه موصلات وعناصر نشطة (Active)</option>
+                        <option value="opto">عناصر كهروضوئية (Optoelectronics)</option>
+                        <option value="ic">دوائر متكاملة (Integrated Circuits)</option>
+                        <option value="sensors">مستشعرات ومذبذبات (Sensors & Oscillators)</option>
+                        <option value="protection">حماية وكهروميكانيك (Protection & Mech)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid for Components -->
+            <div class="row g-4" id="componentsGrid"></div>
+
+        </div>
+    </div>
+
+    <!-- الشريط السفلي (Footer) -->
+    <footer class="app-footer py-3 text-center">
+        <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+            <div class="small">
+                جميع الحقوق محفوظة &copy; 2026 | تطوير وتصميم <a href="https://me.haythamzeidan.workers.dev/" class="footer-link">هيثم زيدان</a>
+            </div>
+            <div>
+                <a href="https://github.com/wazefapress/Electronics-basics" target="_blank" rel="noopener noreferrer" class="github-btn">
+                    <i class="bi bi-github fs-6"></i>
+                    <span>عرض على GitHub</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript Data & Native Canvas Rendering Engine -->
+    <script>
+        const components = [
+            { id: "resistor", name: "المقاومة الكهربائية", en: "Resistor", symbol: "R", category: "passive", desc: ["الحد من تدفق التيار الكهربائي.", "تقسيم الجهد الكهربائي في الدوائر.", "حماية العناصر الحساسة من التيار العالي."] },
+            { id: "capacitor", name: "المكثف الكهربائي", en: "Capacitor", symbol: "C", category: "passive", desc: ["تخزين وتفريغ الشحنات الكهربائية.", "تنعيم التيار بعد التقويم (Filtering).", "حجب التيار المستمر (DC) وإمرار المتردد (AC)."] },
+            { id: "inductor", name: "الملف / المحث", en: "Inductor", symbol: "L", category: "passive", desc: ["تخزين الطاقة في مجال مغناطيسي.", "فلترة الترددات العالية وتصفية الإشارات.", "مقاومة التغيرات المفاجئة في التيار."] },
+            { id: "potentiometer", name: "المقاومة المتغيرة", en: "Potentiometer / Rheostat", symbol: "VR / POT", category: "passive", desc: ["التحكم في شدة الصوت أو الإضاءة يدويًا.", "ضبط مستويات الجهد والتعيير في الدوائر."] },
+            { id: "transformer", name: "المحول الكهربائي", en: "Transformer", symbol: "T / TR", category: "passive", desc: ["رفع أو خفض قيمة الجهد المتردد (AC).", "العزل الكهربائي بين الدوائر."] },
+            { id: "diode", name: "الدايود / الموحد", en: "Diode", symbol: "D", category: "active", desc: ["تسمح بمرور التيار في اتجاه واحد فقط.", "تحويل التيار المتردد (AC) إلى مستمر (DC)."] },
+            { id: "zener", name: "دايود زنر", en: "Zener Diode", symbol: "ZD", category: "active", desc: ["تنظيم الجهد الكهربائي والحفاظ على قيمته ثابته.", "الحماية من ارتفاع الجهد الزائد."] },
+            { id: "bjt", name: "ترانزستور BJT", en: "BJT Transistor (NPN/PNP)", symbol: "Q / T", category: "active", desc: ["عمل كمفتاح إلكتروني سريع جداً.", "تضخيم الإشارات الصوتية والترددية الضئيلة."] },
+            { id: "mosfet", name: "ترانزستور MOSFET", en: "MOSFET Transistor", symbol: "Q", category: "active", desc: ["التحكم في القدرات العالية بسرعة فائقة.", "مستعمل بكثرة في دوائر التغذية (SMPS) والمحركات."] },
+            { id: "scr", name: "الثايرستور", en: "Thyristor / SCR", symbol: "SCR", category: "active", desc: ["مفتاح إلكتروني للتيار العالي يعمل بنبضة تحكم.", "التحكم في المحركات والمعدات الصناعية."] },
+            { id: "triac", name: "الترياك", en: "TRIAC", symbol: "TRIAC", category: "active", desc: ["التحكم في أحمال التيار المتردد (AC) في الاتجاهين.", "خافضات الإضاءة (Dimmer) وسرعة المروحة."] },
+            { id: "led", name: "الثنائي المضيء", en: "LED", symbol: "LED", category: "opto", desc: ["إصدار الضوء عند مرور التيار.", "مؤشرات تشغيل وإضاءة موفرة للطاقة."] },
+            { id: "photodiode", name: "الدايود الضوئي", en: "Photodiode", symbol: "PD", category: "opto", desc: ["تحويل الضوء الساقط عليه إلى تيار كهربائي.", "مستقبلات الأشعة تحت الحمراء في أجهزة التحكم."] },
+            { id: "ldr", name: "المقاومة الضوئية", en: "LDR", symbol: "LDR", category: "opto", desc: ["تتغير قيمتها حسب شدة الإضاءة.", "أنظمة الإنارة التلقائية في الشوارع."] },
+            { id: "optocoupler", name: "العازل الضوئي", en: "Optocoupler", symbol: "U / IC", category: "opto", desc: ["عزل دوائر التحكم ذات الجهد المنخفض عن الجهد العالي.", "حماية المتحكمات من الارتجاعات."] },
+            { id: "ic555", name: "المؤقت 555", en: "Timer 555 IC", symbol: "IC / U", category: "ic", desc: ["توليد نبضات مربعة وتوقيتات زمنية.", "توليد إشارات PWM ومذبذبات."] },
+            { id: "opamp", name: "مكبر العمليات", en: "Operational Amplifier (Op-Amp)", symbol: "IC / Op-Amp", category: "ic", desc: ["مقارنة الجهود وتضخيم الإشارات الدقيقة.", "مرشحات الصوت والدوائر الحسابية التناظرية."] },
+            { id: "regulator", name: "منظم الجهد", en: "Voltage Regulator (78xx/LM317)", symbol: "REG / IC", category: "ic", desc: ["إعطاء خرج جهد مستمر وثابت (مثل 5V أو 12V).", "حماية الدوائر الإلكترونية من تذبذب المصدر."] },
+            { id: "mcu", name: "المتحكم الدقيق", en: "Microcontroller (MCU)", symbol: "MCU / IC", category: "ic", desc: ["عقل الأنظمة المدمجة (مثل Arduino / PIC).", "برمجة وتنفيذ الأوامر المعقدة للتحكم بالحساسات."] },
+            { id: "crystal", name: "الكريستالة / المذبذب", en: "Crystal Oscillator", symbol: "XTAL / Y", category: "sensors", desc: ["توليد ترددات دقيقة جداً للساعات والمعالجات.", "ضبط توقيتات إشارات الاتصال."] },
+            { id: "temp_sensor", name: "حساس الحرارة", en: "Temperature Sensor (LM35/NTC)", symbol: "TH / SENSOR", category: "sensors", desc: ["قياس درجة الحرارة وتحويلها لجهد كهربائي.", "دوائر التكييف ومقاييس الحرارة الرقمية."] },
+            { id: "buzzer", name: "البازر / الطنان", en: "Buzzer", symbol: "BZ", category: "sensors", desc: ["إصدار تنبيهات صوتية عند جهد معين.", "أجهزة الإنذار والتنبيه."] },
+            { id: "fuse", name: "الفيوز / المصهر", en: "Fuse", symbol: "F", category: "protection", desc: ["قطع الدائرة عند مرور تيار أعلى من المسموح.", "حماية الأجهزة من الاحتراق والماسات."] },
+            { id: "varistor", name: "الفاريستور", en: "Varistor (MOV)", symbol: "MOV / RV", category: "protection", desc: ["امتصاص ارتفاعات الجهد المفاجئة (Surges).", "حماية الأجهزة المنزلية من صواعق الكهرباء."] },
+            { id: "relay", name: "المرحل", en: "Relay", symbol: "K / RL", category: "protection", desc: ["مفتاح كهروميكانيكي يدار بواسطة جهد منخفض.", "التحكم بأحمال ذات جهد عالٍ بواسطة متحكمات."] },
+            { id: "switch", name: "المفتاح الكهربائي", en: "Switch", symbol: "SW", category: "protection", desc: ["فتح وإغلاق الدائرة الكهربائية يدوياً."] }
+        ];
+
+        function renderComponents(data) {
+            const grid = document.getElementById('componentsGrid');
+            grid.innerHTML = '';
+            
+            document.getElementById('totalCount').innerText = `${data.length} عنصر`;
+
+            if (data.length === 0) {
+                grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><h5>لا توجد نتائج تطابق بحثك</h5></div>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const canvasId = `canvas-symbol-${index}`;
+                const cardHtml = `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center border-0 pt-3">
+                                <h5 class="card-title fw-bold text-dark mb-0 fs-6">${item.name}</h5>
+                                <span class="badge bg-primary badge-symbol" title="رمز المخطط">${item.symbol}</span>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <p class="text-muted small mb-2"><strong>الاسم بالإنجليزي:</strong> ${item.en}</p>
+                                
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1 fw-bold">الرمز المخططي:</label>
+                                    <div class="canvas-container">
+                                        <canvas id="${canvasId}" width="220" height="80"></canvas>
+                                    </div>
+                                </div>
+
+                                <hr class="my-2">
+                                <h6 class="fw-bold fs-7 text-secondary">الاستخدامات الأساسية:</h6>
+                                <ul class="ps-3 mb-0 text-secondary small flex-grow-1">
+                                    ${item.desc.map(d => `<li>${d}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+
+            // رسم العناصر عبر Native Canvas بدون استهلاك الذاكرة
+            data.forEach((item, index) => {
+                const canvas = document.getElementById(`canvas-symbol-${index}`);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    drawSchematicSymbol(ctx, item.id);
+                }
+            });
+        }
+
+        // تحويل أوامر أداة Phaser Graphics إلى HTML5 Canvas API
+        function drawSchematicSymbol(ctx, type) {
+            const cy = 40;
+
+            // إعدادات الرسم الافتراضية
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#0284c7';
+            ctx.fillStyle = '#0284c7';
+
+            // أدوات مساعدة لرسم الأشكال
+            const fillTriangle = (x1, y1, x2, y2, x3, y3) => {
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.closePath(); ctx.fill();
+            };
+            const fillCircle = (x, y, r) => {
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+            };
+            const strokeCircle = (x, y, r) => {
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+            };
+
+            switch (type) {
+                case "resistor":
+                case "potentiometer":
+                case "ldr":
+                case "varistor":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(50, cy);
+                    const pts = [50, cy, 60, 20, 75, 60, 90, 20, 105, 60, 120, 20, 135, 60, 150, 20, 160, cy, 170, cy];
+                    for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i+1]);
+                    ctx.lineTo(210, cy);
+                    ctx.stroke();
+
+                    if (type === "potentiometer") {
+                        ctx.lineWidth = 2; ctx.strokeStyle = '#d97706';
+                        ctx.beginPath(); ctx.moveTo(110, 70); ctx.lineTo(110, 48); ctx.stroke();
+                        ctx.fillStyle = '#d97706'; fillTriangle(110, 42, 104, 52, 116, 52);
+                    } else if (type === "ldr") {
+                        ctx.lineWidth = 1.5; ctx.strokeStyle = '#eab308';
+                        ctx.beginPath();
+                        ctx.moveTo(70, 15); ctx.lineTo(90, 30);
+                        ctx.moveTo(85, 10); ctx.lineTo(105, 25);
+                        ctx.stroke();
+                    } else if (type === "varistor") {
+                        ctx.lineWidth = 2; ctx.strokeStyle = '#d97706';
+                        ctx.beginPath(); ctx.moveTo(45, 65); ctx.lineTo(175, 15); ctx.lineTo(175, 5); ctx.stroke();
+                    }
+                    break;
+
+                case "capacitor":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(95, cy);
+                    ctx.moveTo(125, cy); ctx.lineTo(210, cy);
+                    ctx.moveTo(95, 15); ctx.lineTo(95, 65);
+                    ctx.moveTo(125, 15); ctx.lineTo(125, 65);
+                    ctx.stroke();
+                    break;
+
+                case "inductor":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(40, cy);
+                    ctx.stroke();
+                    for (let i = 0; i < 4; i++) {
+                        ctx.beginPath();
+                        ctx.arc(55 + (i * 30), cy, 15, Math.PI, 0, false);
+                        ctx.stroke();
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(175, cy); ctx.lineTo(210, cy);
+                    ctx.stroke();
+                    break;
+
+                case "transformer":
+                    ctx.beginPath();
+                    ctx.moveTo(10, 25); ctx.lineTo(30, 25);
+                    ctx.moveTo(10, 55); ctx.lineTo(30, 55);
+                    ctx.moveTo(190, 25); ctx.lineTo(210, 25);
+                    ctx.moveTo(190, 55); ctx.lineTo(210, 55);
+                    ctx.stroke();
+
+                    for (let i = 0; i < 3; i++) {
+                        ctx.beginPath(); ctx.arc(40 + (i * 20), 25, 10, Math.PI, 0, false); ctx.stroke();
+                        ctx.beginPath(); ctx.arc(40 + (i * 20), 55, 10, Math.PI, 0, false); ctx.stroke();
+                    }
+                    ctx.lineWidth = 2; ctx.strokeStyle = '#64748b';
+                    ctx.beginPath();
+                    ctx.moveTo(35, 38); ctx.lineTo(185, 38);
+                    ctx.moveTo(35, 42); ctx.lineTo(185, 42);
+                    ctx.stroke();
+                    break;
+
+                case "diode":
+                case "zener":
+                case "led":
+                case "photodiode":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(90, cy);
+                    ctx.moveTo(130, cy); ctx.lineTo(210, cy);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#0284c7';
+                    fillTriangle(90, 20, 90, 60, 130, 40);
+
+                    ctx.beginPath();
+                    ctx.moveTo(130, 20); ctx.lineTo(130, 60);
+                    if (type === "zener") {
+                        ctx.lineTo(122, 20);
+                        ctx.moveTo(130, 60); ctx.lineTo(138, 60);
+                    }
+                    ctx.stroke();
+
+                    if (type === "led") {
+                        ctx.lineWidth = 1.5; ctx.strokeStyle = '#ef4444';
+                        ctx.beginPath();
+                        ctx.moveTo(110, 20); ctx.lineTo(130, 5);
+                        ctx.moveTo(125, 20); ctx.lineTo(145, 5);
+                        ctx.stroke();
+                    } else if (type === "photodiode") {
+                        ctx.lineWidth = 1.5; ctx.strokeStyle = '#10b981';
+                        ctx.beginPath();
+                        ctx.moveTo(130, 5); ctx.lineTo(110, 20);
+                        ctx.moveTo(145, 5); ctx.lineTo(125, 20);
+                        ctx.stroke();
+                    }
+                    break;
+
+                case "bjt":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(80, cy);
+                    ctx.moveTo(80, 20); ctx.lineTo(80, 60);
+                    ctx.moveTo(80, 30); ctx.lineTo(140, 15); ctx.lineTo(180, 15);
+                    ctx.moveTo(80, 50); ctx.lineTo(140, 65); ctx.lineTo(180, 65);
+                    ctx.stroke();
+                    ctx.fillStyle = '#0284c7';
+                    fillTriangle(135, 64, 120, 52, 125, 68);
+                    ctx.lineWidth = 1; ctx.strokeStyle = '#94a3b8';
+                    strokeCircle(110, cy, 32);
+                    break;
+
+                case "mosfet":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(75, cy);
+                    ctx.moveTo(75, 20); ctx.lineTo(75, 60);
+                    ctx.moveTo(85, 20); ctx.lineTo(85, 60);
+                    ctx.moveTo(85, 25); ctx.lineTo(150, 25); ctx.lineTo(150, 10);
+                    ctx.moveTo(85, 55); ctx.lineTo(150, 55); ctx.lineTo(150, 70);
+                    ctx.stroke();
+                    break;
+
+                case "scr":
+                case "triac":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(90, cy);
+                    ctx.moveTo(130, cy); ctx.lineTo(210, cy);
+                    ctx.stroke();
+                    ctx.fillStyle = '#0284c7';
+                    fillTriangle(90, 20, 90, 60, 130, 40);
+                    ctx.beginPath();
+                    ctx.moveTo(130, 20); ctx.lineTo(130, 60);
+                    ctx.moveTo(110, 50); ctx.lineTo(130, 70); ctx.lineTo(150, 70);
+                    ctx.stroke();
+                    break;
+
+                case "opamp":
+                    ctx.beginPath();
+                    ctx.moveTo(10, 25); ctx.lineTo(60, 25);
+                    ctx.moveTo(10, 55); ctx.lineTo(60, 55);
+                    ctx.moveTo(160, cy); ctx.lineTo(210, cy);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(60, 10); ctx.lineTo(60, 70); ctx.lineTo(160, cy); ctx.closePath();
+                    ctx.stroke();
+
+                    ctx.lineWidth = 1.5; ctx.strokeStyle = '#0284c7';
+                    ctx.beginPath();
+                    ctx.moveTo(70, 25); ctx.lineTo(80, 25);
+                    ctx.moveTo(70, 55); ctx.lineTo(80, 55); ctx.moveTo(75, 50); ctx.lineTo(75, 60);
+                    ctx.stroke();
+                    break;
+
+                case "fuse":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(210, cy);
+                    ctx.stroke();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(60, 25, 100, 30);
+                    ctx.strokeRect(60, 25, 100, 30);
+                    break;
+
+                case "crystal":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(85, cy);
+                    ctx.moveTo(135, cy); ctx.lineTo(210, cy);
+                    ctx.moveTo(85, 20); ctx.lineTo(85, 60);
+                    ctx.moveTo(135, 20); ctx.lineTo(135, 60);
+                    ctx.stroke();
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.fillRect(95, 20, 30, 40);
+                    ctx.strokeRect(95, 20, 30, 40);
+                    break;
+
+                case "ic555":
+                case "regulator":
+                case "mcu":
+                case "optocoupler":
+                    ctx.fillStyle = '#334155';
+                    ctx.fillRect(60, 15, 100, 50);
+
+                    ctx.lineWidth = 2; ctx.strokeStyle = '#94a3b8';
+                    for (let i = 0; i < 4; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(40, 22 + (i * 12)); ctx.lineTo(60, 22 + (i * 12));
+                        ctx.moveTo(160, 22 + (i * 12)); ctx.lineTo(180, 22 + (i * 12));
+                        ctx.stroke();
+                    }
+                    ctx.fillStyle = '#f8fafc';
+                    fillCircle(70, 40, 4);
+                    break;
+
+                case "switch":
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(70, cy);
+                    ctx.moveTo(150, cy); ctx.lineTo(210, cy);
+                    ctx.moveTo(70, cy); ctx.lineTo(145, 15);
+                    ctx.stroke();
+                    ctx.fillStyle = '#0284c7';
+                    fillCircle(70, cy, 3);
+                    fillCircle(150, cy, 3);
+                    break;
+
+                case "relay":
+                    ctx.strokeRect(30, 25, 60, 30);
+                    ctx.beginPath(); ctx.moveTo(60, 25); ctx.lineTo(60, 55); ctx.stroke();
+                    ctx.beginPath(); 
+                    ctx.moveTo(10, 40); ctx.lineTo(30, 40);
+                    ctx.moveTo(120, 40); ctx.lineTo(150, 40);
+                    ctx.moveTo(180, 25); ctx.lineTo(210, 25);
+                    ctx.moveTo(180, 55); ctx.lineTo(210, 55);
+                    ctx.moveTo(150, 40); ctx.lineTo(178, 28);
+                    ctx.stroke();
+                    break;
+
+                default:
+                    ctx.strokeRect(60, 20, 100, 40);
+                    ctx.beginPath();
+                    ctx.moveTo(10, cy); ctx.lineTo(60, cy);
+                    ctx.moveTo(160, cy); ctx.lineTo(210, cy);
+                    ctx.stroke();
+                    break;
+            }
+        }
+
+        // إعداد البحث والفلترة
+        function filterData() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+
+            const filtered = components.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchText) || 
+                                      item.en.toLowerCase().includes(searchText) || 
+                                      item.symbol.toLowerCase().includes(searchText) ||
+                                      item.desc.some(d => d.toLowerCase().includes(searchText));
+                
+                const matchesCategory = category === 'all' || item.category === category;
+
+                return matchesSearch && matchesCategory;
+            });
+
+            renderComponents(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterData);
+        document.getElementById('categoryFilter').addEventListener('change', filterData);
+
+        // العرض المبدئي
+        renderComponents(components);
+           // 1. تفعيل زر المشاركة
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'أساسيات الإلكترونيات',
+                    text: 'تطبيق رائع لتعلم أساسيات ومكونات الدوائر الإلكترونية!',
+                    url: window.location.href
+                });
+            } catch (error) {
+                console.log('حدث خطأ أثناء المشاركة:', error);
+            }
+        } else {
+            alert('عذراً، ميزة المشاركة غير مدعومة في متصفحك. يمكنك نسخ الرابط للمشاركة.');
+        }
+    });
+    </script>
+</body>
+</html>
